@@ -1,0 +1,1255 @@
+<div 
+  class="carousel-banner" 
+  data-autoplay="{{ section.settings.autoplay }}" 
+  data-autoplay-speed="{{ section.settings.autoplay_speed }}"
+  data-transition-type="transition-{{ section.settings.transition_type }}"
+  data-transition-speed="{{ section.settings.transition_speed }}"
+  data-min-height-desktop="{{ section.settings.min_height }}"
+  data-min-height-mobile="{{ section.settings.min_height_mobile }}"
+  style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px;">
+  {% if section.blocks.size > 0 %}
+    <div class="carousel-banner__container" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; --desktop-min-height: {{ section.settings.min_height }}px; --mobile-min-height: {{ section.settings.min_height_mobile }}px;">
+      <div class="carousel-banner__wrapper transition-{{ section.settings.transition_type }}" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; --transition-speed: {{ section.settings.transition_speed }}ms; --desktop-min-height: {{ section.settings.min_height }}px; --mobile-min-height: {{ section.settings.min_height_mobile }}px;">
+        {% for block in section.blocks %}
+          <div class="carousel-banner__slide" data-index="{{ forloop.index0 }}" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; background-color: {{ section.settings.color_bg }}; aspect-ratio: {{ section.settings.aspect_ratio }}; min-height: {{ section.settings.min_height_mobile }}px;"
+               data-desktop-min-height="{{ section.settings.min_height }}"
+               data-mobile-min-height="{{ section.settings.min_height_mobile }}">
+            {% if block.settings.image != blank %}
+              <picture class="carousel-banner__image-wrapper">
+                {%- liquid
+                  assign image_alt = block.settings.image.alt | default: block.settings.heading | default: 'carousel image'
+                  assign loading_attr = 'lazy'
+                  if forloop.first
+                    assign loading_attr = 'eager'
+                  endif
+                -%}
+                
+                {% if block.settings.image_mobile != blank %}
+                  {{ block.settings.image_mobile | image_url: width: 800 | image_tag:
+                    class: 'carousel-banner__img carousel-banner__img--mobile',
+                    widths: '375, 550, 750',
+                    height: 800,
+                    alt: image_alt,
+                    loading: loading_attr
+                  }}
+                {% endif %}
+                
+                {{ block.settings.image | image_url: width: 1440 | image_tag:
+                  class: 'carousel-banner__img carousel-banner__img--desktop',
+                  widths: '750, 1100, 1500, 1780, 2000',
+                  height: 600,
+                  alt: image_alt,
+                  loading: loading_attr
+                }}
+              </picture>
+            {% else %}
+              <div class="carousel-banner__placeholder-image">
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'carousel-banner__placeholder-svg' }}
+              </div>
+            {% endif %}
+            {% if section.settings.overlay_opacity > 0 %}
+              <div class="carousel-banner__overlay" style="background-color: {{ section.settings.overlay_color | default: '#000000' }}; opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+            {% endif %}
+            
+            {% if block.settings.heading != blank or block.settings.text != blank or block.settings.button_label != blank %}
+              <div class="carousel-banner__content" style="padding: {{ section.settings.content_padding }}px; text-align: {{ section.settings.content_alignment }};">
+                {% if block.settings.heading != blank %}
+                  <h2 class="carousel-banner__heading{% unless block.settings.show_heading_mobile %} hide-on-mobile{% endunless %}{% unless block.settings.show_heading_desktop %} hide-on-desktop{% endunless %}" style="color: {{ section.settings.text_color }};">{{ block.settings.heading }}</h2>
+                {% endif %}
+                {% if block.settings.text != blank %}
+                  <p class="carousel-banner__text{% unless block.settings.show_text_mobile %} hide-on-mobile{% endunless %}{% unless block.settings.show_text_desktop %} hide-on-desktop{% endunless %}" style="color: {{ section.settings.text_color }};">{{ block.settings.text }}</p>
+                {% endif %}
+                {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+                  <a href="{{ block.settings.button_link }}" class="carousel-banner__button{% unless block.settings.show_button_mobile %} hide-on-mobile{% endunless %}{% unless block.settings.show_button_desktop %} hide-on-desktop{% endunless %}" style="background-color: {{ section.settings.button_bg_color }}; color: {{ section.settings.button_text_color }};">{{ block.settings.button_label }}</a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      
+      {% if section.blocks.size > 1 %}
+        {% if section.settings.show_arrows %}
+          <button class="carousel-banner__arrow carousel-banner__arrow--prev" style="background: {{ section.settings.arrow_bg_color }} !important; border-color: {{ section.settings.arrow_color }} !important; color: {{ section.settings.arrow_color }} !important;" aria-label="{{ 'carousel_banner.previous_slide' | t | default: 'Previous slide' }}">&#8592;</button>
+          <button class="carousel-banner__arrow carousel-banner__arrow--next" style="background: {{ section.settings.arrow_bg_color }} !important; border-color: {{ section.settings.arrow_color }} !important; color: {{ section.settings.arrow_color }} !important;" aria-label="{{ 'carousel_banner.next_slide' | t | default: 'Next slide' }}">&#8594;</button>
+        {% endif %}
+        
+        {% if section.settings.show_dots %}
+          <div class="carousel-banner__dots">
+            {% for block in section.blocks %}
+              <button class="carousel-banner__dot" data-index="{{ forloop.index0 }}" style="border-color: {{ section.settings.dot_active_color }} !important;" aria-label="{{ 'carousel_banner.go_to_slide' | t | default: 'Go to slide' }} {{ forloop.index }}"></button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="carousel-banner__placeholder">
+      <p>{{ 'carousel_banner.placeholder' | t }}</p>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .carousel-banner {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
+  }
+
+  .carousel-banner__container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Alturas mínimas responsivas */
+  @media screen and (min-width: 768px) {
+    .carousel-banner__container {
+      min-height: var(--desktop-min-height, 404px);
+    }
+    .carousel-banner__slide {
+      min-height: var(--desktop-min-height, 404px);
+    }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .carousel-banner__container {
+      min-height: var(--mobile-min-height, 250px);
+    }
+    .carousel-banner__slide {
+      min-height: var(--mobile-min-height, 250px);
+    }
+  }
+  .carousel-banner__wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    position: relative;
+    transform: translateX(0);
+    transition: transform var(--transition-speed, 400ms) ease-in-out;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+  }
+  .carousel-banner__slide {
+    flex: 0 0 100%;
+    width: 100vw;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  /* Responsive aspect ratios - solo cuando no hay altura mínima definida */
+  @media (max-width: 480px) {
+    .carousel-banner__slide:not([style*="min-height"]) {
+      aspect-ratio: 4/3;
+    }
+  }
+  
+  @media (min-width: 481px) and (max-width: 768px) {
+    .carousel-banner__slide:not([style*="min-height"]) {
+      aspect-ratio: 3/2;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .carousel-banner__slide:not([style*="min-height"]) {
+      aspect-ratio: 16/6;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .carousel-banner__slide:not([style*="min-height"]) {
+      aspect-ratio: 16/5;
+    }
+  }
+  .carousel-banner__slide:not(:first-child) {
+    margin-left: 0;
+  }
+  .carousel-banner__image-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  .carousel-banner__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: inherit;
+  }
+  .carousel-banner__img--mobile {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .carousel-banner__img--desktop {
+      display: none;
+    }
+    
+    .carousel-banner__img--mobile {
+      display: block;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    /* Aseguramos que los slides respeten la altura mínima y ratio de aspecto definido */
+  }
+  .carousel-banner__placeholder-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-bg-secondary, #f4f4f4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-banner__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+  }
+  .carousel-banner__overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-color, #000000);
+    opacity: calc(var(--overlay-opacity, 32) / 100);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .carousel-banner__content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  
+  .carousel-banner__content[style*="text-align: left"] {
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .carousel-banner__content[style*="text-align: right"] {
+    align-items: flex-end;
+    text-align: right;
+  }
+  
+  .carousel-banner__content[style*="text-align: center"] {
+    align-items: center;
+    text-align: center;
+  }
+  
+  /* Responsive content padding */
+  @media (max-width: 480px) {
+    .carousel-banner__content {
+      padding: 1rem 0.5rem;
+      max-width: 95%;
+    }
+  }
+  
+  @media (min-width: 481px) and (max-width: 768px) {
+    .carousel-banner__content {
+      padding: 1.5rem 1rem;
+      max-width: 90%;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .carousel-banner__content {
+      padding: 2rem 1.5rem;
+      max-width: 85%;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .carousel-banner__content {
+      padding: 3rem 2rem;
+      max-width: 80%;
+    }
+  }
+  /* Estilos para slides sin imagen */
+  .carousel-banner__slide:not(:has(.carousel-banner__image-wrapper)) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  .carousel-banner__slide:not(:has(.carousel-banner__image-wrapper)) .carousel-banner__content {
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+  /* Fallback para navegadores sin soporte :has() */
+  .carousel-banner__slide:not(.has-image) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  .carousel-banner__slide:not(.has-image) .carousel-banner__content {
+    border-radius: 8px;
+  }
+  .carousel-banner__heading,
+  .carousel-banner__text,
+  .carousel-banner__button {
+    position: relative;
+    z-index: 3;
+    text-align: inherit;
+  }
+  .carousel-banner__heading {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0;
+    line-height: 1.2;
+  }
+  .carousel-banner__text {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+    line-height: 1.4;
+    max-width: 600px;
+  }
+  .carousel-banner__button {
+    display: inline-block;
+    background: #2E4695;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: background 0.2s;
+    font-size: 1rem;
+    min-width: 160px;
+    text-align: center;
+  }
+  
+  /* Responsive typography */
+  @media (max-width: 480px) {
+    .carousel-banner__heading {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .carousel-banner__text {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    .carousel-banner__button {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+      min-width: 140px;
+    }
+  }
+  
+  @media (min-width: 481px) and (max-width: 768px) {
+    .carousel-banner__heading {
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .carousel-banner__text {
+      font-size: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .carousel-banner__button {
+      padding: 0.7rem 1.75rem;
+      font-size: 0.95rem;
+      min-width: 150px;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .carousel-banner__heading {
+      font-size: 2.2rem;
+      margin-bottom: 0.9rem;
+    }
+    .carousel-banner__text {
+      font-size: 1.1rem;
+      margin-bottom: 1.3rem;
+    }
+    .carousel-banner__button {
+      padding: 0.75rem 1.9rem;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (min-width: 1025px) and (max-width: 1440px) {
+    .carousel-banner__heading {
+      font-size: 2.8rem;
+    }
+    .carousel-banner__text {
+      font-size: 1.3rem;
+    }
+    .carousel-banner__button {
+      padding: 0.8rem 2.2rem;
+      font-size: 1.1rem;
+    }
+  }
+  
+  @media (min-width: 1441px) {
+    .carousel-banner__heading {
+      font-size: 3.2rem;
+    }
+    .carousel-banner__text {
+      font-size: 1.4rem;
+    }
+    .carousel-banner__button {
+      padding: 0.9rem 2.5rem;
+      font-size: 1.2rem;
+    }
+  }
+  .carousel-banner__button:hover {
+    filter: brightness(0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .carousel-banner__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.8;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .carousel-banner__arrow--prev {
+    left: 1rem;
+  }
+  .carousel-banner__arrow--next {
+    right: 1rem;
+  }
+  
+  /* Responsive arrows */
+  @media (max-width: 480px) {
+    .carousel-banner__arrow {
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.2rem;
+    }
+    .carousel-banner__arrow--prev {
+      left: 0.5rem;
+    }
+    .carousel-banner__arrow--next {
+      right: 0.5rem;
+    }
+  }
+  
+  @media (min-width: 481px) and (max-width: 768px) {
+    .carousel-banner__arrow {
+      width: 2.2rem;
+      height: 2.2rem;
+      font-size: 1.3rem;
+    }
+    .carousel-banner__arrow--prev {
+      left: 0.75rem;
+    }
+    .carousel-banner__arrow--next {
+      right: 0.75rem;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .carousel-banner__arrow {
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.8rem;
+    }
+    .carousel-banner__arrow--prev {
+      left: 1.5rem;
+    }
+    .carousel-banner__arrow--next {
+      right: 1.5rem;
+    }
+  }
+  .carousel-banner__arrow:focus,
+  .carousel-banner__arrow:hover {
+    background: #fff !important;
+    color: #2E4695 !important;
+    outline: none;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    border-color: #fff !important;
+    transition: all 0.2s ease-out;
+  }
+  .carousel-banner__dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    z-index: 10;
+  }
+  .carousel-banner__dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .carousel-banner__dot:hover {
+    background: rgba(255,255,255,0.6) !important;
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(255,255,255,0.5);
+  }
+  .carousel-banner__dot.is-active {
+    background: #fff !important;
+  }
+  
+  /* Responsive dots */
+  @media (max-width: 480px) {
+    .carousel-banner__dots {
+      bottom: 0.5rem;
+      gap: 0.3rem;
+    }
+    .carousel-banner__dot {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-width: 1px;
+    }
+  }
+  
+  @media (min-width: 481px) and (max-width: 768px) {
+    .carousel-banner__dots {
+      bottom: 0.75rem;
+      gap: 0.4rem;
+    }
+    .carousel-banner__dot {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .carousel-banner__dots {
+      bottom: 1.5rem;
+      gap: 0.6rem;
+    }
+    .carousel-banner__dot {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+  }
+  .carousel-banner__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background: #f4f4f4;
+    color: #666;
+    font-size: 1.2rem;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  /* Responsive placeholder */
+  @media (max-width: 480px) {
+    .carousel-banner__placeholder {
+      min-height: 150px;
+      font-size: 1rem;
+      padding: 1rem;
+    }
+  }
+  
+  /* Clases para ocultar elementos según dispositivo */
+  @media screen and (max-width: 749px) {
+    .hide-on-mobile {
+      display: none !important;
+    }
+  }
+  
+  @media screen and (min-width: 750px) {
+    .hide-on-desktop {
+      display: none !important;
+    }
+  }
+  
+  /* Estilos para diferentes tipos de transición */
+  
+  /* Transición Fade */
+  .carousel-banner__wrapper.transition-fade {
+    position: relative;
+    height: 100%;
+    display: block;
+  }
+  
+  .carousel-banner__wrapper.transition-fade .carousel-banner__slide {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    flex: none;
+    transition: opacity var(--transition-speed, 400ms) ease-in-out;
+  }
+
+  .carousel-banner__wrapper.transition-fade .carousel-banner__slide:first-child {
+    position: relative;
+  }
+  
+  .carousel-banner__wrapper.transition-fade .carousel-banner__slide.is-active {
+    opacity: 1;
+    z-index: 3;
+    pointer-events: auto;
+  }
+  
+  /* Transición Zoom */
+  .carousel-banner__wrapper.transition-zoom {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    display: block;
+  }
+  
+  .carousel-banner__wrapper.transition-zoom .carousel-banner__slide {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+    z-index: 1;
+    flex: none;
+    transition: opacity var(--transition-speed, 400ms) ease-in-out, transform var(--transition-speed, 400ms) ease-in-out;
+  }
+
+  .carousel-banner__wrapper.transition-zoom .carousel-banner__slide:first-child {
+    position: relative;
+  }
+  
+  .carousel-banner__wrapper.transition-zoom .carousel-banner__slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 3;
+    pointer-events: auto;
+  }
+  
+  /* Transición Slide y otros tipos son manejados por sus propias clases */
+
+  /* Transición Slide (horizontal) */
+  .carousel-banner__wrapper.transition-slide {
+    display: flex;
+    flex-direction: row;
+    transition: transform var(--transition-speed, 400ms) ease-in-out;
+  }
+  
+  .carousel-banner__wrapper.transition-slide .carousel-banner__slide {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+  
+  /* Asegurar que el contenedor tenga altura para transiciones absolutas */
+  .carousel-banner__container:has(.transition-fade),
+  .carousel-banner__container:has(.transition-zoom) {
+    min-height: 400px;
+  }
+  
+  @media (max-width: 749px) {
+    .carousel-banner__container:has(.transition-fade),
+    .carousel-banner__container:has(.transition-zoom) {
+      min-height: 250px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar todos los carousels en la página
+  const carousels = document.querySelectorAll('.carousel-banner');
+  
+  carousels.forEach(carousel => {
+    initCarousel(carousel);
+  });
+  
+  function initCarousel(carouselElement) {
+    // Variables del carousel
+    let currentSlide = 0;
+    const wrapper = carouselElement.querySelector('.carousel-banner__wrapper');
+    const slides = carouselElement.querySelectorAll('.carousel-banner__slide');
+    const prevButton = carouselElement.querySelector('.carousel-banner__arrow--prev');
+    const nextButton = carouselElement.querySelector('.carousel-banner__arrow--next');
+    const dots = carouselElement.querySelectorAll('.carousel-banner__dot');
+    
+    // Configuración
+    const autoplayEnabled = carouselElement.dataset.autoplay === 'true';
+    const autoplaySpeed = parseInt(carouselElement.dataset.autoplaySpeed) || 5000;
+    const transitionType = carouselElement.dataset.transitionType || 'transition-slide';
+    const transitionSpeed = parseInt(carouselElement.dataset.transitionSpeed) || 400;
+    
+    // Obtener colores personalizados de dots desde el CSS computado
+    const computedStyle = getComputedStyle(carouselElement);
+    const dotActiveColor = '{{ section.settings.dot_active_color }}';
+    const dotInactiveColor = '{{ section.settings.dot_inactive_color }}';
+    
+    let autoplayTimer = null;
+    
+    // Si no hay suficientes slides, no inicializar
+    if (slides.length <= 1) return;
+    
+    // Configurar transiciones
+    slides.forEach(slide => {
+      slide.style.transitionDuration = transitionSpeed + 'ms';
+    });
+    
+    if (wrapper) {
+      wrapper.style.transitionDuration = transitionSpeed + 'ms';
+    }
+    
+    // Inicializar primer slide
+    function setInitialSlide() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('is-active', index === 0);
+      });
+      
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === 0);
+        // Aplicar colores personalizados
+        if (index === 0) {
+          dot.style.background = dotActiveColor + ' !important';
+        } else {
+          dot.style.background = dotInactiveColor + ' !important';
+        }
+      });
+      
+      updateSlidePosition();
+    }
+    
+    // Actualizar posición de slide
+    function updateSlidePosition() {
+      if (!wrapper) return;
+      
+      switch (transitionType) {
+        case 'transition-slide':
+          wrapper.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+          break;
+        case 'transition-fade':
+        case 'transition-zoom':
+          // Para fade y zoom, las transiciones son manejadas por CSS
+          break;
+      }
+    }
+    
+    // Ir al slide anterior
+    function goToPrevSlide() {
+      currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+      updateSlide();
+    }
+    
+    // Ir al slide siguiente
+    function goToNextSlide() {
+      currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+      updateSlide();
+    }
+    
+    // Ir a slide específico
+    function goToSlide(index) {
+      if (index >= 0 && index < slides.length && index !== currentSlide) {
+        currentSlide = index;
+        updateSlide();
+      }
+    }
+    
+    // Actualizar slide activo
+    function updateSlide() {
+      // Quitar todas las clases activas
+      slides.forEach(slide => slide.classList.remove('is-active'));
+      dots.forEach((dot, index) => {
+        dot.classList.remove('is-active');
+        // Aplicar color inactivo
+        dot.style.background = dotInactiveColor + ' !important';
+      });
+      
+      // Agregar clase activa al slide actual
+      if (slides[currentSlide]) {
+        slides[currentSlide].classList.add('is-active');
+      }
+      
+      if (dots[currentSlide]) {
+        dots[currentSlide].classList.add('is-active');
+        // Aplicar color activo
+        dots[currentSlide].style.background = dotActiveColor + ' !important';
+      }
+      
+      updateSlidePosition();
+    }
+    
+    // Autoplay
+    function startAutoplay() {
+      if (!autoplayEnabled || slides.length <= 1) return;
+      
+      autoplayTimer = setInterval(function() {
+        goToNextSlide();
+      }, autoplaySpeed);
+    }
+    
+    function pauseAutoplay() {
+      if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    }
+    
+    function restartAutoplay() {
+      if (autoplayEnabled) {
+        pauseAutoplay();
+        startAutoplay();
+      }
+    }
+    
+    // Event listeners para flechas
+    if (prevButton) {
+      prevButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        pauseAutoplay();
+        goToPrevSlide();
+        restartAutoplay();
+      });
+    }
+    
+    if (nextButton) {
+      nextButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        pauseAutoplay();
+        goToNextSlide();
+        restartAutoplay();
+      });
+    }
+    
+    // Event listeners para dots
+    dots.forEach(function(dot, index) {
+      dot.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        pauseAutoplay();
+        goToSlide(index);
+        restartAutoplay();
+      });
+    });
+    
+    // Event listeners para hover
+    carouselElement.addEventListener('mouseenter', function() {
+      pauseAutoplay();
+    });
+    
+    carouselElement.addEventListener('mouseleave', function() {
+      restartAutoplay();
+    });
+    
+    // Touch support
+    let startX = 0;
+    let isDragging = false;
+    
+    carouselElement.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+      pauseAutoplay();
+    });
+    
+    carouselElement.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      
+      const moveX = e.touches[0].clientX;
+      const diffX = startX - moveX;
+      
+      // Si el movimiento es horizontal, prevenir scroll
+      if (Math.abs(diffX) > 10) {
+        e.preventDefault();
+      }
+    });
+    
+    carouselElement.addEventListener('touchend', function(e) {
+      if (!isDragging) return;
+      
+      const endX = e.changedTouches[0].clientX;
+      const diffX = startX - endX;
+      
+      isDragging = false;
+      
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          goToNextSlide();
+        } else {
+          goToPrevSlide();
+        }
+      }
+      
+      restartAutoplay();
+    });
+    
+    // Altura mínima responsive
+    function updateMinHeight() {
+      const desktopMinHeight = carouselElement.dataset.minHeightDesktop;
+      const mobileMinHeight = carouselElement.dataset.minHeightMobile;
+      const container = carouselElement.querySelector('.carousel-banner__container');
+      const wrapper = carouselElement.querySelector('.carousel-banner__wrapper');
+      
+      if (window.innerWidth >= 768) {
+        if (desktopMinHeight && desktopMinHeight !== '0') {
+          // Aplicar altura al contenedor principal
+          carouselElement.style.minHeight = desktopMinHeight + 'px';
+          if (container) container.style.minHeight = desktopMinHeight + 'px';
+          if (wrapper) wrapper.style.minHeight = desktopMinHeight + 'px';
+          
+          // Aplicar altura a todos los slides
+          slides.forEach(slide => {
+            slide.style.minHeight = desktopMinHeight + 'px';
+            
+            // Asegurar que las imágenes también respeten la altura mínima
+            const imgWrapper = slide.querySelector('.carousel-banner__image-wrapper');
+            if (imgWrapper) imgWrapper.style.minHeight = desktopMinHeight + 'px';
+          });
+        }
+      } else {
+        if (mobileMinHeight && mobileMinHeight !== '0') {
+          // Aplicar altura al contenedor principal
+          carouselElement.style.minHeight = mobileMinHeight + 'px';
+          if (container) container.style.minHeight = mobileMinHeight + 'px';
+          if (wrapper) wrapper.style.minHeight = mobileMinHeight + 'px';
+          
+          // Aplicar altura a todos los slides
+          slides.forEach(slide => {
+            slide.style.minHeight = mobileMinHeight + 'px';
+            
+            // Asegurar que las imágenes también respeten la altura mínima
+            const imgWrapper = slide.querySelector('.carousel-banner__image-wrapper');
+            if (imgWrapper) imgWrapper.style.minHeight = mobileMinHeight + 'px';
+          });
+        }
+      }
+    }
+    
+    // Inicializar
+    setInitialSlide();
+    updateMinHeight();
+    
+    if (autoplayEnabled) {
+      startAutoplay();
+    }
+    
+    // Escuchar cambios de tamaño de ventana
+    window.addEventListener('resize', updateMinHeight);
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Carousel Banner",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Background color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "range",
+      "id": "border_radius_bottom",
+      "label": "Bottom border radius (px)",
+      "default": 0,
+      "min": 0,
+      "max": 100
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity (%)",
+      "min": 0,
+      "max": 100,
+      "default": 32
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image (optional)"
+    },
+    {
+      "type": "range",
+      "id": "border_radius_top",
+      "label": "Top border radius (px)",
+      "default": 0,
+      "min": 0,
+      "max": 100
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Min height (desktop, px)",
+      "default": 404,
+      "min": 100,
+      "max": 900,
+      "step": 8
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "label": "Min height (mobile, px)",
+      "default": 250,
+      "min": 100,
+      "max": 600,
+      "step": 5
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        { "value": "16_5", "label": "16:5 (wide)" },
+        { "value": "16_9", "label": "16:9" },
+        { "value": "4_3", "label": "4:3" },
+        { "value": "1_1", "label": "1:1 (square)" }
+      ],
+      "default": "16_5"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show navigation dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay speed (ms)",
+      "default": 5000,
+      "min": 2000,
+      "max": 9900,
+      "step": 100
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content padding (px)",
+      "default": 32.4,
+      "min": 0,
+      "max": 120,
+      "step": 1.2
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background color",
+      "default": "#2E4695"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Navigation colors"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Arrow background color",
+      "default": "rgba(255,255,255,0.1)"
+    },
+    {
+      "type": "color",
+      "id": "dot_active_color",
+      "label": "Active dot color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dot_inactive_color",
+      "label": "Inactive dot color",
+      "default": "rgba(255,255,255,0.3)"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "transition_type",
+      "label": "Transition effect",
+      "options": [
+        { "value": "slide", "label": "Slide (horizontal)" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "zoom", "label": "Zoom" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "range",
+      "id": "transition_speed",
+      "label": "Transition speed (ms)",
+      "default": 400,
+      "min": 200,
+      "max": 1000,
+      "step": 50
+    }
+  ],
+  "blocks": [
+    {
+      "type": "carousel_slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image for desktop (1440x480px)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Image for mobile (800x800px)",
+          "info": "If not set, desktop image will be used"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt text"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_heading_mobile",
+          "label": "Mostrar encabezado en móvil",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_heading_desktop",
+          "label": "Mostrar encabezado en escritorio",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_text_mobile",
+          "label": "Mostrar texto en móvil",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_text_desktop",
+          "label": "Mostrar texto en escritorio",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button_mobile",
+          "label": "Mostrar botón en móvil",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button_desktop",
+          "label": "Mostrar botón en escritorio",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Carousel Banner",
+      "category": "Banners",
+      "blocks": [
+        { "type": "carousel_slide" },
+        { "type": "carousel_slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}

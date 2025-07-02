@@ -1,0 +1,178 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Página no encontrada.",
+    "back_to_shopping": "Volver a comprar"
+  },
+  "blog": {
+    "article_comments": "Comentarios",
+    "article_metadata_html": "{{ date }} por {{ author }}",
+    "comment_form_body": "Comentario",
+    "comment_form_email": "Correo electrónico",
+    "comment_form_name": "Nombre",
+    "comment_form_submit": "Publicar",
+    "comment_form_title": "Agregar un comentario"
+  },
+  "cart": {
+    "checkout": "Finalizar compra",
+    "title": "Carrito",
+    "update": "Actualizar",
+    "remove": "Eliminar"
+  },
+  "customers": {
+    "login": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "title": "Acceder"
+    }
+  },
+  "collections": {
+    "title": "Colecciones"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Agregar a Apple Wallet",
+    "card": "Tarjeta de regalo",
+    "expired": "Esta tarjeta de regalo ha expirado",
+    "expires_on": "Expira el {{ expires_on }}",
+    "use_at_checkout": "Usa esta tarjeta de regalo al pagar"
+  },
+  "password": {
+    "title": "Esta tienda es privada",
+    "password": "Contraseña",
+    "enter": "Entrar"
+  },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "Buscar artículos, páginas o productos",
+    "submit": "Buscar",
+    "no_results_html": "No se encontraron resultados para {{ terms }}",
+    "results_for_html": "{{ count }} resultados encontrados para {{ terms }}"
+  },
+  "carousel_banner": {
+    "placeholder": "Agrega contenido a tu sección de banner carrusel",
+    "previous_slide": "Slide anterior",
+    "next_slide": "Siguiente slide",
+    "go_to_slide": "Ir al slide",
+    "settings": {
+      "color_bg": "Color de fondo",
+      "border_radius_bottom": "Radio de borde inferior (px)",
+      "overlay_color": "Color de superposición",
+      "overlay_opacity": "Opacidad de superposición (%)",
+      "background_image": "Imagen de fondo (opcional)",
+      "border_radius_top": "Radio de borde superior (px)",
+      "min_height": "Altura mínima (desktop, px)",
+      "min_height_mobile": "Altura mínima (móvil, px)",
+      "aspect_ratio": "Relación de aspecto",
+      "show_arrows": "Mostrar flechas de navegación",
+      "show_dots": "Mostrar puntos de navegación",
+      "autoplay": "Activar autoplay",
+      "autoplay_speed": "Velocidad de autoplay (ms)",
+      "content_alignment": "Alineación del contenido",
+      "text_color": "Color del texto",
+      "content_padding": "Padding del contenido (px)",
+      "button_bg_color": "Color de fondo del botón",
+      "button_text_color": "Color del texto del botón",
+      "arrow_color": "Color de la flecha",
+      "arrow_bg_color": "Color de fondo de la flecha",
+      "dot_active_color": "Color del punto activo",
+      "dot_inactive_color": "Color del punto inactivo",
+      "transition_type": "Efecto de transición",
+      "transition_speed": "Velocidad de transición (ms)"
+    },
+    "options": {
+      "aspect_ratio": {
+        "16_5": "16:5 (ancho)",
+        "16_9": "16:9",
+        "4_3": "4:3",
+        "1_1": "1:1 (cuadrado)"
+      },
+      "content_alignment": {
+        "center": "Centro",
+        "left": "Izquierda",
+        "right": "Derecha"
+      },
+      "transition_type": {
+        "slide": "Deslizar (horizontal)",
+        "fade": "Desvanecer",
+        "zoom": "Zoom"
+      }
+    },
+    "blocks": {
+      "carousel_slide": {
+        "name": "Slide",
+        "settings": {
+          "image": "Imagen para desktop (1440x480px)",
+          "image_mobile": "Imagen para móvil (800x800px)",
+          "alt": "Texto alternativo",
+          "heading": "Encabezado",
+          "show_heading_mobile": "Mostrar encabezado en móvil",
+          "show_heading_desktop": "Mostrar encabezado en escritorio",
+          "text": "Texto",
+          "show_text_mobile": "Mostrar texto en móvil",
+          "show_text_desktop": "Mostrar texto en escritorio",
+          "button_label": "Texto del botón",
+          "show_button_mobile": "Mostrar botón en móvil",
+          "show_button_desktop": "Mostrar botón en escritorio",
+          "button_link": "Enlace del botón"
+        }
+      }
+    },
+    "preset": {
+      "name": "Banner Carrusel",
+      "category": "Banners"
+    }
+  },
+  "header": {
+    "menu_open": "Abrir menú",
+    "menu_close": "Cerrar menú"
+  },
+  "general": {
+    "navigation": {
+      "menu_open": "Abrir menú",
+      "menu_close": "Cerrar menú"
+    },
+    "header": "Encabezado"
+  },
+  "labels": {
+    "menu": "Menú",
+    "color": "Color",
+    "bg_color": "Color de fondo",
+    "logo": "Logo",
+    "logo_position": "Posición del logo",
+    "left": "Izquierda",
+    "center": "Centro",
+    "right": "Derecha",
+    "header_gap": "Espacio entre elementos (desktop)",
+    "header_gap_mobile": "Espacio entre elementos (móvil)",
+    "logo_max_height": "Altura máxima del logo (desktop)",
+    "logo_max_height_mobile": "Altura máxima del logo (móvil)",
+    "header_padding_x": "Padding horizontal (desktop)",
+    "header_padding_x_mobile": "Padding horizontal (móvil)",
+    "header_height": "Altura del header (desktop)",
+    "header_height_mobile": "Altura del header (móvil)",
+    "nav_gap": "Espaciado entre enlaces (desktop)",
+    "nav_gap_mobile": "Espaciado entre enlaces (móvil)",
+    "mobile_menu": "Menú móvil",
+    "mobile_menu_title": "Título del menú móvil",
+    "mobile_menu_bg_color": "Color de fondo del menú móvil",
+    "mobile_menu_text_color": "Color del texto del menú móvil",
+    "mobile_menu_border_color": "Color del borde del menú móvil",
+    "mobile_menu_title_color": "Color del título del menú móvil",
+    "effects_and_animations": "Efectos y animaciones",
+    "link_hover_effect": "Efecto hover en enlaces",
+    "hover_color": "Color de hover",
+    "link_spacing": "Espaciado entre letras",
+    "animation_style": "Estilo de animación",
+    "animation_speed": "Velocidad de animación",
+    "none": "Ninguno",
+    "underline": "Subrayado",
+    "opacity": "Opacidad",
+    "color_change": "Cambio de color",
+    "scale": "Escala",
+    "background": "Fondo",
+    "fade": "Desvanecer",
+    "slide": "Deslizar",
+    "bounce": "Rebote"
+  }
+}

@@ -1,56 +1,842 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header class="header header--{{ section.settings.logo_position }}" role="banner">
+  <div class="header__container">
+    <button class="header__burger" 
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            aria-label="{{ 'header.menu_open' | t }}">
+      <span class="header__burger-bar"></span>
+      <span class="header__burger-bar"></span>
+      <span class="header__burger-bar"></span>
+    </button>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+    <nav class="header__nav header__nav--left" role="navigation">
+      {% assign left_links = section.settings.menu.links | slice: 0, 5 %}
+      {% for link in left_links %}
+        <a href="{{ link.url }}" class="header__nav-link{% if link.current %} header__nav-link--active{% endif %}">
+          {{ link.title }}
+        </a>
+      {% endfor %}
+    </nav>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
-
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
+    <div class="header__logo-wrapper">
+      {% if section.settings.logo != blank %}
+        <a href="{{ routes.root_url }}" class="header__logo-link">
+          {{ section.settings.logo | image_url: width: 160 | image_tag:
+              class: 'header__logo',
+              widths: '50, 100, 150, 200, 250, 300',
+              sizes: '(max-width: 749px) 50vw, 160px',
+              alt: shop.name,
+              preload: true
+          }}
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" class="header__logo-text">{{ shop.name }}</a>
       {% endif %}
+    </div>
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+    <nav class="header__nav header__nav--right" role="navigation">
+      {% assign right_links = section.settings.menu.links | slice: 5, 5 %}
+      {% for link in right_links %}
+        <a href="{{ link.url }}" class="header__nav-link{% if link.current %} header__nav-link--active{% endif %}">
+          {{ link.title }}
+        </a>
+      {% endfor %}
+    </nav>
+    
+    <div id="mobile-menu" class="header__mobile-nav" aria-hidden="true">
+      <div class="header__mobile-nav-header">
+        <div class="header__mobile-title">{{ section.settings.mobile_menu_title | default: shop.name }}</div>
+      </div>
+      <nav class="header__mobile-nav-menu" role="navigation">
+        {% for link in section.settings.menu.links %}
+          <a href="{{ link.url }}" class="header__mobile-nav-link{% if link.current %} header__mobile-nav-link--active{% endif %}">
+            {{ link.title }}
+          </a>
+        {% endfor %}
+      </nav>
+    </div>
   </div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background: var(--header-bg, var(--color-bg, #ffffff));
+  color: var(--header-color, var(--color-text, #000000));
+  border-bottom: 1px solid rgba(var(--color-border), 0.08);
+  transition: background var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+              transform var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+              box-shadow var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+/* Clase para ocultar el header al hacer scroll hacia abajo */
+.header--hidden {
+  transform: translateY(-100%);
+  box-shadow: none;
+}
+
+/* Añadir sombra cuando hacemos scroll y el header está visible */
+.header:not(.header--hidden) {
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+}
+
+.header__container {
+  max-width: var(--page-width, 1200px);
+  margin: 0 auto;
+  padding: 0 var(--space-4, 2rem);
+  height: var(--header-height, 5rem);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4, 2rem);
+  position: relative;
+}
+
+.header__nav {
+  display: flex;
+  gap: var(--nav-gap, 2rem);
+  flex: 1;
+  align-items: center;
+}
+
+.header__nav--left {
+  justify-content: flex-end;
+}
+
+.header__nav--right {
+  justify-content: flex-start;
+}
+
+.header__nav-link {
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+  padding: 0.5rem;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: var(--font-weight-medium, 500);
+  letter-spacing: var(--link-spacing, 0.02em);
+  white-space: nowrap;
+  transition: all var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  display: inline-block;
+  transform-origin: center;
+}
+
+.header__nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 2px;
+  background: var(--hover-color, currentColor);
+  opacity: 0;
+  transform: translateY(4px) scaleX(0.8);
+  transform-origin: center;
+  transition: transform var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+              opacity var(--animation-speed, 0.3s) var(--animation-curve, ease),
+              width var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+/* Underline effect */
+.header--effect-underline .header__nav-link::after {
+  transform-origin: center bottom;
+  transition: transform var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+              opacity var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+.header--effect-underline .header__nav-link:hover::after,
+.header--effect-underline .header__nav-link:focus::after,
+.header--effect-underline .header__nav-link--active::after {
+  opacity: 1;
+  transform: translateY(0) scaleX(1);
+}
+
+/* Opacity effect */
+.header--effect-opacity .header__nav-link {
+  transition: opacity var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+.header--effect-opacity .header__nav-link:hover,
+.header--effect-opacity .header__nav-link:focus,
+.header--effect-opacity .header__nav-link--active {
+  opacity: 0.7;
+}
+
+/* Color effect */
+.header--effect-color .header__nav-link {
+  transition: color var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+.header--effect-color .header__nav-link:hover,
+.header--effect-color .header__nav-link:focus,
+.header--effect-color .header__nav-link--active {
+  color: var(--hover-color);
+}
+
+/* Scale effect */
+.header--effect-scale .header__nav-link {
+  transition: transform var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+.header--effect-scale .header__nav-link:hover,
+.header--effect-scale .header__nav-link:focus,
+.header--effect-scale .header__nav-link--active {
+  transform: scale(1.05);
+}
+
+/* Background effect */
+.header--effect-background .header__nav-link {
+  border-radius: 4px;
+  padding: 0.5rem 0.8rem;
+  transition: background-color var(--animation-speed, 0.3s) var(--animation-curve, ease),
+              color var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+.header--effect-background .header__nav-link:hover,
+.header--effect-background .header__nav-link:focus,
+.header--effect-background .header__nav-link--active {
+  background-color: var(--hover-color, currentColor);
+  color: var(--header-bg, #ffffff);
+}
+
+.header__logo-wrapper {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+}
+
+.header__logo {
+  display: block;
+  width: auto;
+  height: var(--logo-height, 3rem);
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform var(--animation-speed, 0.3s) var(--animation-curve, ease),
+              opacity var(--animation-speed, 0.3s) var(--animation-curve, ease);
+}
+
+.header--animation-fade .header__logo-link:hover .header__logo {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.header--animation-slide .header__logo-link:hover .header__logo {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.header--animation-bounce .header__logo-link:hover .header__logo {
+  animation: logoBounceFx var(--animation-speed, 0.5s) var(--animation-curve, cubic-bezier(0.175, 0.885, 0.32, 1.275));
+}
+
+@keyframes logoBounceFx {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.header__logo-text {
+  color: inherit;
+  text-decoration: none;
+  font-size: var(--font-size-xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.header__burger {
+  display: none;
+}
+
+.header__mobile-nav {
+  display: none;
+}
+
+@media screen and (max-width: 989px) {
+  .header {
+    position: sticky;
+    top: 0;
+  }
+
+  .header__container {
+    height: var(--header-height-mobile, 4rem);
+    padding: 0 var(--space-3, 1rem);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+
+  .header__nav {
+    display: none;
+  }
+  
+  /* Asegurarse de que el logo siempre esté centrado en móvil */
+  .header__logo-wrapper {
+    grid-column: 2;
+    justify-self: center;
+    margin: 0 auto;
+    max-width: 60%;
+  }
+
+  .header__burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    margin-left: -8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 101;
+    position: relative;
+    grid-column: 1;
+    color: var(--header-color, currentColor);
+    transition: color var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  }
+  
+  .header__burger[aria-expanded="true"] {
+    color: var(--mobile-menu-color, var(--header-color, currentColor));
+  }
+
+  .header__burger-bar {
+    width: 24px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform var(--animation-speed, 0.25s) ease-in-out, 
+                opacity var(--animation-speed, 0.15s) ease;
+    position: absolute;
+    left: 8px;
+    right: 8px;
+  }
+
+  .header__burger-bar:nth-child(1) {
+    top: 14px;
+    transform-origin: left center;
+  }
+
+  .header__burger-bar:nth-child(2) {
+    top: 19px;
+    transform-origin: center;
+    transition: opacity calc(var(--animation-speed, 0.15s) * 0.8) ease, 
+                transform var(--animation-speed, 0.25s) ease-in-out;
+  }
+
+  .header__burger-bar:nth-child(3) {
+    top: 24px;
+    transform-origin: left center;
+  }
+
+  .header__burger[aria-expanded="true"] .header__burger-bar:nth-child(1) {
+    transform: translateY(4px) rotate(45deg);
+    width: 20px;
+  }
+
+  .header__burger[aria-expanded="true"] .header__burger-bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .header__burger[aria-expanded="true"] .header__burger-bar:nth-child(3) {
+    transform: translateY(-4px) rotate(-45deg);
+    width: 20px;
+  }
+
+  .header__mobile-nav {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--mobile-menu-bg, var(--header-bg, var(--color-bg, #ffffff)));
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-1rem);
+    transition: opacity var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+                visibility var(--animation-speed, 0.3s) ease, 
+                transform var(--animation-speed, 0.3s) var(--animation-curve, ease),
+                background var(--animation-speed, 0.3s) var(--animation-curve, ease);
+    padding: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 100;
+  }
+
+  .header__mobile-nav[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  .header--animation-fade .header__mobile-nav {
+    transition: opacity var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+                visibility var(--animation-speed, 0.3s) ease, 
+                transform var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  }
+  
+  .header--animation-slide .header__mobile-nav {
+    transform: translateX(-100%);
+    transition: opacity var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+                visibility var(--animation-speed, 0.3s) ease, 
+                transform var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  }
+  
+  .header--animation-slide .header__mobile-nav[aria-hidden="false"] {
+    transform: translateX(0);
+  }
+  
+  .header--animation-bounce .header__mobile-nav {
+    transform: scale(0.95);
+    transform-origin: top center;
+    transition: opacity var(--animation-speed, 0.3s) var(--animation-curve, ease), 
+                visibility var(--animation-speed, 0.3s) ease, 
+                transform var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  }
+  
+  .header--animation-bounce .header__mobile-nav[aria-hidden="false"] {
+    transform: scale(1);
+  }
+
+  .header__mobile-nav-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: var(--space-4, 1rem);
+    z-index: 2;
+  }
+
+  .header__close {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--mobile-menu-color, inherit);
   }
-  header a {
+
+  .header__close-icon {
     position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
+    width: 24px;
+    height: 24px;
   }
-  header a sup {
+
+  .header__close-icon::before,
+  .header__close-icon::after {
+    content: '';
     position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
   }
-  header svg {
-    width: 2rem;
+
+  .header__close-icon::before {
+    transform: rotate(45deg);
   }
-  header .header__menu,
-  header .header__icons {
+
+  .header__close-icon::after {
+    transform: rotate(-45deg);
+  }
+
+  .header__mobile-nav-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height-mobile, 4rem);
+    background: var(--mobile-menu-bg, var(--header-bg, var(--color-bg, #ffffff)));
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 var(--space-4, 2rem);
+    z-index: 2;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--mobile-menu-border-color, rgba(0, 0, 0, 0.08));
   }
+  
+  .header__mobile-title {
+    font-size: var(--font-size-lg, 1.25rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--mobile-menu-title-color, var(--mobile-menu-color, var(--header-color, #000000)));
+  }
+  
+  .header__mobile-nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6, 1.5rem);
+    text-align: left;
+    padding: var(--space-4, 2rem);
+    padding-top: var(--space-6, 1.5rem);
+  }
+
+  .header__mobile-nav-link {
+    color: var(--mobile-menu-color, inherit);
+    text-decoration: none;
+    font-size: var(--font-size-lg, 1.125rem);
+    font-weight: var(--font-weight-medium, 500);
+    padding: 0.7rem 0;
+    display: block;
+    transition: all var(--animation-speed, 0.3s) var(--animation-curve, ease);
+    opacity: 0.9;
+    position: relative;
+    letter-spacing: var(--link-spacing, 0.02em);
+    border-bottom: 1px solid var(--mobile-menu-border-color, rgba(var(--color-border, 0, 0, 0), 0.08));
+    scroll-margin-top: calc(var(--header-height-mobile, 4rem) + 1rem);
+  }
+  
+  .header--effect-underline .header__mobile-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--hover-color, currentColor);
+    transition: width var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  }
+  
+  .header--effect-underline .header__mobile-nav-link:hover::after,
+  .header--effect-underline .header__mobile-nav-link:focus::after,
+  .header--effect-underline .header__mobile-nav-link--active::after {
+    width: 100%;
+  }
+  
+  .header--effect-opacity .header__mobile-nav-link:hover,
+  .header--effect-opacity .header__mobile-nav-link:focus,
+  .header--effect-opacity .header__mobile-nav-link--active {
+    opacity: 0.7;
+  }
+  
+  .header--effect-color .header__mobile-nav-link:hover,
+  .header--effect-color .header__mobile-nav-link:focus,
+  .header--effect-color .header__mobile-nav-link--active {
+    color: var(--hover-color);
+  }
+  
+  .header--effect-scale .header__mobile-nav-link:hover,
+  .header--effect-scale .header__mobile-nav-link:focus,
+  .header--effect-scale .header__mobile-nav-link--active {
+    transform: translateX(5px) scale(1.02);
+  }
+  
+  .header--effect-background .header__mobile-nav-link {
+    border-radius: 4px;
+    padding: 0.7rem 1rem;
+    margin: 0 -1rem;
+    border-bottom: none;
+  }
+  
+  .header--effect-background .header__mobile-nav-link:hover,
+  .header--effect-background .header__mobile-nav-link:focus,
+  .header--effect-background .header__mobile-nav-link--active {
+    background-color: var(--hover-color, rgba(0, 0, 0, 0.05));
+    color: var(--mobile-menu-color, var(--header-color, #000000));
+  }
+
+  /* Animación secuencial de elementos de menú */
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link {
+    animation: fadeSlideIn var(--animation-speed, 0.3s) var(--animation-curve, ease) forwards;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  
+  @keyframes fadeSlideIn {
+    to {
+      opacity: 0.9;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Ajustar retraso para cada elemento */
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link:nth-child(1) {
+    animation-delay: calc(var(--animation-speed, 0.3s) * 0.1);
+  }
+  
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link:nth-child(2) {
+    animation-delay: calc(var(--animation-speed, 0.3s) * 0.2);
+  }
+  
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link:nth-child(3) {
+    animation-delay: calc(var(--animation-speed, 0.3s) * 0.3);
+  }
+  
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link:nth-child(4) {
+    animation-delay: calc(var(--animation-speed, 0.3s) * 0.4);
+  }
+  
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link:nth-child(5) {
+    animation-delay: calc(var(--animation-speed, 0.3s) * 0.5);
+  }
+  
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-nav-link:nth-child(n+6) {
+    animation-delay: calc(var(--animation-speed, 0.3s) * 0.6);
+  }
+
+  .header__logo {
+    height: var(--logo-height-mobile, 2rem);
+    max-height: var(--logo-height-mobile, 2rem);
+    transition: transform var(--animation-speed, 0.3s) var(--animation-curve, ease);
+  }
+
+  .header__logo-text {
+    font-size: var(--font-size-lg, 1.125rem);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (hover: hover) {
+  .header__nav-link:hover {
+    opacity: var(--hover-opacity, 0.9);
+  }
+  
+  .header__nav-link:hover::after {
+    opacity: var(--hover-opacity, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .header__logo,
+  .header__nav-link::after,
+  .header__mobile-nav,
+  .header__burger-bar {
+    transition: none;
+  }
+}
+
+/* Animaciones para enlaces desktop al cargar la página */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header--animation-fade .header__nav-link {
+  animation: fadeInUp var(--animation-speed, 0.3s) var(--animation-curve, ease) backwards;
+}
+
+.header--animation-slide .header__nav-link {
+  animation: fadeInUp var(--animation-speed, 0.3s) var(--animation-curve, ease) backwards;
+  animation-name: fadeInSlide;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.header--animation-bounce .header__nav-link {
+  animation: fadeInUp var(--animation-speed, 0.3s) var(--animation-curve, ease) backwards;
+  animation-name: fadeInBounce;
+}
+
+@keyframes fadeInBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  70% {
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ajustar retraso para cada enlace de navegación */
+.header__nav--left .header__nav-link:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.header__nav--left .header__nav-link:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.header__nav--left .header__nav-link:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.header__nav--left .header__nav-link:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.header__nav--left .header__nav-link:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.header__nav--right .header__nav-link:nth-child(1) {
+  animation-delay: 0.6s;
+}
+.header__nav--right .header__nav-link:nth-child(2) {
+  animation-delay: 0.7s;
+}
+.header__nav--right .header__nav-link:nth-child(3) {
+  animation-delay: 0.8s;
+}
+.header__nav--right .header__nav-link:nth-child(4) {
+  animation-delay: 0.9s;
+}
+.header__nav--right .header__nav-link:nth-child(5) {
+  animation-delay: 1s;
+}
 {% endstylesheet %}
+
+<style>
+  :root {
+    --header-height: {{ section.settings.header_height | default: 80 }}px;
+    --header-height-mobile: {{ section.settings.header_height_mobile | default: 64 }}px;
+    --header-bg: {{ section.settings.bg_color | color_to_rgb }};
+    --header-color: {{ section.settings.color | color_to_rgb }};
+    --mobile-menu-bg: {{ section.settings.mobile_menu_bg_color | default: section.settings.bg_color | color_to_rgb }};
+    --mobile-menu-color: {{ section.settings.mobile_menu_text_color | default: '#000000' | color_to_rgb }};
+    --mobile-menu-title-color: {{ section.settings.mobile_menu_title_color | default: section.settings.mobile_menu_text_color | default: '#000000' | color_to_rgb }};
+    --mobile-menu-border-color: {{ section.settings.mobile_menu_border_color | default: 'rgba(0, 0, 0, 0.08)' }};
+    --logo-height: {{ section.settings.logo_max_height | default: 48 }}px;
+    --logo-height-mobile: {{ section.settings.logo_max_height_mobile | default: 32 }}px;
+    --nav-gap: {{ section.settings.nav_gap | default: 16 }}px;
+    --nav-gap-mobile: {{ section.settings.nav_gap_mobile | default: 8 }}px;
+    --link-spacing: {{ section.settings.link_spacing | default: 0.02 }}em;
+    --hover-color: {{ section.settings.hover_color | default: '#2E4695' }};
+    --animation-speed: {{ section.settings.animation_speed | default: 0.3 }}s;
+    --hover-opacity: {{ section.settings.link_hover_effect | default: 'underline' | replace: 'opacity', '0.7' | replace: 'underline', '1' | replace: 'color', '1' | replace: 'scale', '1' | replace: 'background', '1' | replace: 'none', '1' }};
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.header');
+    const burgerButton = document.querySelector('.header__burger');
+    const mobileNav = document.querySelector('.header__mobile-nav');
+    
+    if (!burgerButton || !mobileNav || !header) return;
+    
+    // Aplicar clases de efecto y animación según configuración
+    const hoverEffect = {{ section.settings.link_hover_effect | json }};
+    const animationStyle = {{ section.settings.animation_style | json }};
+    
+    if (hoverEffect !== 'none') {
+      header.classList.add('header--effect-' + hoverEffect);
+    }
+    
+    if (animationStyle !== 'none') {
+      header.classList.add('header--animation-' + animationStyle);
+      
+      // Curvas de animación según estilo
+      let animationCurve = 'ease';
+      switch (animationStyle) {
+        case 'fade':
+          animationCurve = 'ease';
+          break;
+        case 'slide':
+          animationCurve = 'cubic-bezier(0.25, 1, 0.5, 1)';
+          break;
+        case 'bounce':
+          animationCurve = 'cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          break;
+      }
+      
+      // Establecer la curva de animación como variable CSS
+      document.documentElement.style.setProperty('--animation-curve', animationCurve);
+    }
+    
+    function toggleMenu() {
+      const isOpen = burgerButton.getAttribute('aria-expanded') === 'true';
+      const newState = !isOpen;
+      
+      // Actualizar estados ARIA
+      burgerButton.setAttribute('aria-expanded', newState);
+      mobileNav.setAttribute('aria-hidden', !newState);
+      
+      // Actualizar label del botón
+      const labelKey = newState ? 'header.menu_close' : 'header.menu_open';
+      burgerButton.setAttribute('aria-label', labelKey.replace('header.menu_', '').replace('_', ' '));
+      
+      // Prevenir scroll cuando el menú está abierto
+      document.body.style.overflow = newState ? 'hidden' : '';
+      
+      // Agregar/quitar clase para efectos de animación
+      header.classList.toggle('menu-open', newState);
+    }
+    
+    // Event listener para el botón hamburguesa
+    burgerButton.addEventListener('click', toggleMenu);
+    
+    // Cerrar menú con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && burgerButton.getAttribute('aria-expanded') === 'true') {
+        toggleMenu();
+      }
+    });
+    
+    // Cerrar menú al hacer click en un enlace (móvil)
+    const mobileLinks = mobileNav.querySelectorAll('.header__mobile-nav-link');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // Solo cerrar el menú en móvil
+        if (window.innerWidth <= 989) {
+          toggleMenu();
+        }
+      });
+    });
+    
+    // Manejar cambios de tamaño de ventana
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 989 && burgerButton.getAttribute('aria-expanded') === 'true') {
+        toggleMenu();
+      }
+    });
+    
+    // Animación de scroll para ocultar/mostrar header
+    let lastScrollTop = 0;
+    const scrollThreshold = 10;
+    
+    window.addEventListener('scroll', function() {
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Si estamos en móvil y el menú está abierto, no hacer nada
+      if (window.innerWidth <= 989 && burgerButton.getAttribute('aria-expanded') === 'true') {
+        return;
+      }
+      
+      // Detectar dirección de scroll
+      if (currentScroll > lastScrollTop + scrollThreshold) {
+        // Scroll hacia abajo
+        header.classList.add('header--hidden');
+        lastScrollTop = currentScroll;
+      } else if (currentScroll < lastScrollTop - scrollThreshold) {
+        // Scroll hacia arriba
+        header.classList.remove('header--hidden');
+        lastScrollTop = currentScroll;
+      }
+    });
+  });
+</script>
 
 {% schema %}
 {
@@ -60,6 +846,225 @@
       "type": "link_list",
       "id": "menu",
       "label": "t:labels.menu"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:labels.color"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "t:labels.bg_color"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:labels.logo"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "t:labels.logo_position",
+      "options": [
+        { "value": "left", "label": "t:labels.left" },
+        { "value": "center", "label": "t:labels.center" },
+        { "value": "right", "label": "t:labels.right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "header_height",
+      "label": "t:labels.header_height",
+      "min": 60,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "header_height_mobile",
+      "label": "t:labels.header_height_mobile",
+      "min": 48,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "header_gap",
+      "label": "t:labels.header_gap",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "header_gap_mobile",
+      "label": "t:labels.header_gap_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "logo_max_height",
+      "label": "t:labels.logo_max_height",
+      "min": 16,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "logo_max_height_mobile",
+      "label": "t:labels.logo_max_height_mobile",
+      "min": 16,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "header_padding_x",
+      "label": "t:labels.header_padding_x",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "header_padding_x_mobile",
+      "label": "t:labels.header_padding_x_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "nav_gap",
+      "label": "t:labels.nav_gap",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "nav_gap_mobile",
+      "label": "t:labels.nav_gap_mobile",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "t:labels.mobile_menu"
+    },
+    {
+      "type": "text",
+      "id": "mobile_menu_title",
+      "label": "t:labels.mobile_menu_title",
+      "default": "Menú",
+      "info": "Si no se especifica, usará el nombre de la tienda"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_bg_color",
+      "label": "t:labels.mobile_menu_bg_color",
+      "info": "Si no se especifica, usará el mismo color que el header"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_text_color",
+      "label": "t:labels.mobile_menu_text_color",
+      "default": "#000000",
+      "info": "Color independiente para texto del menú móvil"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_title_color",
+      "label": "t:labels.mobile_menu_title_color",
+      "info": "Si no se especifica, usará el color de texto del menú móvil"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_border_color",
+      "label": "t:labels.mobile_menu_border_color",
+      "default": "rgba(0, 0, 0, 0.08)"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.effects_and_animations"
+    },
+    {
+      "type": "select",
+      "id": "link_hover_effect",
+      "label": "t:labels.link_hover_effect",
+      "options": [
+        { "value": "underline", "label": "t:labels.underline" },
+        { "value": "opacity", "label": "t:labels.opacity" },
+        { "value": "color", "label": "t:labels.color_change" },
+        { "value": "scale", "label": "t:labels.scale" },
+        { "value": "background", "label": "t:labels.background" },
+        { "value": "none", "label": "t:labels.none" }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "color",
+      "id": "hover_color",
+      "label": "t:labels.hover_color",
+      "default": "#2E4695",
+      "info": "Usado para efectos de cambio de color"
+    },
+    {
+      "type": "range",
+      "id": "link_spacing",
+      "label": "t:labels.link_spacing",
+      "min": 0,
+      "max": 3,
+      "step": 0.1,
+      "unit": "em",
+      "default": 0.0
+    },
+    {
+      "type": "select",
+      "id": "animation_style",
+      "label": "t:labels.animation_style",
+      "options": [
+        { "value": "fade", "label": "t:labels.fade" },
+        { "value": "slide", "label": "t:labels.slide" },
+        { "value": "bounce", "label": "t:labels.bounce" },
+        { "value": "none", "label": "t:labels.none" }
+      ],
+      "default": "fade"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "t:labels.animation_speed",
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.3
     }
   ]
 }

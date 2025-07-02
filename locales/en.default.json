@@ -48,5 +48,131 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "carousel_banner": {
+    "placeholder": "Add content to your carousel banner section",
+    "previous_slide": "Previous slide",
+    "next_slide": "Next slide",
+    "go_to_slide": "Go to slide",
+    "settings": {
+      "color_bg": "Background color",
+      "border_radius_bottom": "Bottom border radius (px)",
+      "overlay_color": "Overlay color",
+      "overlay_opacity": "Overlay opacity (%)",
+      "background_image": "Background image (optional)",
+      "border_radius_top": "Top border radius (px)",
+      "min_height": "Min height (desktop, px)",
+      "min_height_mobile": "Min height (mobile, px)",
+      "aspect_ratio": "Aspect ratio",
+      "show_arrows": "Show navigation arrows",
+      "show_dots": "Show navigation dots",
+      "autoplay": "Enable autoplay",
+      "autoplay_speed": "Autoplay speed (ms)",
+      "content_alignment": "Content alignment",
+      "text_color": "Text color",
+      "content_padding": "Content padding (px)",
+      "button_bg_color": "Button background color",
+      "button_text_color": "Button text color",
+      "arrow_color": "Arrow color",
+      "arrow_bg_color": "Arrow background color",
+      "dot_active_color": "Active dot color",
+      "dot_inactive_color": "Inactive dot color",
+      "transition_type": "Transition effect",
+      "transition_speed": "Transition speed (ms)"
+    },
+    "options": {
+      "aspect_ratio": {
+        "16_5": "16:5 (wide)",
+        "16_9": "16:9",
+        "4_3": "4:3",
+        "1_1": "1:1 (square)"
+      },
+      "content_alignment": {
+        "center": "Center",
+        "left": "Left",
+        "right": "Right"
+      },
+      "transition_type": {
+        "slide": "Slide (horizontal)",
+        "fade": "Fade",
+        "zoom": "Zoom"
+      }
+    },
+    "blocks": {
+      "carousel_slide": {
+        "name": "Slide",
+        "settings": {
+          "image": "Image for desktop (1440x480px)",
+          "image_mobile": "Image for mobile (800x800px)",
+          "alt": "Alt text",
+          "heading": "Heading",
+          "show_heading_mobile": "Show heading on mobile",
+          "show_heading_desktop": "Show heading on desktop",
+          "text": "Text",
+          "show_text_mobile": "Show text on mobile",
+          "show_text_desktop": "Show text on desktop",
+          "button_label": "Button label",
+          "show_button_mobile": "Show button on mobile",
+          "show_button_desktop": "Show button on desktop",
+          "button_link": "Button link"
+        }
+      }
+    },
+    "preset": {
+      "name": "Carousel Banner",
+      "category": "Banners"
+    }
+  },
+  "header": {
+    "menu_open": "Open menu",
+    "menu_close": "Close menu"
+  },
+  "general": {
+    "navigation": {
+      "menu_open": "Open menu",
+      "menu_close": "Close menu"
+    },
+    "header": "Header"
+  },
+  "labels": {
+    "menu": "Menu",
+    "color": "Color",
+    "bg_color": "Background color",
+    "logo": "Logo",
+    "logo_position": "Logo position",
+    "left": "Left",
+    "center": "Center",
+    "right": "Right",
+    "header_gap": "Element spacing (desktop)",
+    "header_gap_mobile": "Element spacing (mobile)",
+    "logo_max_height": "Logo max height (desktop)",
+    "logo_max_height_mobile": "Logo max height (mobile)",
+    "header_padding_x": "Horizontal padding (desktop)",
+    "header_padding_x_mobile": "Horizontal padding (mobile)",
+    "header_height": "Header height (desktop)",
+    "header_height_mobile": "Header height (mobile)",
+    "nav_gap": "Navigation link spacing (desktop)",
+    "nav_gap_mobile": "Navigation link spacing (mobile)",
+    "mobile_menu": "Mobile menu",
+    "mobile_menu_title": "Mobile menu title",
+    "mobile_menu_bg_color": "Mobile menu background color",
+    "mobile_menu_text_color": "Mobile menu text color",
+    "mobile_menu_border_color": "Mobile menu border color",
+    "mobile_menu_title_color": "Mobile menu title color",
+    "effects_and_animations": "Effects and animations",
+    "link_hover_effect": "Link hover effect",
+    "hover_color": "Hover color",
+    "link_spacing": "Link letter spacing",
+    "animation_style": "Animation style",
+    "animation_speed": "Animation speed",
+    "none": "None",
+    "underline": "Underline",
+    "opacity": "Opacity",
+    "color_change": "Color change",
+    "scale": "Scale",
+    "background": "Background",
+    "fade": "Fade",
+    "slide": "Slide",
+    "bounce": "Bounce"
   }
 }
