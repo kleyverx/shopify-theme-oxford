@@ -1,0 +1,742 @@
+<section class="brands-carousel-section" 
+  style="--color-bg: {{ section.settings.background_color | default: '#fff' }}; 
+         --title-color: {{ section.settings.title_color | default: '#333' }}; 
+         --subtitle-color: {{ section.settings.subtitle_color | default: '#666' }}; 
+         --hover-text: '{{ section.settings.hover_text | default: 'Visitar sitio' }}';
+         --overlay-text-color: {{ section.settings.overlay_text_color | default: '#ffffff' }};
+         --overlay-bg-color: {{ section.settings.overlay_bg_color | default: 'rgba(46, 70, 149, 0.85)' }};
+         --arrow-color: {{ section.settings.arrow_color | default: '#333333' }};
+         --arrow-bg: {{ section.settings.arrow_bg_color | default: '#ffffff' }};
+         --arrow-hover-color: {{ section.settings.arrow_hover_color | default: '#ffffff' }};
+         --arrow-hover-bg: {{ section.settings.arrow_hover_bg_color | default: '#2E4695' }};"
+  data-autoplay="{{ section.settings.enable_autoplay | default: true }}"
+  data-autoplay-speed="{{ section.settings.autoplay_speed | default: 4 | times: 1000 }}"
+  data-transition-speed="{{ section.settings.transition_speed | default: 800 }}">
+  
+  <div class="brands-carousel-header">
+    {% if section.settings.title != blank %}
+      <h2 class="brands-carousel-title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    {% if section.settings.subtitle != blank %}
+      <div class="brands-carousel-subtitle">{{ section.settings.subtitle }}</div>
+    {% endif %}
+  </div>
+  
+  <div class="brands-carousel">
+    <button class="brands-carousel__arrow brands-carousel__arrow--prev" aria-label="Anterior" tabindex="0">&#8592;</button>
+    
+    <div class="brands-carousel__track-wrapper">
+      <div class="brands-carousel__track">
+        {% for block in section.blocks %}
+          <div class="brands-carousel__item" {{ block.shopify_attributes }}>
+            {% if block.settings.logo != blank or block.settings.svg != blank %}
+              {% liquid
+                assign alt_text = block.settings.alt | default: block.settings.logo.alt | escape
+                assign circle_bg = section.settings.circle_bg_color | default: '#fff'
+              %}
+              
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="brands-carousel__item-link" target="_blank" rel="noopener" aria-label="Visitar {{ alt_text }}">
+                  <div class="brands-carousel__logo-wrapper" style="--circle-bg: {{ circle_bg }};">
+                    {% if block.settings.svg != blank %}
+                      <div class="brands-carousel__svg">{{ block.settings.svg }}</div>
+                    {% elsif block.settings.logo != blank %}
+                      <img src="{{ block.settings.logo | image_url: width: 300 }}"
+                           alt="{{ alt_text }}"
+                           class="brands-carousel__logo"
+                           width="240" height="240"
+                           loading="lazy">
+                    {% endif %}
+                  </div>
+                </a>
+              {% else %}
+                <div class="brands-carousel__item-link">
+                  <div class="brands-carousel__logo-wrapper" style="--circle-bg: {{ circle_bg }};">
+                    {% if block.settings.svg != blank %}
+                      <div class="brands-carousel__svg">{{ block.settings.svg }}</div>
+                    {% elsif block.settings.logo != blank %}
+                      <img src="{{ block.settings.logo | image_url: width: 300 }}"
+                           alt="{{ alt_text }}"
+                           class="brands-carousel__logo"
+                           width="240" height="240"
+                           loading="lazy">
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <button class="brands-carousel__arrow brands-carousel__arrow--next" aria-label="Siguiente" tabindex="0">&#8594;</button>
+  </div>
+</section>
+
+{% stylesheet %}
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+.brands-carousel-section {
+  width: 100%;
+  padding: 3rem 0;
+  overflow: hidden;
+  background-color: var(--color-bg, #ffffff);
+  box-sizing: border-box;
+  max-width: 100%;
+  position: relative;
+}
+
+.brands-carousel-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.brands-carousel-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--title-color, #333333);
+}
+
+.brands-carousel-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: var(--subtitle-color, #666666);
+}
+
+.brands-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 4rem;
+  min-height: 280px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.brands-carousel__track-wrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 20px 0 80px;
+  box-sizing: border-box;
+}
+
+.brands-carousel__track {
+  display: flex;
+  will-change: transform;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.brands-carousel__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.brands-carousel__item-link {
+  display: block;
+  text-decoration: none;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.brands-carousel__logo-wrapper {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: var(--circle-bg, #ffffff);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  margin: 0 auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Overlay de fondo */
+.brands-carousel__logo-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--overlay-bg-color, rgba(46, 70, 149, 0.85));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+/* Texto del overlay */
+.brands-carousel__logo-wrapper::after {
+  content: var(--hover-text, "Visitar sitio");
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  color: var(--overlay-text-color, white);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  opacity: 0;
+  z-index: 2;
+  transition: all 0.4s ease;
+  width: 80%;
+  text-decoration: none;
+}
+
+/* Navegación */
+.brands-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--arrow-bg, white);
+  color: var(--arrow-color, #333333);
+  border: 1px solid #e5e5e5;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: all 0.3s ease, transform 0.3s ease;
+  box-sizing: border-box;
+}
+
+.brands-carousel__arrow:hover {
+  background-color: var(--arrow-hover-bg, #2E4695);
+  color: var(--arrow-hover-color, white);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.brands-carousel__arrow:focus {
+  box-shadow: 0 0 0 2px rgba(46, 70, 149, 0.3);
+  outline: none;
+}
+
+.brands-carousel__arrow--prev {
+  left: 0.5rem;
+}
+
+.brands-carousel__arrow--next {
+  right: 0.5rem;
+}
+
+/* Estados de hover */
+.brands-carousel__item a:hover .brands-carousel__logo-wrapper,
+.brands-carousel__item a:focus .brands-carousel__logo-wrapper,
+.brands-carousel__item a:active .brands-carousel__logo-wrapper,
+.brands-carousel__item a.touch-hover .brands-carousel__logo-wrapper {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.brands-carousel__item a:hover .brands-carousel__logo-wrapper::before,
+.brands-carousel__item a:focus .brands-carousel__logo-wrapper::before,
+.brands-carousel__item a:active .brands-carousel__logo-wrapper::before,
+.brands-carousel__item a.touch-hover .brands-carousel__logo-wrapper::before {
+  opacity: 1;
+}
+
+/* Añadir línea subrayada en hover */
+.brands-carousel__item a:hover .brands-carousel__logo-wrapper::after,
+.brands-carousel__item a:focus .brands-carousel__logo-wrapper::after,
+.brands-carousel__item a:active .brands-carousel__logo-wrapper::after,
+.brands-carousel__item a.touch-hover .brands-carousel__logo-wrapper::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Ajustes para que la imagen sea visible debajo del overlay */
+.brands-carousel__logo-wrapper img,
+.brands-carousel__logo-wrapper svg {
+  max-width: 80%;
+  max-height: 80%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+  position: relative;
+  z-index: 0;
+}
+
+/* Media queries */
+@media (max-width: 900px) {
+  .brands-carousel-section {
+    padding: 2rem 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    left: 50%;
+    position: relative;
+  }
+  
+  .brands-carousel__logo-wrapper {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .brands-carousel__item {
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .brands-carousel-section {
+    padding: 1.5rem 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+  
+  .brands-carousel {
+    padding: 0 2rem;
+    min-height: 220px;
+  }
+  
+  .brands-carousel__arrow {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .brands-carousel-title {
+    font-size: 1.8rem;
+  }
+  
+  .brands-carousel-subtitle {
+    font-size: 1rem;
+  }
+  
+  .brands-carousel__logo-wrapper {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .brands-carousel__logo-wrapper::after {
+    font-size: 0.8rem;
+  }
+}
+{% endstylesheet %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  class BrandsCarousel {
+    constructor(element) {
+      // Elementos principales
+      this.carousel = element;
+      this.track = this.carousel.querySelector('.brands-carousel__track');
+      this.prevBtn = this.carousel.querySelector('.brands-carousel__arrow--prev');
+      this.nextBtn = this.carousel.querySelector('.brands-carousel__arrow--next');
+      
+      // Configuración de la sección
+      const section = this.carousel.closest('.brands-carousel-section');
+      this.enableAutoplay = section.dataset.autoplay === 'true';
+      this.autoplaySpeed = parseInt(section.dataset.autoplaySpeed, 10) || 4000;
+      this.transitionSpeed = parseInt(section.dataset.transitionSpeed, 10) || 800;
+      
+      // Variables de estado
+      this.originalItems = Array.from(this.track.querySelectorAll('.brands-carousel__item'));
+      this.totalItems = this.originalItems.length;
+      this.currentIndex = 0;
+      this.autoplayTimer = null;
+      this.isMobile = window.innerWidth <= 600;
+      
+      // Configuración
+      this.itemsToShow = this.isMobile ? 1 : Math.min(5, this.totalItems);
+      this.itemWidth = 100 / this.itemsToShow;
+      
+      // Inicialización
+      this.setupCarousel();
+      this.bindEvents();
+      
+      if (this.enableAutoplay) {
+        this.startAutoplay();
+      }
+    }
+    
+    setupCarousel() {
+      // Limpiar clones anteriores
+      this.track.querySelectorAll('.clone').forEach(clone => clone.remove());
+      
+      // Configurar ancho de los ítems
+      this.originalItems.forEach(item => {
+        item.style.flex = `0 0 ${this.itemWidth}%`;
+        item.style.width = `${this.itemWidth}%`;
+        item.style.maxWidth = `${this.itemWidth}%`;
+      });
+      
+      // Clones para carrusel infinito
+      const totalClones = Math.max(this.itemsToShow * 2, this.totalItems);
+      
+      // Clonar al final
+      for (let i = 0; i < totalClones; i++) {
+        const clone = this.originalItems[i % this.totalItems].cloneNode(true);
+        clone.classList.add('clone');
+        clone.setAttribute('aria-hidden', 'true');
+        clone.style.flex = `0 0 ${this.itemWidth}%`;
+        clone.style.width = `${this.itemWidth}%`;
+        clone.style.maxWidth = `${this.itemWidth}%`;
+        this.track.appendChild(clone);
+      }
+      
+      // Clonar al inicio
+      for (let i = this.totalItems - 1; i >= 0; i--) {
+        const index = (i % this.totalItems + this.totalItems) % this.totalItems;
+        const clone = this.originalItems[index].cloneNode(true);
+        clone.classList.add('clone');
+        clone.setAttribute('aria-hidden', 'true');
+        clone.style.flex = `0 0 ${this.itemWidth}%`;
+        clone.style.width = `${this.itemWidth}%`;
+        clone.style.maxWidth = `${this.itemWidth}%`;
+        this.track.insertBefore(clone, this.track.firstChild);
+      }
+      
+      // Posición inicial
+      this.currentIndex = this.totalItems;
+      this.updatePosition(false);
+    }
+    
+    updatePosition(animate = true) {
+      const translateValue = -(this.currentIndex * this.itemWidth);
+      
+      if (!animate) {
+        this.track.style.transition = 'none';
+      } else {
+        this.track.style.transition = `transform ${this.transitionSpeed}ms ease`;
+      }
+      
+      this.track.style.transform = `translateX(${translateValue}%)`;
+      
+      if (!animate) {
+        this.track.offsetHeight; // Trigger reflow
+        this.track.style.transition = `transform ${this.transitionSpeed}ms ease`;
+      }
+    }
+    
+    next() {
+      this.currentIndex++;
+      this.updatePosition(true);
+      this.resetAutoplay();
+    }
+    
+    prev() {
+      this.currentIndex--;
+      this.updatePosition(true);
+      this.resetAutoplay();
+    }
+    
+    resetLoop() {
+      if (this.currentIndex >= this.totalItems * 2) {
+        this.currentIndex = this.totalItems;
+        this.updatePosition(false);
+      }
+      
+      if (this.currentIndex <= 0) {
+        this.currentIndex = this.totalItems;
+        this.updatePosition(false);
+      }
+    }
+    
+    startAutoplay() {
+      if (!this.enableAutoplay) return;
+      
+      this.stopAutoplay();
+      this.autoplayTimer = setInterval(() => this.next(), this.autoplaySpeed);
+    }
+    
+    stopAutoplay() {
+      if (this.autoplayTimer) {
+        clearInterval(this.autoplayTimer);
+        this.autoplayTimer = null;
+      }
+    }
+    
+    resetAutoplay() {
+      if (!this.enableAutoplay) return;
+      
+      this.stopAutoplay();
+      this.startAutoplay();
+    }
+    
+    handleResize() {
+      const wasDesktop = !this.isMobile;
+      this.isMobile = window.innerWidth <= 600;
+      const isDesktopNow = !this.isMobile;
+      
+      if (wasDesktop !== isDesktopNow) {
+        this.itemsToShow = this.isMobile ? 1 : Math.min(5, this.totalItems);
+        this.itemWidth = 100 / this.itemsToShow;
+        
+        this.setupCarousel();
+        
+        if (this.enableAutoplay) {
+          this.resetAutoplay();
+        }
+      }
+    }
+    
+    bindEvents() {
+      // Navegación
+      this.prevBtn.addEventListener('click', () => this.prev());
+      this.nextBtn.addEventListener('click', () => this.next());
+      
+      // Autoplay
+      if (this.enableAutoplay) {
+        this.carousel.addEventListener('mouseenter', () => this.stopAutoplay());
+        this.carousel.addEventListener('mouseleave', () => this.startAutoplay());
+      }
+      
+      // Responsive
+      window.addEventListener('resize', () => this.handleResize());
+      
+      // Carrusel infinito
+      this.track.addEventListener('transitionend', () => this.resetLoop());
+      
+      // Accesibilidad
+      this.prevBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.prev();
+        }
+      });
+      
+      this.nextBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.next();
+        }
+      });
+      
+      // Touch hover
+      const itemLinks = this.carousel.querySelectorAll('.brands-carousel__item-link');
+      itemLinks.forEach(link => {
+        link.addEventListener('touchstart', function() {
+          this.classList.add('touch-hover');
+        }, { passive: true });
+        
+        link.addEventListener('touchend', function() {
+          setTimeout(() => {
+            this.classList.remove('touch-hover');
+          }, 1000);
+        });
+      });
+    }
+  }
+  
+  // Inicializar carruseles
+  document.querySelectorAll('.brands-carousel').forEach(carousel => {
+    new BrandsCarousel(carousel);
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Nuestras Marcas",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Nuestras Marcas"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtítulo",
+      "default": "Trabajamos con las mejores marcas"
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Color del subtítulo",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "circle_bg_color",
+      "label": "Color de fondo de los logos",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "hover_text",
+      "label": "Texto al pasar el mouse",
+      "default": "Visitar sitio"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Color del texto de overlay",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color_background",
+      "id": "overlay_bg_color",
+      "label": "Color de fondo del overlay",
+      "default": "rgba(46, 70, 149, 0.85)"
+    },
+    {
+      "type": "header",
+      "content": "Flechas de navegación"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Color del texto de flechas",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Color de fondo de flechas",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_hover_color",
+      "label": "Color del texto de flechas (hover)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_hover_bg_color",
+      "label": "Color de fondo de flechas (hover)",
+      "default": "#2E4695"
+    },
+    {
+      "type": "header",
+      "content": "Configuración del carrusel"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Activar desplazamiento automático",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Velocidad del autoplay",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "transition_speed",
+      "min": 300,
+      "max": 2000,
+      "step": 100,
+      "unit": "ms",
+      "label": "Velocidad de transición",
+      "default": 800
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Marca",
+      "type": "brand",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo de la marca"
+        },
+        {
+          "type": "textarea",
+          "id": "svg",
+          "label": "SVG (opcional)",
+          "info": "Si prefieres usar un SVG en lugar de una imagen"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Texto alternativo",
+          "info": "Describe la imagen para mejorar la accesibilidad"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace (opcional)",
+          "info": "URL a la que se dirigirá al hacer clic en la marca"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Nuestras Marcas",
+      "blocks": [
+        {"type": "brand"},
+        {"type": "brand"},
+        {"type": "brand"},
+        {"type": "brand"},
+        {"type": "brand"},
+        {"type": "brand"},
+        {"type": "brand"},
+        {"type": "brand"}
+      ]
+    }
+  ]
+}
+{% endschema %}
