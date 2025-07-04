@@ -206,21 +206,24 @@
     max-width: 400px;
     margin: 0 auto;
     overflow: hidden;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .slide-image-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    }
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    min-width: 180px;
+    min-height: 180px;
+    /* El aspect-ratio fuerza el cuadrado, el min asegura tamaño mínimo */
   }
 
   .slide-image img,
   .slide-image svg {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: contain;
+    object-position: center;
     display: block;
+    aspect-ratio: 1 / 1;
+    /* Siempre cuadrada, nunca recortada ni deformada */
+    background: #f8fafc;
+    border-radius: inherit;
   }
 
   .slide-title {
@@ -386,6 +389,9 @@
       max-width: 280px;
       padding: 15px;
       margin: 0 auto;
+      aspect-ratio: 1 / 1;
+      min-width: 120px;
+      min-height: 120px;
     }
 
     .pagination-{{ section.id }} {
