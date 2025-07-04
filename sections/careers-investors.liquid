@@ -1,0 +1,464 @@
+{% liquid
+  assign section_id = section.id
+%}
+
+<section class="careers-investors" id="CareersInvestors-{{ section_id }}" style="
+  --ci-text-color: {{ section.settings.text_color }};
+  --ci-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
+  --ci-border-radius: {{ section.settings.border_radius }}px;
+  --ci-section-padding-top: {{ section.settings.padding_top }}px;
+  --ci-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  --ci-button-background: {{ section.settings.button_background_color }};
+  --ci-button-text: {{ section.settings.button_text_color }};
+  --ci-background-color: {{ section.settings.background_color }};
+">
+  <div class="careers-investors__container container">
+    {% if section.settings.title != blank %}
+      <h2 class="careers-investors__title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    {% if section.settings.description != blank %}
+      <div class="careers-investors__description">{{ section.settings.description }}</div>
+    {% endif %}
+
+    <div class="careers-investors__grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'career_block' %}
+            {% liquid
+              assign block_id = block.id
+              assign image = block.settings.image
+              assign title = block.settings.title
+              assign text = block.settings.text
+              assign button_text = block.settings.button_text
+              assign button_link = block.settings.button_link
+            %}
+            
+            <div class="careers-investors__item careers-investors__item--career" 
+                 id="CareersItem-{{ block_id }}" 
+                 {{ block.shopify_attributes }}>
+              <div class="careers-investors__item-inner">
+                {% if image != blank %}
+                  <div class="careers-investors__image-wrapper">
+                    {{ image | image_url: width: 800 | image_tag: 
+                      loading: 'lazy',
+                      class: 'careers-investors__image',
+                      widths: '540, 720, 900, 1080',
+                      sizes: '(min-width: 990px) 50vw, 100vw'
+                    }}
+                  </div>
+                {% else %}
+                  <div class="careers-investors__placeholder">
+                    {{ 'image' | placeholder_svg_tag: 'careers-investors__placeholder-svg' }}
+                  </div>
+                {% endif %}
+                
+                <div class="careers-investors__overlay">
+                  <div class="careers-investors__content">
+                    {% if title != blank %}
+                      <h3 class="careers-investors__item-title">{{ title }}</h3>
+                    {% endif %}
+                    
+                    {% if text != blank %}
+                      <div class="careers-investors__item-text">{{ text }}</div>
+                    {% endif %}
+                    
+                    {% if button_text != blank and button_link != blank %}
+                      <a href="{{ button_link }}" class="careers-investors__button">
+                        {{ button_text }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+          {% when 'investor_block' %}
+            {% liquid
+              assign block_id = block.id
+              assign image = block.settings.image
+              assign title = block.settings.title
+              assign text = block.settings.text
+              assign button_text = block.settings.button_text
+              assign button_link = block.settings.button_link
+            %}
+            
+            <div class="careers-investors__item careers-investors__item--investor" 
+                 id="InvestorsItem-{{ block_id }}" 
+                 {{ block.shopify_attributes }}>
+              <div class="careers-investors__item-inner">
+                {% if image != blank %}
+                  <div class="careers-investors__image-wrapper">
+                    {{ image | image_url: width: 800 | image_tag: 
+                      loading: 'lazy',
+                      class: 'careers-investors__image',
+                      widths: '540, 720, 900, 1080',
+                      sizes: '(min-width: 990px) 50vw, 100vw'
+                    }}
+                  </div>
+                {% else %}
+                  <div class="careers-investors__placeholder">
+                    {{ 'image' | placeholder_svg_tag: 'careers-investors__placeholder-svg' }}
+                  </div>
+                {% endif %}
+                
+                <div class="careers-investors__overlay">
+                  <div class="careers-investors__content">
+                    {% if title != blank %}
+                      <h3 class="careers-investors__item-title">{{ title }}</h3>
+                    {% endif %}
+                    
+                    {% if text != blank %}
+                      <div class="careers-investors__item-text">{{ text }}</div>
+                    {% endif %}
+                    
+                    {% if button_text != blank and button_link != blank %}
+                      <a href="{{ button_link }}" class="careers-investors__button">
+                        {{ button_text }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .careers-investors {
+    padding-top: var(--ci-section-padding-top);
+    padding-bottom: var(--ci-section-padding-bottom);
+    width: 100%;
+    background-color: var(--ci-background-color);
+  }
+
+  .careers-investors__container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .careers-investors__title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .careers-investors__description {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .careers-investors__grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  @media screen and (min-width: 990px) {
+    .careers-investors__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .careers-investors__item {
+    position: relative;
+    border-radius: var(--ci-border-radius);
+    overflow: hidden;
+  }
+
+  .careers-investors__item-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 749px) {
+    .careers-investors__item-inner {
+      aspect-ratio: 1/1;
+    }
+  }
+
+  .careers-investors__image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .careers-investors__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .careers-investors__item:hover .careers-investors__image {
+    transform: scale(1.05);
+  }
+
+  .careers-investors__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .careers-investors__placeholder-svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.3;
+  }
+
+  .careers-investors__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--ci-overlay-color);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease;
+  }
+
+  .careers-investors__item:hover .careers-investors__overlay {
+    opacity: 1;
+  }
+
+  .careers-investors__content {
+    padding: 2rem;
+    color: var(--ci-text-color);
+    text-align: center;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    transition-delay: 0.1s;
+    max-width: 90%;
+  }
+
+  .careers-investors__item:hover .careers-investors__content {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .careers-investors__item-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .careers-investors__item-text {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .careers-investors__button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--ci-button-background);
+    color: var(--ci-button-text);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    transition-delay: 0.2s;
+  }
+
+  .careers-investors__item:hover .careers-investors__button {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .careers-investors__button:hover {
+    transform: scale(1.05);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Carreras e Inversores",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Únete a nosotros"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descripción",
+      "default": "<p>Descubre oportunidades para crecer con nosotros, ya sea como parte de nuestro equipo o como inversor.</p>"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Color de fondo al hover",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacidad del fondo",
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.1,
+      "default": 0.7
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Color de fondo del botón",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color del texto del botón",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Redondez de bordes",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Relleno superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Relleno inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "career_block",
+      "name": "Bloque de Carreras",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Carreras"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Forma parte de nuestro equipo y desarrolla tu carrera profesional con nosotros. Buscamos personas apasionadas que quieran crecer y aportar valor.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del botón",
+          "default": "Ver oportunidades"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Enlace del botón"
+        }
+      ]
+    },
+    {
+      "type": "investor_block",
+      "name": "Bloque de Inversores",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Inversores"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Descubre las oportunidades de inversión en nuestra compañía. Conoce nuestros resultados financieros y plan de crecimiento.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del botón",
+          "default": "Información para inversores"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Enlace del botón"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Carreras e Inversores",
+      "blocks": [
+        {
+          "type": "career_block"
+        },
+        {
+          "type": "investor_block"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

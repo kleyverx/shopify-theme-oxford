@@ -1,0 +1,532 @@
+{% comment %}
+  Sección de Visi            {% if block.settings.icon != blank %}
+              <img src="{{ block.settings.icon | image_url: width: 120 }}" 
+                   alt="{{ block.settings.title }}"
+                   class="vision-mission__icon vision-mission__icon--image"
+                   width="80"
+                   height="80"
+                   loading="lazy">sión
+  Una sección para mostrar la filosofía de la empresa, dividida en visión, misión y valores.
+{% endcomment %}
+
+<section class="vision-mission {% if section.settings.full_width %}vision-mission--full-width{% endif %}"
+  style="background-color: {{ section.settings.background_color }};">
+  <div class="vision-mission__container">
+    
+    {% if section.settings.section_title != blank %}
+      <h2 class="vision-mission__title" style="color: {{ section.settings.title_color }};">
+        {{ section.settings.section_title }}
+      </h2>
+    {% endif %}
+    
+    {% if section.settings.intro_text != blank %}
+      <div class="vision-mission__intro" style="color: {{ section.settings.text_color }};">
+        {{ section.settings.intro_text }}
+      </div>
+    {% endif %}
+    
+    <div class="vision-mission__grid">
+      {% for block in section.blocks %}
+        {% assign border_color = block.settings.highlight_color | default: section.settings.accent_color %}
+        
+        <div class="vision-mission__item{% if block.settings.featured %} vision-mission__item--featured{% endif %}" 
+          {{ block.shopify_attributes }}
+          style="{% if block.settings.background_color != blank %}background-color: {{ block.settings.background_color }};{% endif %}
+                border-color: {{ border_color }};">
+          
+          <div class="vision-mission__icon-wrapper">
+            {% if block.settings.icon != blank %}
+              <img src="{{ block.settings.icon | image_url: width: 150 }}" 
+                   alt="{{ block.settings.title }}"
+                   class="vision-mission__icon vision-mission__icon--image"
+                   width="80"
+                   height="80"
+                   loading="lazy">
+            {% elsif block.settings.svg_icon != blank %}
+              <div class="vision-mission__icon vision-mission__icon--svg">
+                {{ block.settings.svg_icon }}
+              </div>
+            {% else %}
+              {% comment %} Iconos predeterminados según el tipo {% endcomment %}
+              <div class="vision-mission__icon vision-mission__icon--default" style="color: {{ block.settings.icon_color | default: section.settings.accent_color }};">
+                {% case block.settings.icon_type %}
+                  {% when 'mission' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="8"/>
+                      <path d="M12 6l3 6-6 0z"/>
+                    </svg>
+                  {% when 'vision' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  {% when 'values' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 12l2 2 4-4"/>
+                      <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+                    </svg>
+                  {% when 'goal' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <circle cx="12" cy="12" r="6"/>
+                      <circle cx="12" cy="12" r="2"/>
+                    </svg>
+                  {% when 'innovation' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10 10 10 0 0 1-10-10 10 10 0 0 1 10-10"/>
+                      <path d="M8 12h8"/>
+                      <path d="M12 8v8"/>
+                    </svg>
+                  {% when 'team' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                      <circle cx="16" cy="11" r="3"/>
+                      <path d="M24 21v-2a4 4 0 0 0-3-3.87"/>
+                    </svg>
+                  {% when 'growth' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                      <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                  {% when 'quality' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12,2 15.09,8.26 22,9 17,14.74 18.18,21.02 12,17.77 5.82,21.02 7,14.74 2,9 8.91,8.26"/>
+                    </svg>
+                  {% when 'excellence' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M8 12h8"/>
+                      <path d="M12 8v8"/>
+                      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                    </svg>
+                  {% when 'sustainability' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                  {% when 'trust' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 1l3 9 9 0-7 7 2 9-7-5-7 5 2-9-7-7 9 0z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M8 12h8"/>
+                    </svg>
+                {% endcase %}
+              </div>
+            {% endif %}
+          </div>
+          
+          {% if block.settings.title != blank %}
+            <h3 class="vision-mission__item-title" style="color: {{ block.settings.title_color | default: section.settings.title_color }};">
+              {{ block.settings.title }}
+            </h3>
+          {% endif %}
+          
+          {% if block.settings.text != blank %}
+            <div class="vision-mission__text" style="color: {{ block.settings.text_color | default: section.settings.text_color }};">
+              {{ block.settings.text }}
+            </div>
+          {% endif %}
+          
+          {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+            <a href="{{ block.settings.button_link }}" 
+               class="vision-mission__button"
+               style="background-color: {{ block.settings.button_background_color | default: section.settings.accent_color }};
+                      color: {{ block.settings.button_text_color | default: '#ffffff' }};">
+              {{ block.settings.button_label }}
+            </a>
+          {% endif %}
+          
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+.vision-mission {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.vision-mission--full-width {
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  width: 100vw;
+}
+
+.vision-mission__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.vision-mission__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.vision-mission__title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: currentColor;
+}
+
+.vision-mission__intro {
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.vision-mission__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.vision-mission__item {
+  padding: 2.5rem 2rem;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 4px solid transparent;
+  height: 100%;
+}
+
+.vision-mission__item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.vision-mission__item--featured {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.vision-mission__item--featured:hover {
+  transform: scale(1.05) translateY(-5px);
+}
+
+.vision-mission__icon-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vision-mission__icon {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.vision-mission__icon--image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.vision-mission__icon--svg,
+.vision-mission__icon--default {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.vision-mission__icon--svg:hover,
+.vision-mission__icon--default:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.vision-mission__icon--svg svg,
+.vision-mission__icon--default svg {
+  width: 48px;
+  height: 48px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.vision-mission__item:hover .vision-mission__icon {
+  transform: scale(1.1) rotateY(10deg);
+}
+
+.vision-mission__item-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.vision-mission__text {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.vision-mission__button {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+  margin-top: auto;
+}
+
+.vision-mission__button:hover {
+  opacity: 0.9;
+}
+
+@media screen and (max-width: 767px) {
+  .vision-mission {
+    padding: 3rem 1.5rem;
+  }
+  
+  .vision-mission__title {
+    font-size: 2rem;
+  }
+  
+  .vision-mission__grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .vision-mission__item--featured {
+    transform: none;
+  }
+  
+  .vision-mission__item--featured:hover {
+    transform: translateY(-5px);
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Visión y Misión",
+  "tag": "section",
+  "class": "shopify-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Título de la sección",
+      "default": "Nuestra Filosofía"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Texto introductorio",
+      "default": "<p>En nuestra empresa nos guían principios sólidos que definen quiénes somos y hacia dónde vamos. Estos valores fundamentales nos inspiran a ofrecer lo mejor de nosotros cada día.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Estilo"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color de títulos",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color de texto",
+      "default": "#444444"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#2E4695"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Ancho completo",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Columna",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Nuestra Misión"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Proporcionar productos excepcionales que mejoren la vida de nuestros clientes, manteniendo siempre los más altos estándares de calidad, innovación y servicio al cliente.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icono personalizado (imagen)"
+        },
+        {
+          "type": "html",
+          "id": "svg_icon",
+          "label": "Código SVG personalizado",
+          "info": "Pega aquí el código SVG completo. Ejemplo: <svg>...</svg>"
+        },
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icono predeterminado",
+          "options": [
+            { "value": "mission", "label": "Misión (brújula)" },
+            { "value": "vision", "label": "Visión (ojo)" },
+            { "value": "values", "label": "Valores (verificado)" },
+            { "value": "goal", "label": "Objetivo (diana)" },
+            { "value": "innovation", "label": "Innovación (más)" },
+            { "value": "team", "label": "Equipo (personas)" },
+            { "value": "growth", "label": "Crecimiento (gráfica)" },
+            { "value": "quality", "label": "Calidad (estrella)" },
+            { "value": "excellence", "label": "Excelencia (círculo plus)" },
+            { "value": "sustainability", "label": "Sostenibilidad (símbolo S)" },
+            { "value": "trust", "label": "Confianza (estrella simple)" }
+          ],
+          "default": "mission",
+          "info": "Se usa solo si no hay imagen o SVG personalizado"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Color del icono predeterminado",
+          "info": "Solo afecta a los iconos predeterminados"
+        },
+        {
+          "type": "checkbox",
+          "id": "featured",
+          "label": "Destacar esta columna",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Colores personalizados"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Color de fondo"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Color del título"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Color del texto"
+        },
+        {
+          "type": "color",
+          "id": "highlight_color",
+          "label": "Color de borde superior"
+        },
+        {
+          "type": "header",
+          "content": "Botón (opcional)"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Enlace del botón"
+        },
+        {
+          "type": "color",
+          "id": "button_background_color",
+          "label": "Color de fondo del botón"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Color de texto del botón",
+          "default": "#ffffff"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Visión y Misión",
+      "blocks": [
+        {
+          "type": "column",
+          "settings": {
+            "title": "Nuestra Misión",
+            "text": "<p>Proporcionar productos excepcionales que mejoren la vida de nuestros clientes, manteniendo siempre los más altos estándares de calidad, innovación y servicio al cliente.</p>",
+            "icon_type": "mission",
+            "featured": false
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "title": "Nuestra Visión",
+            "text": "<p>Ser reconocidos globalmente como líderes en nuestra industria, expandiendo constantemente nuestros horizontes y creando valor duradero para todos nuestros stakeholders.</p>",
+            "icon_type": "vision",
+            "featured": true
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "title": "Nuestros Valores",
+            "text": "<p>Integridad, excelencia, innovación, colaboración y responsabilidad social son los pilares que guían todas nuestras decisiones y acciones diarias.</p>",
+            "icon_type": "values",
+            "featured": false
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

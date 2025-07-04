@@ -30,41 +30,57 @@
       <div class="brands-carousel__track">
         {% for block in section.blocks %}
           <div class="brands-carousel__item" {{ block.shopify_attributes }}>
-            {% if block.settings.logo != blank or block.settings.svg != blank %}
-              {% liquid
-                assign alt_text = block.settings.alt | default: block.settings.logo.alt | escape
-                assign circle_bg = section.settings.circle_bg_color | default: '#fff'
-              %}
-              
-              {% if block.settings.link != blank %}
-                <a href="{{ block.settings.link }}" class="brands-carousel__item-link" target="_blank" rel="noopener" aria-label="Visitar {{ alt_text }}">
-                  <div class="brands-carousel__logo-wrapper" style="--circle-bg: {{ circle_bg }};">
-                    {% if block.settings.svg != blank %}
-                      <div class="brands-carousel__svg">{{ block.settings.svg }}</div>
-                    {% elsif block.settings.logo != blank %}
-                      <img src="{{ block.settings.logo | image_url: width: 300 }}"
-                           alt="{{ alt_text }}"
-                           class="brands-carousel__logo"
-                           width="240" height="240"
-                           loading="lazy">
-                    {% endif %}
-                  </div>
-                </a>
-              {% else %}
-                <div class="brands-carousel__item-link">
-                  <div class="brands-carousel__logo-wrapper" style="--circle-bg: {{ circle_bg }};">
-                    {% if block.settings.svg != blank %}
-                      <div class="brands-carousel__svg">{{ block.settings.svg }}</div>
-                    {% elsif block.settings.logo != blank %}
-                      <img src="{{ block.settings.logo | image_url: width: 300 }}"
-                           alt="{{ alt_text }}"
-                           class="brands-carousel__logo"
-                           width="240" height="240"
-                           loading="lazy">
-                    {% endif %}
-                  </div>
+            {% liquid
+              assign alt_text = block.settings.alt | default: block.settings.logo.alt | default: 'Logo de marca' | escape
+              assign circle_bg = section.settings.circle_bg_color | default: '#fff'
+            %}
+            
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="brands-carousel__item-link" target="_blank" rel="noopener" aria-label="Visitar {{ alt_text }}">
+                <div class="brands-carousel__logo-wrapper" style="--circle-bg: {{ circle_bg }};">
+                  {% if block.settings.svg != blank %}
+                    <div class="brands-carousel__svg">{{ block.settings.svg }}</div>
+                  {% elsif block.settings.logo != blank %}
+                    <img src="{{ block.settings.logo | image_url: width: 300 }}"
+                         alt="{{ alt_text }}"
+                         class="brands-carousel__logo"
+                         width="240" height="240"
+                         loading="lazy">
+                  {% else %}
+                    <div class="brands-carousel__placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21,15 16,10 5,21"/>
+                      </svg>
+                      <span>Logo</span>
+                    </div>
+                  {% endif %}
                 </div>
-              {% endif %}
+              </a>
+            {% else %}
+              <div class="brands-carousel__item-link">
+                <div class="brands-carousel__logo-wrapper" style="--circle-bg: {{ circle_bg }};">
+                  {% if block.settings.svg != blank %}
+                    <div class="brands-carousel__svg">{{ block.settings.svg }}</div>
+                  {% elsif block.settings.logo != blank %}
+                    <img src="{{ block.settings.logo | image_url: width: 300 }}"
+                         alt="{{ alt_text }}"
+                         class="brands-carousel__logo"
+                         width="240" height="240"
+                         loading="lazy">
+                  {% else %}
+                    <div class="brands-carousel__placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21,15 16,10 5,21"/>
+                      </svg>
+                      <span>Logo</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
             {% endif %}
           </div>
         {% endfor %}
@@ -88,7 +104,7 @@ html, body {
 
 .brands-carousel-section {
   width: 100%;
-  padding: 3rem 0;
+  padding: 3rem 1rem;
   overflow: hidden;
   background-color: var(--color-bg, #ffffff);
   box-sizing: border-box;
@@ -293,15 +309,42 @@ html, body {
   z-index: 0;
 }
 
+/* Placeholder cuando no hay logo */
+.brands-carousel__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 0.8rem;
+  gap: 0.5rem;
+}
+
+.brands-carousel__placeholder svg {
+  width: 3rem;
+  height: 3rem;
+  stroke: #ccc;
+}
+
+.brands-carousel__placeholder span {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* Media queries */
 @media (max-width: 900px) {
   .brands-carousel-section {
-    padding: 2rem 0;
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: -50vw;
-    left: 50%;
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    left: auto;
     position: relative;
+  }
+  
+  .brands-carousel {
+    padding: 0 3rem;
   }
   
   .brands-carousel__logo-wrapper {
@@ -316,22 +359,36 @@ html, body {
 
 @media (max-width: 600px) {
   .brands-carousel-section {
-    padding: 1.5rem 0;
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    padding: 1.5rem 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    overflow: visible;
   }
   
   .brands-carousel {
-    padding: 0 2rem;
+    padding: 0 2.5rem;
     min-height: 220px;
+    overflow: visible;
+  }
+  
+  .brands-carousel__track-wrapper {
+    overflow: visible;
   }
   
   .brands-carousel__arrow {
     width: 2.5rem;
     height: 2.5rem;
     font-size: 1.2rem;
+  }
+  
+  .brands-carousel__arrow--prev {
+    left: 0.25rem;
+  }
+
+  .brands-carousel__arrow--next {
+    right: 0.25rem;
   }
   
   .brands-carousel-title {
@@ -349,6 +406,11 @@ html, body {
   
   .brands-carousel__logo-wrapper::after {
     font-size: 0.8rem;
+  }
+  
+  .brands-carousel__placeholder svg {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 }
 {% endstylesheet %}
@@ -727,14 +789,86 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "name": "Nuestras Marcas",
       "blocks": [
-        {"type": "brand"},
-        {"type": "brand"},
-        {"type": "brand"},
-        {"type": "brand"},
-        {"type": "brand"},
-        {"type": "brand"},
-        {"type": "brand"},
-        {"type": "brand"}
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Apple - Tecnología innovadora",
+            "link": "https://www.apple.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Microsoft - Soluciones empresariales",
+            "link": "https://www.microsoft.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Google - Servicios digitales",
+            "link": "https://www.google.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z\" fill=\"#4285F4\"/><path d=\"M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\" fill=\"#34A853\"/><path d=\"M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z\" fill=\"#FBBC05\"/><path d=\"M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\" fill=\"#EA4335\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Amazon - Comercio electrónico",
+            "link": "https://www.amazon.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595l.315-.14c.138-.06.234-.1.29-.12.16-.06.314-.04.465.056.15.097.192.235.13.415-.062.18-.211.29-.449.336-.034.006-.418.143-.636.211-3.264 1.04-6.296 1.566-9.098 1.566-4.532 0-8.686-1.167-12.462-3.5-.225-.14-.31-.282-.26-.427.054-.145.202-.16.345-.005l.695.06zm1.757-1.69c-.115-.084-.126-.215-.032-.393L7.27 2.46c.095-.18.232-.27.41-.27h3.527c.192 0 .29.097.29.29v11.913l6.346-7.18c.098-.113.21-.17.335-.17h4.297c.128 0 .192.096.192.29 0 .11-.037.195-.11.256l-7.402 8.36 7.724 10.64c.063.09.094.174.094.252 0 .204-.096.306-.29.306h-4.297c-.13 0-.24-.06-.335-.18L11.497 17.77v4.004c0 .192-.098.29-.29.29H7.68c-.18 0-.315-.09-.41-.27L1.77 8.327c-.094-.178-.083-.31.032-.393zm16.173 3.867c2.622 0 4.094.32 4.094 1.04 0 .416-.26.785-.781 1.105-.52.32-1.177.48-1.97.48-1.473 0-2.328-.48-2.565-1.44-.034-.138-.014-.24.058-.306.073-.065.16-.097.262-.097h.902z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Samsung - Tecnología móvil",
+            "link": "https://www.samsung.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5.23 5.32c-.94 0-1.52.66-1.52 1.7 0 .86.4 1.44 1.16 1.69-.05.21-.1.45-.1.69 0 1.26.67 2.05 1.78 2.05.39 0 .78-.1 1.12-.29.34.19.73.29 1.13.29 1.11 0 1.78-.79 1.78-2.05 0-.24-.05-.48-.1-.69.76-.25 1.16-.83 1.16-1.69 0-1.04-.58-1.7-1.52-1.7-.5 0-.94.24-1.19.64-.34-.19-.73-.29-1.13-.29s-.79.1-1.13.29c-.25-.4-.69-.64-1.19-.64zm13.54 0c-.94 0-1.52.66-1.52 1.7 0 .86.4 1.44 1.16 1.69-.05.21-.1.45-.1.69 0 1.26.67 2.05 1.78 2.05.39 0 .78-.1 1.12-.29.34.19.73.29 1.13.29 1.11 0 1.78-.79 1.78-2.05 0-.24-.05-.48-.1-.69.76-.25 1.16-.83 1.16-1.69 0-1.04-.58-1.7-1.52-1.7-.5 0-.94.24-1.19.64-.34-.19-.73-.29-1.13-.29s-.79.1-1.13.29c-.25-.4-.69-.64-1.19-.64z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Nike - Artículos deportivos",
+            "link": "https://www.nike.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M24 7.8L6.442 15.276c-1.456.616-2.679.925-3.668.925-1.456 0-2.525-.616-3.207-1.848-.682-1.232-.682-2.772 0-4.619.341-1.007 1.023-2.079 2.045-3.216 1.364-1.519 3.207-2.261 5.523-2.261 1.432 0 3.3.264 5.6.792l1.964.44c1.081.242 1.622.363 1.622.363.968.22 1.816.44 2.525.66L24 7.8zM0 16.995c0 1.518 1.331 2.75 2.975 2.75h18.05C22.669 19.745 24 18.513 24 16.995s-1.331-2.75-2.975-2.75H2.975C1.331 14.245 0 15.477 0 16.995z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Coca-Cola - Bebidas refrescantes",
+            "link": "https://www.coca-cola.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5.04 12.48c.26.68.65 1.32 1.17 1.86.52.54 1.16.95 1.86 1.21.7.26 1.45.39 2.21.39s1.51-.13 2.21-.39c.7-.26 1.34-.67 1.86-1.21.52-.54.91-1.18 1.17-1.86.26-.68.39-1.4.39-2.16s-.13-1.48-.39-2.16c-.26-.68-.65-1.32-1.17-1.86-.52-.54-1.16-.95-1.86-1.21C11.79 6.03 11.04 5.9 10.28 5.9s-1.51.13-2.21.39c-.7.26-1.34.67-1.86 1.21-.52.54-.91 1.18-1.17 1.86-.26.68-.39 1.4-.39 2.16s.13 1.48.39 2.16zm14.92-.16c0 1.3-.2 2.54-.61 3.7-.4 1.16-1 2.2-1.78 3.09-.78.89-1.74 1.6-2.84 2.11-1.1.51-2.34.77-3.68.77s-2.58-.26-3.68-.77c-1.1-.51-2.06-1.22-2.84-2.11-.78-.89-1.38-1.93-1.78-3.09-.4-1.16-.61-2.4-.61-3.7s.2-2.54.61-3.7c.4-1.16 1-2.2 1.78-3.09.78-.89 1.74-1.6 2.84-2.11C8.47 3.26 9.71 3 11.05 3s2.58.26 3.68.77c1.1.51 2.06 1.22 2.84 2.11.78.89 1.38 1.93 1.78 3.09.4 1.16.61 2.4.61 3.7z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Tesla - Vehículos eléctricos",
+            "link": "https://www.tesla.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 0L3.64 6.38H7.9L12 2.69l4.1 3.69H20.36L12 0zm0 24l8.36-6.38H16.1L12 21.31l-4.1-3.69H3.64L12 24zM3.64 17.62H20.36L12 24l-8.36-6.38zM20.36 6.38H3.64L12 0l8.36 6.38z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Netflix - Entretenimiento digital",
+            "link": "https://www.netflix.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24zm5.084 0v23.596c.773-.057 1.508-.086 2.084-.086V0zm1.55 0v23.988c3.168.495 6.968 1.582 6.968 1.582V0z\"/></svg>"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "alt": "Spotify - Música en streaming",
+            "link": "https://www.spotify.com",
+            "svg": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z\"/></svg>"
+          }
+        }
       ]
     }
   ]

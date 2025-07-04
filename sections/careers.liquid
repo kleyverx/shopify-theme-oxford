@@ -1,0 +1,494 @@
+{% liquid
+  assign section_id = section.id
+  assign blocks_count = section.blocks.size
+%}
+
+<section class="careers-section" id="CareersSection-{{ section_id }}" style="
+  --careers-cards-gap: {{ section.settings.gap }}px;
+  --careers-text-color: {{ section.settings.text_color }};
+  --careers-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
+  --careers-border-radius: {{ section.settings.border_radius }}px;
+  --careers-section-padding-top: {{ section.settings.padding_top }}px;
+  --careers-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  --careers-button-bg-color: {{ section.settings.button_bg_color }};
+  --careers-button-text-color: {{ section.settings.button_text_color }};
+">
+  <div class="careers-section__container container">
+    {% if section.settings.title != blank %}
+      <h2 class="careers-section__title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    {% if section.settings.description != blank %}
+      <div class="careers-section__description">{{ section.settings.description }}</div>
+    {% endif %}
+
+    <div class="careers-section__grid" style="--blocks-count: {{ blocks_count }}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'career_item' %}
+            {% liquid
+              assign block_id = block.id
+              assign image = block.settings.image
+              assign title = block.settings.title
+              assign text = block.settings.text
+              assign button_text = block.settings.button_text
+              assign button_url = block.settings.button_url
+              assign layout_style = block.settings.layout_style
+            %}
+            
+            <div class="careers-section__item careers-section__item--{{ layout_style }}" 
+                 id="CareerItem-{{ block_id }}" 
+                 {{ block.shopify_attributes }}>
+              <div class="careers-section__item-inner">
+                {% if image != blank %}
+                  <div class="careers-section__image-wrapper">
+                    {{ image | image_url: width: 800 | image_tag: 
+                      loading: 'lazy',
+                      class: 'careers-section__image',
+                      widths: '360, 540, 720, 900, 1080',
+                      sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+                    }}
+                  </div>
+                {% else %}
+                  <div class="careers-section__placeholder">
+                    {{ 'image' | placeholder_svg_tag: 'careers-section__placeholder-svg' }}
+                  </div>
+                {% endif %}
+                
+                <div class="careers-section__overlay">
+                  <div class="careers-section__content">
+                    {% if title != blank %}
+                      <h3 class="careers-section__item-title">{{ title }}</h3>
+                    {% endif %}
+                    
+                    {% if text != blank %}
+                      <div class="careers-section__item-text">{{ text }}</div>
+                    {% endif %}
+                    
+                    {% if button_text != blank %}
+                      <div class="careers-section__button-wrapper">
+                        <a href="{{ button_url | default: '#' }}" class="careers-section__button">
+                          {{ button_text }}
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = '{{ section_id }}';
+    const careerItems = document.querySelectorAll(`#CareersSection-${sectionId} .careers-section__item`);
+    
+    // Solo aplicamos el efecto en dispositivos móviles
+    const isMobile = window.innerWidth < 750;
+    
+    if (isMobile) {
+      const observerOptions = {
+        root: null, // viewport
+        rootMargin: '0px',
+        threshold: 0.3 // 30% del elemento visible
+      };
+      
+      const observerCallback = (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          } else {
+            // Si quieres que el efecto se repita cada vez que sale del viewport, descomenta la siguiente línea
+            // entry.target.classList.remove('is-visible');
+          }
+        });
+      };
+      
+      const observer = new IntersectionObserver(observerCallback, observerOptions);
+      
+      careerItems.forEach(item => {
+        observer.observe(item);
+      });
+    }
+  });
+</script>
+
+{% stylesheet %}
+  .careers-section {
+    padding-top: var(--careers-section-padding-top);
+    padding-bottom: var(--careers-section-padding-bottom);
+    width: 100%;
+  }
+
+  .careers-section__container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .careers-section__title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .careers-section__description {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .careers-section__grid {
+    display: grid;
+    gap: var(--careers-cards-gap);
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  @media screen and (min-width: 750px) {
+    .careers-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .careers-section__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .careers-section__item--large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    
+    .careers-section__item--tall {
+      grid-row: span 2;
+    }
+    
+    .careers-section__item--wide {
+      grid-column: span 2;
+    }
+  }
+
+  .careers-section__item {
+    position: relative;
+    border-radius: var(--careers-border-radius);
+    overflow: hidden;
+  }
+
+  .careers-section__item-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+  }
+
+  .careers-section__item--tall .careers-section__item-inner {
+    aspect-ratio: 1/2;
+  }
+
+  .careers-section__item--wide .careers-section__item-inner {
+    aspect-ratio: 2/1;
+  }
+
+  .careers-section__item--large .careers-section__item-inner {
+    aspect-ratio: 1/1;
+  }
+
+  @media screen and (max-width: 989px) {
+    .careers-section__item--tall .careers-section__item-inner,
+    .careers-section__item--wide .careers-section__item-inner,
+    .careers-section__item--large .careers-section__item-inner {
+      aspect-ratio: 1/1;
+    }
+  }
+
+  .careers-section__image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .careers-section__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .careers-section__item:hover .careers-section__image {
+    transform: scale(1.05);
+  }
+
+  .careers-section__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .careers-section__placeholder-svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.3;
+  }
+
+  .careers-section__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--careers-overlay-color);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease;
+  }
+
+  .careers-section__item:hover .careers-section__overlay {
+    opacity: 1;
+  }
+
+  .careers-section__item.is-visible .careers-section__overlay {
+    opacity: 1;
+  }
+
+  .careers-section__content {
+    padding: 2rem;
+    color: var(--careers-text-color);
+    text-align: center;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    transition-delay: 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .careers-section__item:hover .careers-section__content,
+  .careers-section__item.is-visible .careers-section__content {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .careers-section__item-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .careers-section__item-text {
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .careers-section__button-wrapper {
+    margin-top: auto;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    transition-delay: 0.2s;
+  }
+
+  .careers-section__item:hover .careers-section__button-wrapper,
+  .careers-section__item.is-visible .careers-section__button-wrapper {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .careers-section__button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--careers-button-bg-color);
+    color: var(--careers-button-text-color);
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .careers-section__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Carreras",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Trabaja con nosotros"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descripción",
+      "default": "<p>Descubre oportunidades profesionales en nuestra empresa.</p>"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Espacio entre elementos",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Color de fondo al hover",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacidad del fondo",
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.1,
+      "default": 0.7
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Color de fondo del botón",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color de texto del botón",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Redondez de bordes",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Relleno superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Relleno inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "career_item",
+      "name": "Elemento de carrera",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Posición laboral"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Descripción",
+          "default": "<p>Breve descripción de la posición laboral disponible.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del botón",
+          "default": "Aplicar ahora"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Enlace del botón"
+        },
+        {
+          "type": "select",
+          "id": "layout_style",
+          "label": "Estilo de layout",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "wide",
+              "label": "Ancho"
+            },
+            {
+              "value": "tall",
+              "label": "Alto"
+            },
+            {
+              "value": "large",
+              "label": "Grande"
+            }
+          ],
+          "default": "normal"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Carreras",
+      "blocks": [
+        {
+          "type": "career_item"
+        },
+        {
+          "type": "career_item"
+        },
+        {
+          "type": "career_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

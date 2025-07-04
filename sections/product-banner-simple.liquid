@@ -1,0 +1,194 @@
+{% comment %}
+  Banner simple con imagen, texto animado y opciones de posición/animación.
+{% endcomment %}
+
+<section class="product-banner-simple" id="banner-simple-{{ section.id }}" style="background: {{ section.settings.background_color }}; width: 100vw; margin-left: calc(50% - 50vw); margin-top: {{ section.settings.margin_top | default: 0 }}px; margin-bottom: {{ section.settings.margin_bottom | default: 0 }}px;">
+  <div class="banner-simple-wrapper">
+    <picture>
+      {% if section.settings.image_mobile != blank %}
+        <source srcset="{{ section.settings.image_mobile | image_url: width: 900 }}" media="(max-width: 767px)">
+      {% endif %}
+      <img src="{{ section.settings.image_desktop | image_url: width: 2000 }}" alt="{{ section.settings.alt | escape }}" class="banner-simple-img" loading="lazy" width="2000" height="600">
+    </picture>
+    <div class="banner-simple-text banner-text-{{ section.settings.text_position }} banner-anim-{{ section.settings.text_animation }}" style="background: {{ section.settings.text_overlay_bg }}; color: {{ section.settings.text_color }};">
+      <span>{{ section.settings.texto }}</span>
+    </div>
+  </div>
+</section>
+
+<style>
+.product-banner-simple {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  overflow: hidden;
+}
+.banner-simple-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
+.banner-simple-img {
+  width: 100vw;
+  height: {{ section.settings.height_desktop }}px;
+  max-height: {{ section.settings.height_desktop }}px;
+  object-fit: cover;
+  display: block;
+}
+.banner-simple-text {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: 0 7vw;
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  border-radius: 0 32px 0 0;
+  max-width: 90vw;
+  margin: 0 auto;
+  pointer-events: none;
+}
+.banner-text-left { justify-content: flex-start; text-align: left; }
+.banner-text-center { justify-content: center; text-align: center; }
+.banner-text-right { justify-content: flex-end; text-align: right; }
+
+/* Animaciones */
+.banner-anim-fade { animation: fadeInUp 1.1s cubic-bezier(.77,0,.18,1); }
+.banner-anim-scale { animation: scaleIn 1.1s cubic-bezier(.77,0,.18,1); }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+@media (max-width: 767px) {
+  .banner-simple-img {
+    height: {{ section.settings.height_mobile }}px;
+    max-height: {{ section.settings.height_mobile }}px;
+  }
+  .banner-simple-text {
+    font-size: 1.3rem;
+    padding: 0 4vw;
+    max-width: 98vw;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Banner simple animado",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "Imagen desktop (1920x600 recomendado)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Imagen mobile (900x600 recomendado)"
+    },
+    {
+      "type": "text",
+      "id": "texto",
+      "label": "Texto del banner",
+      "default": "Descubre nuestro producto estrella"
+    },
+    {
+      "type": "text",
+      "id": "alt",
+      "label": "Texto alternativo de la imagen",
+      "default": "Banner de producto"
+    },
+    {
+      "type": "select",
+      "id": "text_animation",
+      "label": "Animación del texto",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "scale", "label": "Scale" }
+      ],
+      "default": "fade"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Posición del texto",
+      "options": [
+        { "value": "left", "label": "Izquierda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Derecha" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "text_overlay_bg",
+      "label": "Fondo del texto animado",
+      "default": "rgba(0,0,0,0.18)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto animado",
+      "default": "#fff"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "min": 300,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "label": "Altura máxima desktop",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "min": 120,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Altura máxima mobile",
+      "default": 340
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Margen superior",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Margen inferior",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner simple animado",
+      "settings": {
+        "texto": "¡Lanzamiento especial: Silla Oxford Home!",
+        "alt": "Banner silla Oxford Home"
+      }
+    }
+  ]
+}
+{% endschema %}

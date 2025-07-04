@@ -1,0 +1,471 @@
+{% liquid
+  assign section_id = section.id
+  assign blocks_count = section.blocks.size
+%}
+
+<section class="trust-packery" id="TrustPackery-{{ section_id }}" style="
+  --trust-cards-gap: {{ section.settings.gap }}px;
+  --trust-text-color: {{ section.settings.text_color }};
+  --trust-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
+  --trust-border-radius: {{ section.settings.border_radius }}px;
+  --trust-section-padding-top: {{ section.settings.padding_top }}px;
+  --trust-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  --trust-mobile-text: {{ section.settings.show_mobile_text }};
+">
+  <div class="trust-packery__container container">
+    {% if section.settings.title != blank %}
+      <h2 class="trust-packery__title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    {% if section.settings.description != blank %}
+      <div class="trust-packery__description">{{ section.settings.description }}</div>
+    {% endif %}
+
+    <div class="trust-packery__grid" style="--blocks-count: {{ blocks_count }}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'trust_item' %}
+            {% liquid
+              assign block_id = block.id
+              assign image = block.settings.image
+              assign title = block.settings.title
+              assign text = block.settings.text
+              assign layout_style = block.settings.layout_style
+            %}
+            
+            <div class="trust-packery__item trust-packery__item--{{ layout_style }}" 
+                 id="TrustItem-{{ block_id }}" 
+                 {{ block.shopify_attributes }}>
+              <div class="trust-packery__item-inner">
+                {% if image != blank %}
+                  <div class="trust-packery__image-wrapper">
+                    {{ image | image_url: width: 800 | image_tag: 
+                      loading: 'lazy',
+                      class: 'trust-packery__image',
+                      widths: '360, 540, 720, 900, 1080',
+                      sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+                    }}
+                  </div>
+                {% else %}
+                  <div class="trust-packery__placeholder">
+                    {{ 'image' | placeholder_svg_tag: 'trust-packery__placeholder-svg' }}
+                  </div>
+                {% endif %}
+                
+                <div class="trust-packery__overlay">
+                  <div class="trust-packery__content">
+                    {% if title != blank %}
+                      <h3 class="trust-packery__item-title">{{ title }}</h3>
+                    {% endif %}
+                    
+                    {% if text != blank %}
+                      <div class="trust-packery__item-text">{{ text }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = '{{ section_id }}';
+    const trustItems = document.querySelectorAll(`#TrustPackery-${sectionId} .trust-packery__item`);
+    
+    // Solo aplicamos el efecto en dispositivos móviles
+    const isMobile = window.innerWidth < 750;
+    
+    if (isMobile) {
+      const observerOptions = {
+        root: null, // viewport
+        rootMargin: '0px',
+        threshold: 0.3 // 30% del elemento visible
+      };
+      
+      const observerCallback = (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          } else {
+            // Si quieres que el efecto se repita cada vez que sale del viewport, descomenta la siguiente línea
+            // entry.target.classList.remove('is-visible');
+          }
+        });
+      };
+      
+      const observer = new IntersectionObserver(observerCallback, observerOptions);
+      
+      trustItems.forEach(item => {
+        observer.observe(item);
+      });
+    }
+  });
+</script>
+
+{% stylesheet %}
+  .trust-packery {
+    padding-top: var(--trust-section-padding-top);
+    padding-bottom: var(--trust-section-padding-bottom);
+    width: 100%;
+  }
+
+  .trust-packery__container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .trust-packery__title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .trust-packery__description {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .trust-packery__grid {
+    display: grid;
+    gap: var(--trust-cards-gap);
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  @media screen and (min-width: 750px) {
+    .trust-packery__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .trust-packery__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .trust-packery__item--large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    
+    .trust-packery__item--tall {
+      grid-row: span 2;
+    }
+    
+    .trust-packery__item--wide {
+      grid-column: span 2;
+    }
+  }
+
+  .trust-packery__item {
+    position: relative;
+    border-radius: var(--trust-border-radius);
+    overflow: hidden;
+  }
+
+  .trust-packery__item-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+  }
+
+  .trust-packery__item--tall .trust-packery__item-inner {
+    aspect-ratio: 1/2;
+  }
+
+  .trust-packery__item--wide .trust-packery__item-inner {
+    aspect-ratio: 2/1;
+  }
+
+  .trust-packery__item--large .trust-packery__item-inner {
+    aspect-ratio: 1/1;
+  }
+
+  @media screen and (max-width: 989px) {
+    .trust-packery__item--tall .trust-packery__item-inner,
+    .trust-packery__item--wide .trust-packery__item-inner,
+    .trust-packery__item--large .trust-packery__item-inner {
+      aspect-ratio: 1/1;
+    }
+  }
+
+  .trust-packery__image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .trust-packery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .trust-packery__item:hover .trust-packery__image {
+    transform: scale(1.05);
+  }
+
+  .trust-packery__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .trust-packery__placeholder-svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.3;
+  }
+
+  .trust-packery__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--trust-overlay-color);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease;
+  }
+
+  .trust-packery__item:hover .trust-packery__overlay {
+    opacity: 1;
+  }
+
+  .trust-packery__item.is-visible .trust-packery__overlay {
+    opacity: 1;
+  }
+
+  .trust-packery__content {
+    padding: 2rem;
+    color: var(--trust-text-color);
+    text-align: center;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    transition-delay: 0.1s;
+  }
+
+  .trust-packery__item:hover .trust-packery__content,
+  .trust-packery__item.is-visible .trust-packery__content {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .trust-packery__item-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .trust-packery__item-text {
+    line-height: 1.5;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Por qué confiar",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Por qué confiar en nosotros"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descripción",
+      "default": "<p>Estas son algunas razones por las que nuestros clientes confían en nosotros.</p>"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Espacio entre elementos",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Color de fondo al hover",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacidad del fondo",
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.1,
+      "default": 0.7
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Redondez de bordes",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Relleno superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Relleno inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_text",
+      "label": "Mostrar texto al scroll en móvil",
+      "default": true,
+      "info": "Cuando está activado, el texto aparecerá al hacer scroll en dispositivos móviles"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "Elemento de confianza",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Razón para confiar"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Explica brevemente por qué tus clientes deberían confiar en tu negocio.</p>"
+        },
+        {
+          "type": "select",
+          "id": "layout_style",
+          "label": "Estilo de layout",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "wide",
+              "label": "Ancho"
+            },
+            {
+              "value": "tall",
+              "label": "Alto"
+            },
+            {
+              "value": "large",
+              "label": "Grande"
+            }
+          ],
+          "default": "normal"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Por qué confiar",
+      "blocks": [
+        {
+          "type": "trust_item",
+          "settings": {
+            "title": "Experiencia comprobada",
+            "text": "<p>Más de 15 años en el mercado respaldando a miles de clientes satisfechos con soluciones innovadoras y de calidad.</p>",
+            "layout_style": "large"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "title": "Soporte 24/7",
+            "text": "<p>Nuestro equipo de expertos está disponible las 24 horas para resolver cualquier duda o problema que puedas tener.</p>",
+            "layout_style": "normal"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "title": "Garantía total",
+            "text": "<p>Ofrecemos garantía completa en todos nuestros productos y servicios. Tu satisfacción es nuestra prioridad.</p>",
+            "layout_style": "tall"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "title": "Tecnología de vanguardia",
+            "text": "<p>Utilizamos las últimas tecnologías y metodologías para ofrecerte las mejores soluciones del mercado.</p>",
+            "layout_style": "normal"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "title": "Certificaciones internacionales",
+            "text": "<p>Contamos con todas las certificaciones de calidad ISO y reconocimientos internacionales que avalan nuestro trabajo.</p>",
+            "layout_style": "wide"
+          }
+        },
+        {
+          "type": "trust_item",
+          "settings": {
+            "title": "Precios competitivos",
+            "text": "<p>Ofrecemos las mejores tarifas del mercado sin comprometer la calidad de nuestros productos y servicios.</p>",
+            "layout_style": "normal"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1167 @@
+{% comment %}
+  Galería de productos con modal elegante - Diseños optimizados para alta calidad
+{% endcomment %}
+
+<section class="product-gallery" id="gallery-{{ section.id }}">
+  <div class="container">
+    {% if section.settings.title != blank %}
+      <h2 class="gallery-title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    <div class="products-grid">
+      {% if section.settings.collection != blank %}
+        {% assign collection = section.settings.collection %}
+        {% assign products_to_show = section.settings.products_limit %}
+        {% assign sort_by = section.settings.sort_by %}
+        
+        {% case sort_by %}
+          {% when 'best-selling' %}
+            {% assign sorted_products = collection.products | sort: 'bestselling' %}
+          {% when 'title-ascending' %}
+            {% assign sorted_products = collection.products | sort: 'title' %}
+          {% when 'title-descending' %}
+            {% assign sorted_products = collection.products | sort: 'title' | reverse %}
+          {% when 'price-ascending' %}
+            {% assign sorted_products = collection.products | sort: 'price' %}
+          {% when 'price-descending' %}
+            {% assign sorted_products = collection.products | sort: 'price' | reverse %}
+          {% when 'created-ascending' %}
+            {% assign sorted_products = collection.products | sort: 'created_at' %}
+          {% when 'created-descending' %}
+            {% assign sorted_products = collection.products | sort: 'created_at' | reverse %}
+          {% else %}
+            {% assign sorted_products = collection.products %}
+        {% endcase %}
+        
+        {% for product in sorted_products limit: products_to_show %}
+          <div class="product-card style-{{ section.settings.card_style }}" data-product-id="{{ product.id }}" {% if section.settings.enable_modal %}onclick="openModal('{{ product.id }}')" class="modal-enabled"{% endif %}>
+            {% if section.settings.card_style == '6' %}
+              <div class="product-content">
+            {% endif %}
+            {% if product.featured_image %}
+              <img 
+                src="{{ product.featured_image | image_url: width: 800 }}" 
+                alt="{{ product.title }}"
+                class="product-image"
+                width="800"
+                height="800"
+                loading="lazy"
+                srcset="{{ product.featured_image | image_url: width: 400 }} 400w,
+                        {{ product.featured_image | image_url: width: 600 }} 600w,
+                        {{ product.featured_image | image_url: width: 800 }} 800w,
+                        {{ product.featured_image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              >
+            {% endif %}
+            <div class="product-info">
+              <h3>{{ product.title }}</h3>
+              <p class="price">{{ product.price | money }}</p>
+            </div>
+            {% if section.settings.card_style == '6' %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Mensaje cuando no hay colección seleccionada -->
+        <div class="no-collection-message">
+          <p>Por favor selecciona una colección para mostrar productos.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="product-modal" class="modal">
+    <div class="modal-overlay" onclick="closeModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="modal-body">
+        <div class="modal-image">
+          <img id="modal-img" src="" alt="" width="600" height="600" loading="lazy">
+        </div>
+        <div class="modal-info">
+          <div class="modal-header">
+            <h2 id="modal-title"></h2>
+            <div class="modal-price" id="modal-price"></div>
+          </div>
+          <div class="modal-description" id="modal-description"></div>
+          <div class="modal-actions">
+            <button class="btn-primary" onclick="window.location.href='#'">Ver producto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .product-gallery {
+    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px 0;
+    background: {{ section.settings.background_color }};
+    min-height: auto;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  
+  .gallery-title {
+    text-align: center;
+    margin-bottom: 60px;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: {{ section.settings.title_color }};
+    letter-spacing: 1px;
+  }
+  
+  .products-grid {
+    display: grid;
+    /* Asegura cards de mínimo 280px, pero se adaptan fluidamente */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: {{ section.settings.gap_size }}px;
+    max-width: 100%;
+  }
+
+  /* En mobile, cards más pequeñas pero legibles */
+  @media (max-width: 767px) {
+    .products-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: {{ section.settings.gap_size | divided_by: 2 }}px;
+    }
+  }
+
+  /* Tablet - máximo 3 columnas */
+  @media (min-width: 768px) and (max-width: 991px) {
+    .products-grid {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+  }
+
+  /* Desktop pequeño - máximo basado en configuración pero limitado */
+  @media (min-width: 992px) and (max-width: 1199px) {
+    .products-grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop | at_most: 3 }}, 1fr);
+    }
+  }
+
+  /* Desktop mediano - máximo 4 columnas */
+  @media (min-width: 1200px) and (max-width: 1399px) {
+    .products-grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop | at_most: 4 }}, 1fr);
+    }
+  }
+
+  /* Desktop grande - máximo configurado pero nunca más de 5 */
+  @media (min-width: 1400px) {
+    .products-grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop | at_most: 5 }}, 1fr);
+    }
+  }
+
+  /* Estilos base para todas las cards */
+  .product-card {
+    min-width: 240px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Para que todas las cards tengan la misma altura en el grid */
+  }
+
+  /* Contenedor de imagen consistente para todos los estilos */
+  .product-image {
+    width: 100%;
+    aspect-ratio: 1/1; /* Proporción cuadrada 1:1 para todas las cards */
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Info del producto flexible */
+  .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100px; /* Altura mínima para consistencia */
+  }
+
+  .no-collection-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #dee2e6;
+  }
+
+  .no-collection-message p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin: 0;
+    font-style: italic;
+  }
+  
+  /* ESTILO 1 - Minimalista (Default) */
+  .product-card.style-1 {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .product-card.style-1:hover {
+    border-color: #1a1a1a;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+  }
+  
+  .product-card.style-1 .product-image {
+    border-radius: 12px 12px 0 0;
+  }
+  
+  .product-card.style-1 .product-info {
+    padding: 28px 24px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .product-card.style-1 .product-info h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.4;
+  }
+  
+  .product-card.style-1 .price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #666666;
+    margin: 0;
+  }
+
+  /* ESTILO 2 - Moderno con sombra (Para productos premium) */
+  .product-card.style-2 {
+    background: #ffffff;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-card.style-2:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+  }
+  
+  .product-card.style-2 .product-image {
+    transition: transform 0.3s ease;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .product-card.style-2:hover .product-image {
+    transform: scale(1.05);
+  }
+  
+  .product-card.style-2 .product-info {
+    padding: 32px 28px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .product-card.style-2 .product-info h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.3;
+  }
+  
+  .product-card.style-2 .price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #27ae60;
+    margin: 0;
+    padding: 8px 16px;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  /* ESTILO 3 - Overlay Premium (Para comida y bebidas) */
+  .product-card.style-3 {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .product-card.style-3:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  }
+  
+  .product-card.style-3 .product-image {
+    transition: transform 0.3s ease;
+  }
+
+  .product-card.style-3:hover .product-image {
+    transform: scale(1.1);
+  }
+  
+  .product-card.style-3 .product-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px 30px 30px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.4), transparent);
+    color: white;
+  }
+  
+  .product-card.style-3 .product-info h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .product-card.style-3 .price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffd700;
+    margin: 0;
+    background: rgba(255, 215, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+  }
+
+  /* ESTILO 4 - Card con badge Premium (Para productos de limpieza) */
+  .product-card.style-4 {
+    background: #ffffff;
+    border: 2px solid #f8f9fa;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .product-card.style-4::before {
+    content: 'NUEVO';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 20px;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .product-card.style-4:hover {
+    border-color: #3498db;
+    box-shadow: 0 8px 30px rgba(52, 152, 219, 0.25);
+    transform: translateY(-5px);
+  }
+  
+  .product-card.style-4 .product-image {
+    border-radius: 10px 10px 0 0;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card.style-4:hover .product-image {
+    transform: scale(1.05);
+  }
+  
+  .product-card.style-4 .product-info {
+    padding: 30px 25px;
+    background: #ffffff;
+    text-align: center;
+  }
+  
+  .product-card.style-4 .product-info h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.4;
+  }
+  
+  .product-card.style-4 .price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #3498db;
+    margin: 0;
+    padding: 8px 16px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  /* ESTILO 5 - Limpio y Hogareño (Para productos del hogar) */
+  .product-card.style-5 {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .product-card.style-5:hover {
+    border-color: #d0d0d0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  .product-card.style-5 .product-image {
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .product-card.style-5 .product-info {
+    padding: 20px;
+    background: #ffffff;
+    text-align: center;
+    border-top: 1px solid #f5f5f5;
+  }
+  
+  .product-card.style-5 .product-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2c2c2c;
+    line-height: 1.4;
+  }
+  
+  .product-card.style-5 .price {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666666;
+    margin: 0;
+  }
+
+  /* ESTILO 6 - Elegante Minimalista (Para productos premium del hogar) */
+  .product-card.style-6 {
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+  }
+  
+  .product-card.style-6:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: #e0e0e0;
+  }
+
+  .product-card.style-6 .product-content {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  .product-card.style-6 .product-image {
+    border-radius: 12px 12px 0 0;
+  }
+  
+  .product-card.style-6 .product-info {
+    padding: 24px 20px;
+    background: #ffffff;
+    text-align: center;
+    position: relative;
+  }
+
+  .product-card.style-6 .product-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 2px;
+    background: #e0e0e0;
+  }
+  
+  .product-card.style-6 .product-info h3 {
+    margin: 12px 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333333;
+    line-height: 1.4;
+  }
+  
+  .product-card.style-6 .price {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666666;
+    margin: 0;
+    letter-spacing: 0.5px;
+  }
+
+  /* Modal - Solo visible en desktop */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal.show {
+    opacity: 1;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Ocultar modal en tablets y móviles */
+  @media (max-width: 1024px) {
+    .modal {
+      display: none !important;
+    }
+    
+    .product-card.modal-enabled {
+      cursor: default !important;
+    }
+  }
+
+  .modal-content {
+    position: relative;
+    background: #ffffff;
+    margin: 3% auto;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    max-height: 90vh;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    {% case section.settings.modal_size %}
+      {% when 'small' %}
+        max-width: 700px;
+        width: 90%;
+      {% when 'medium' %}
+        max-width: 900px;
+        width: 85%;
+      {% when 'large' %}
+        max-width: 1100px;
+        width: 80%;
+    {% endcase %}
+  }
+
+  .modal.show .modal-content {
+    transform: translateY(0);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #333;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+  }
+
+  .modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 500px;
+  }
+
+  .modal-image {
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .modal-info {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #ffffff;
+  }
+
+  .modal-header {
+    margin-bottom: 24px;
+  }
+
+  .modal-info h2 {
+    margin: 0 0 16px 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+
+  .modal-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #27ae60;
+    margin: 0;
+    padding: 8px 16px;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 8px;
+    display: inline-block;
+    border: 1px solid rgba(39, 174, 96, 0.2);
+  }
+
+  .modal-description {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #555555;
+    margin-bottom: 32px;
+  }
+
+  .modal-description p {
+    margin-bottom: 16px;
+  }
+
+  .modal-description p:last-child {
+    margin-bottom: 0;
+  }
+
+  .modal-actions {
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .btn-primary {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: #333333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .products-grid {
+      grid-template-columns: repeat({{ section.settings.columns_tablet }}, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .product-gallery {
+      padding: {{ section.settings.section_padding_top | divided_by: 1.3 | round }}px 0 {{ section.settings.section_padding_bottom | divided_by: 1.3 | round }}px 0;
+    }
+
+    .container {
+      padding: 0 20px;
+    }
+    
+    .gallery-title {
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+    
+    .products-grid {
+      grid-template-columns: 1fr;
+      gap: {{ section.settings.gap_size | divided_by: 1.5 | round }}px;
+    }
+
+    /* Ajuste de padding en mobile */
+    .product-info {
+      padding: 16px !important;
+      min-height: 80px;
+    }
+
+    /* Títulos más pequeños en mobile */
+    .product-info h3 {
+      font-size: 1rem !important;
+      margin-bottom: 8px !important;
+    }
+
+    /* Precios más pequeños en mobile */
+    .price {
+      font-size: 0.9rem !important;
+      padding: 6px 12px !important;
+    }
+    
+    .modal-content {
+      width: 95%;
+      margin: 5% auto;
+      border-radius: 12px;
+      max-height: 85vh;
+    }
+    
+    .modal-body {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    
+    .modal-image {
+      min-height: 300px;
+      max-height: 400px;
+    }
+    
+    .modal-info {
+      padding: 30px 24px;
+    }
+    
+    .modal-info h2 {
+      font-size: 1.6rem;
+    }
+
+    .modal-price {
+      font-size: 1.3rem;
+    }
+
+    .modal-close {
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .modal-close svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  /* Tablet específico (768px - 991px) */
+  @media (min-width: 768px) and (max-width: 991px) {
+    .container {
+      padding: 0 30px;
+    }
+    
+    .gallery-title {
+      font-size: 2.2rem;
+      margin-bottom: 50px;
+    }
+
+    /* En tablet, máximo 2 columnas */
+    .products-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: {{ section.settings.gap_size | times: 0.8 | round }}px;
+    }
+
+    .product-info {
+      padding: 20px;
+      min-height: 90px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 15px;
+    }
+    
+    .product-card.style-1 .product-info,
+    .product-card.style-2 .product-info,
+    .product-card.style-4 .product-info,
+    .product-card.style-5 .product-info,
+    .product-card.style-6 .product-info {
+      padding: 20px;
+    }
+
+    .product-card.style-3 .product-info {
+      padding: 20px;
+    }
+    
+    .modal-info {
+      padding: 20px 16px;
+    }
+
+    .modal-info h2 {
+      font-size: 1.4rem;
+    }
+
+    .modal-description {
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .btn-primary {
+      padding: 14px 24px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<script>
+  // Datos de productos de la colección
+  const products = {
+    {% if section.settings.collection != blank %}
+      {% assign collection = section.settings.collection %}
+      {% assign products_to_show = section.settings.products_limit %}
+      {% assign sort_by = section.settings.sort_by %}
+      
+      {% case sort_by %}
+        {% when 'best-selling' %}
+          {% assign sorted_products = collection.products | sort: 'bestselling' %}
+        {% when 'title-ascending' %}
+          {% assign sorted_products = collection.products | sort: 'title' %}
+        {% when 'title-descending' %}
+          {% assign sorted_products = collection.products | sort: 'title' | reverse %}
+        {% when 'price-ascending' %}
+          {% assign sorted_products = collection.products | sort: 'price' %}
+        {% when 'price-descending' %}
+          {% assign sorted_products = collection.products | sort: 'price' | reverse %}
+        {% when 'created-ascending' %}
+          {% assign sorted_products = collection.products | sort: 'created_at' %}
+        {% when 'created-descending' %}
+          {% assign sorted_products = collection.products | sort: 'created_at' | reverse %}
+        {% else %}
+          {% assign sorted_products = collection.products %}
+      {% endcase %}
+      
+      {% for product in sorted_products limit: products_to_show %}
+        '{{ product.id }}': {
+          title: {{ product.title | json }},
+          price: {{ product.price | money | json }},
+          description: {{ product.description | json }},
+          image: {{ product.featured_image | image_url: width: 1200 | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% endif %}
+  };
+
+  function openModal(productId) {
+    // Solo abrir modal en desktop (pantallas > 1024px)
+    if (window.innerWidth <= 1024) {
+      return; // No hacer nada en mobile/tablet
+    }
+    
+    const product = products[productId];
+    if (product) {
+      const modal = document.getElementById('product-modal');
+      
+      // Actualizar contenido
+      document.getElementById('modal-title').textContent = product.title;
+      document.getElementById('modal-price').textContent = product.price;
+      document.getElementById('modal-description').innerHTML = product.description;
+      document.getElementById('modal-img').src = product.image;
+      document.getElementById('modal-img').alt = product.title;
+      
+      // Mostrar modal con animación
+      modal.style.display = 'block';
+      
+      // Forzar reflow para que la animación funcione
+      modal.offsetHeight;
+      
+      // Añadir clase para animación
+      modal.classList.add('show');
+      
+      // Prevenir scroll del body
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('product-modal');
+    
+    // Remover clase de animación
+    modal.classList.remove('show');
+    
+    // Esperar a que termine la animación antes de ocultar
+    setTimeout(() => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }, 300);
+  }
+
+  // Cerrar modal al hacer clic fuera
+  window.onclick = function(event) {
+    const modal = document.getElementById('product-modal');
+    const modalContent = modal.querySelector('.modal-content');
+    
+    if (event.target === modal || event.target.classList.contains('modal-overlay')) {
+      closeModal();
+    }
+  }
+
+  // Cerrar modal con tecla ESC
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Galería de Productos",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la galería",
+      "default": "Productos Destacados"
+    },
+    {
+      "type": "header",
+      "content": "Colección"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Seleccionar colección",
+      "info": "Elige la colección de productos que deseas mostrar"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "label": "Número de productos a mostrar",
+      "default": 12,
+      "info": "Máximo de productos de la colección que se mostrarán"
+    },
+    {
+      "type": "select",
+      "id": "sort_by",
+      "label": "Ordenar productos por",
+      "options": [
+        {
+          "value": "manual",
+          "label": "Orden manual"
+        },
+        {
+          "value": "best-selling",
+          "label": "Más vendidos"
+        },
+        {
+          "value": "title-ascending",
+          "label": "Alfabético A-Z"
+        },
+        {
+          "value": "title-descending",
+          "label": "Alfabético Z-A"
+        },
+        {
+          "value": "price-ascending",
+          "label": "Precio menor a mayor"
+        },
+        {
+          "value": "price-descending",
+          "label": "Precio mayor a menor"
+        },
+        {
+          "value": "created-ascending",
+          "label": "Más antiguos primero"
+        },
+        {
+          "value": "created-descending",
+          "label": "Más nuevos primero"
+        }
+      ],
+      "default": "manual"
+    },
+    {
+      "type": "header",
+      "content": "Configuración de estilo"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Estilo de tarjetas",
+      "options": [
+        { "value": "1", "label": "Minimalista" },
+        { "value": "2", "label": "Moderno con sombra" },
+        { "value": "3", "label": "Overlay (Comida/Bebidas)" },
+        { "value": "4", "label": "Con badge (Productos nuevos)" },
+        { "value": "5", "label": "Limpio y hogareño" },
+        { "value": "6", "label": "Elegante minimalista" }
+      ],
+      "default": "2",
+      "info": "Selecciona el estilo que se aplicará a todas las tarjetas de la galería"
+    },
+    {
+      "type": "header",
+      "content": "Layout y espaciado"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columnas en desktop",
+      "options": [
+        { "value": "2", "label": "2 columnas" },
+        { "value": "3", "label": "3 columnas" },
+        { "value": "4", "label": "4 columnas" },
+        { "value": "5", "label": "5 columnas" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "Columnas en tablet",
+      "options": [
+        { "value": "1", "label": "1 columna" },
+        { "value": "2", "label": "2 columnas" },
+        { "value": "3", "label": "3 columnas" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "gap_size",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaciado entre tarjetas",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding superior",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding inferior",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo de la sección",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Modal"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_modal",
+      "label": "Habilitar modal al hacer clic",
+      "default": true,
+      "info": "El modal solo se muestra en desktop (pantallas > 1024px). En móviles y tablets está deshabilitado para mejor experiencia de usuario."
+    },
+    {
+      "type": "select",
+      "id": "modal_size",
+      "label": "Tamaño del modal",
+      "options": [
+        { "value": "small", "label": "Pequeño (700px)" },
+        { "value": "medium", "label": "Mediano (900px)" },
+        { "value": "large", "label": "Grande (1200px)" }
+      ],
+      "default": "medium"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Galería de Productos",
+      "settings": {
+        "title": "Productos Destacados",
+        "card_style": "2",
+        "columns_desktop": "3",
+        "columns_tablet": "2",
+        "gap_size": 30,
+        "products_limit": 12,
+        "sort_by": "manual"
+      }
+    }
+  ]
+}
+{% endschema %}

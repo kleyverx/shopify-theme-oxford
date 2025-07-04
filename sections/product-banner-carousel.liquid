@@ -1,0 +1,360 @@
+{% comment %}
+  Banner de producto destacado tipo carrusel, full width, minimalista, responsivo.
+  Imagen desktop y mobile, texto animado, sin botón de llamada a la acción.
+  Ejemplo con imágenes y textos de muestra.
+{% endcomment %}
+
+<section class="product-banner-carousel" id="banner-{{ section.id }}" style="margin-top: {{ section.settings.margin_top | default: 0 }}px; margin-bottom: {{ section.settings.margin_bottom | default: 0 }}px;">
+  <div class="banner-carousel-wrapper">
+    <button class="banner-arrow banner-arrow--prev" aria-label="Anterior" style="{% if section.settings.show_arrows %}display:flex;{% else %}display:none;{% endif %}">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="#1a1a1a" stroke-width="2" fill="white"/><path d="M21 12l-6 6 6 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="banner-carousel-track">
+      {% for block in section.blocks %}
+        <div class="banner-slide" data-index="{{ forloop.index0 }}">
+          <picture>
+            {% if block.settings.image_mobile != blank %}
+              <source srcset="{{ block.settings.image_mobile | image_url: width: 900 }}" media="(max-width: 767px)">
+            {% endif %}
+            <img src="{{ block.settings.image_desktop | image_url: width: 2000 }}" alt="{{ block.settings.alt | escape }}" class="banner-img" loading="lazy" width="2000" height="600">
+          </picture>
+          <div class="banner-text-animado banner-text-{{ section.settings.text_position }}" style="background: {{ section.settings.text_overlay_bg }}; color: {{ section.settings.text_color }};">
+            <span>{{ block.settings.texto }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <button class="banner-arrow banner-arrow--next" aria-label="Siguiente" style="{% if section.settings.show_arrows %}display:flex;{% else %}display:none;{% endif %}">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="17" stroke="#1a1a1a" stroke-width="2" fill="white"/><path d="M15 12l6 6-6 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="banner-carousel-indicators">
+      {% for block in section.blocks %}
+        <button class="indicator" data-index="{{ forloop.index0 }}" aria-label="Ir al slide {{ forloop.index }}"></button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+.product-banner-carousel {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+.banner-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
+.banner-carousel-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(.77,0,.18,1);
+  will-change: transform;
+}
+.banner-slide {
+  min-width: 100vw;
+  height: {{ section.settings.height_desktop }}px;
+  max-height: {{ section.settings.height_desktop }}px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+@media (max-width: 767px) {
+  .banner-slide {
+    height: {{ section.settings.height_mobile }}px;
+    max-height: {{ section.settings.height_mobile }}px;
+  }
+}
+.banner-img {
+  width: 100vw;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  left: 0; top: 0;
+  z-index: 1;
+}
+.banner-text-animado {
+  position: relative;
+  z-index: 2;
+  padding: 48px 7vw 56px;
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  animation: fadeInUp 1.1s cubic-bezier(.77,0,.18,1);
+  border-radius: 0 32px 0 0;
+  max-width: 80vw;
+  background: var(--banner-text-bg, linear-gradient(90deg,rgba(0,0,0,0.18) 60%,transparent 100%));
+  color: var(--banner-text-color, #fff);
+}
+.banner-text-left { text-align: left; justify-content: flex-start; }
+.banner-text-center { text-align: center; justify-content: center; margin: 0 auto; }
+.banner-text-right { text-align: right; justify-content: flex-end; margin-left: auto; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.banner-carousel-indicators {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #1a1a1a;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  padding: 0;
+}
+.indicator.active {
+  opacity: 1;
+  background: #1a1a1a;
+}
+.banner-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.banner-arrow--prev { left: 24px; }
+.banner-arrow--next { right: 24px; }
+.banner-arrow:hover { opacity: 1; }
+@media (max-width: 767px) {
+  .banner-arrow--prev { left: 8px; }
+  .banner-arrow--next { right: 8px; }
+}
+</style>
+
+<script>
+(function() {
+  const sectionId = "banner-{{ section.id }}";
+  const wrapper = document.querySelector(`#${sectionId} .banner-carousel-wrapper`);
+  const track = wrapper.querySelector('.banner-carousel-track');
+  const slides = wrapper.querySelectorAll('.banner-slide');
+  const indicators = wrapper.querySelectorAll('.indicator');
+  const prevBtn = wrapper.querySelector('.banner-arrow--prev');
+  const nextBtn = wrapper.querySelector('.banner-arrow--next');
+  let current = 0;
+  let timer = null;
+  const autoplay = {{ section.settings.autoplay | default: true | json }};
+  const speed = {{ section.settings.autoplay_speed | default: 6000 | json }};
+
+  function goToSlide(idx) {
+    if (!track) return;
+    current = idx;
+    track.style.transform = `translateX(-${idx * 100}vw)`;
+    indicators.forEach((el, i) => el.classList.toggle('active', i === idx));
+  }
+
+  function nextSlide() {
+    goToSlide((current + 1) % slides.length);
+  }
+  function prevSlide() {
+    goToSlide((current - 1 + slides.length) % slides.length);
+  }
+
+  function startAuto() {
+    if (autoplay && slides.length > 1) {
+      timer = setInterval(nextSlide, speed);
+    }
+  }
+  function stopAuto() {
+    clearInterval(timer);
+  }
+
+  indicators.forEach((btn, idx) => {
+    btn.addEventListener('click', () => {
+      goToSlide(idx);
+      stopAuto();
+      startAuto();
+    });
+  });
+  if (prevBtn) prevBtn.addEventListener('click', () => { prevSlide(); stopAuto(); startAuto(); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); stopAuto(); startAuto(); });
+
+  if (slides.length > 1) {
+    startAuto();
+  }
+  goToSlide(0);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Banner producto carrusel",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "min": 300,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "label": "Altura máxima desktop",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "min": 120,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Altura máxima mobile",
+      "default": 340
+    },
+    {
+      "type": "color",
+      "id": "text_overlay_bg",
+      "label": "Fondo del texto animado",
+      "default": "rgba(0,0,0,0.18)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto animado",
+      "default": "#fff"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Posición del texto",
+      "options": [
+        { "value": "left", "label": "Izquierda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Derecha" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay activado",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 3000,
+      "max": 9000,
+      "step": 500,
+      "unit": "ms",
+      "label": "Velocidad del carrusel (ms)",
+      "default": 6000
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Mostrar flechas de navegación",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Margen superior",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Margen inferior",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide de producto",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Imagen desktop (1920x600 recomendado)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Imagen mobile (900x600 recomendado)"
+        },
+        {
+          "type": "text",
+          "id": "texto",
+          "label": "Texto animado del banner",
+          "default": "Descubre nuestro producto estrella"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Texto alternativo de la imagen",
+          "default": "Banner de producto"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner producto carrusel",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "image_desktop": "shopify://shop_images/sample-banner-1.jpg",
+            "image_mobile": "shopify://shop_images/sample-banner-1-mobile.jpg",
+            "texto": "¡Lanzamiento especial: Silla Oxford Home!",
+            "alt": "Banner silla Oxford Home"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "image_desktop": "shopify://shop_images/sample-banner-2.jpg",
+            "image_mobile": "shopify://shop_images/sample-banner-2-mobile.jpg",
+            "texto": "Confort y diseño para tu sala",
+            "alt": "Banner confort sala"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "image_desktop": "shopify://shop_images/sample-banner-3.jpg",
+            "image_mobile": "shopify://shop_images/sample-banner-3-mobile.jpg",
+            "texto": "¡Solo por tiempo limitado!",
+            "alt": "Banner oferta limitada"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

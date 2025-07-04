@@ -1,0 +1,946 @@
+{% comment %}
+  Sección de slider con imagen y texto
+  Utiliza Swiper.js para crear un carrusel personalizable
+{% endcomment %}
+
+<section 
+  class="image-text-slider" 
+  id="slider-{{ section.id }}"
+  aria-label="{{ section.settings.section_title | escape | default: 'Image and text slider' }}"
+  style="border-radius: {{ section.settings.border_radius }}px; overflow: hidden;"
+>
+  {% if section.settings.section_title != blank %}
+    <div class="section-header">
+      <h2 class="slider-title">{{ section.settings.section_title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="swiper slider-{{ section.id }}">
+    <div class="swiper-wrapper">
+      {% for block in section.blocks %}
+        {% assign slide_bg = block.settings.background_color | default: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' %}
+        <div class="swiper-slide" 
+          {{ block.shopify_attributes }} 
+          data-background="{{ slide_bg }}"
+        >
+          <div class="slide-container">
+            <div class="slide-content-wrapper {% if block.settings.image_position == 'left' %}image-left{% else %}image-right{% endif %}">
+              <div class="slide-image">
+                <div class="slide-image-card" style="border-radius: {{ section.settings.image_border_radius }}px;">
+                  {% if block.settings.image != blank %}
+                    {% assign img_url = block.settings.image | image_url: width: 800 %}
+                    <img 
+                      src="{{ img_url }}" 
+                      alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                      loading="lazy"
+                      width="{{ block.settings.image.width }}"
+                      height="{{ block.settings.image.height }}"
+                      srcset="{{ block.settings.image | image_url: width: 400 }} 400w,
+                              {{ block.settings.image | image_url: width: 600 }} 600w,
+                              {{ block.settings.image | image_url: width: 800 }} 800w"
+                      sizes="(max-width: 767px) 280px, (max-width: 991px) 350px, 400px"
+                      style="border-radius: {{ section.settings.image_border_radius | minus: 4 }}px;"
+                    >
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-image' }}
+                  {% endif %}
+                </div>
+              </div>
+              <div class="slide-content">
+                {% if block.settings.title != blank %}
+                  <h3 class="slide-title animate-text">{{ block.settings.title }}</h3>
+                {% endif %}
+                {% if block.settings.text != blank %}
+                  <div class="slide-text animate-text">{{ block.settings.text }}</div>
+                {% endif %}
+                {% if block.settings.button_url != blank and block.settings.button_text != blank %}
+                  <div class="slide-button animate-text">
+                    <a href="{{ block.settings.button_url }}" class="button" style="border-radius: {{ section.settings.button_border_radius }}px;">
+                      {{ block.settings.button_text }}
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_pagination %}
+      <div class="swiper-pagination pagination-{{ section.id }}" aria-hidden="true"></div>
+    {% endif %}
+    
+    {% if section.settings.show_navigation %}
+      <button class="swiper-button-prev nav-prev-{{ section.id }}" aria-label="Previous slide" style="border-radius: {{ section.settings.control_border_radius }}px;">
+        <span class="visually-hidden">{{ 'general.slider.previous_slide' | t }}</span>
+      </button>
+      <button class="swiper-button-next nav-next-{{ section.id }}" aria-label="Next slide" style="border-radius: {{ section.settings.control_border_radius }}px;">
+        <span class="visually-hidden">{{ 'general.slider.next_slide' | t }}</span>
+      </button>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .image-text-slider {
+    padding: 0;
+    width: 100%;
+    margin: {{ section.settings.margin_top }}px 0 {{ section.settings.margin_bottom }}px 0;
+    position: relative;
+    transition: background {{ section.settings.animation_speed }}ms ease;
+    {% if section.settings.add_shadow %}
+      box-shadow: 0 {{ section.settings.shadow_vertical_offset }}px {{ section.settings.shadow_blur }}px rgba(0, 0, 0, {{ section.settings.shadow_opacity | divided_by: 100.0 }});
+    {% endif %}
+  }
+
+  .section-header {
+    width: 100%;
+    padding: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .slider-title {
+    text-align: center;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: {{ section.settings.title_color }};
+    padding: 60px 0 0;
+  }
+
+  .slider-{{ section.id }} {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+  }
+
+  .swiper-wrapper {
+    width: 100%;
+  }
+
+  .swiper-slide {
+    width: 100% !important;
+    flex-shrink: 0;
+    height: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .slide-container {
+    width: 100%;
+    padding: 40px 0;
+    max-width: 100vw;
+  }
+
+  .slide-content-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 {{ section.settings.content_padding }}px;
+    gap: 40px;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+
+  .image-left {
+    flex-direction: row;
+  }
+
+  .image-right {
+    flex-direction: row-reverse;
+  }
+
+  /* Animaciones para texto con respeto a prefers-reduced-motion */
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-text {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .swiper-slide-active .animate-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-title.animate-text {
+      transition-delay: 0.2s;
+    }
+
+    .slide-text.animate-text {
+      transition-delay: 0.4s;
+    }
+    
+    .slide-button.animate-text {
+      transition-delay: 0.6s;
+    }
+  }
+
+  .slide-content {
+    flex: 1;
+    padding: 20px;
+    min-width: 0; /* Evita desbordamiento en flexbox */
+  }
+
+  .slide-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .slide-image-card {
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .slide-image-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .slide-image img,
+  .slide-image svg {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .slide-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: {{ section.settings.heading_color }};
+  }
+
+  .slide-text {
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    line-height: 1.6;
+    color: {{ section.settings.text_color }};
+    margin-bottom: 1.5rem;
+  }
+
+  .slide-text p {
+    margin-bottom: 1rem;
+  }
+
+  .slide-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .slide-button {
+    margin-top: 1.5rem;
+  }
+
+  .slide-button .button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: {{ section.settings.button_background }};
+    color: {{ section.settings.button_text_color }};
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+
+  .slide-button .button:hover {
+    background-color: {{ section.settings.button_background | color_darken: 10 }};
+    transform: translateY(-2px);
+  }
+
+  /* Paginación */
+  .pagination-{{ section.id }} {
+    margin-top: 2rem;
+    position: relative;
+    bottom: 0;
+    padding-bottom: 20px;
+    width: 100%;
+  }
+
+  .pagination-{{ section.id }} .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: {{ section.settings.pagination_color }};
+    opacity: 0.5;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+    border-radius: {{ section.settings.control_border_radius }}px;
+  }
+
+  .pagination-{{ section.id }} .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: {{ section.settings.pagination_active_color }};
+    transform: scale(1.2);
+  }
+
+  /* Navegación */
+  .nav-prev-{{ section.id }},
+  .nav-next-{{ section.id }} {
+    color: {{ section.settings.navigation_color }};
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, color 0.3s ease;
+    z-index: 10;
+  }
+
+  .nav-prev-{{ section.id }}:hover,
+  .nav-next-{{ section.id }}:hover {
+    color: {{ section.settings.navigation_hover_color }};
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .nav-prev-{{ section.id }}:after,
+  .nav-next-{{ section.id }}:after {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 991px) {
+    .slide-container {
+      padding: 30px 0;
+    }
+    
+    .slide-content-wrapper {
+      gap: 20px;
+    }
+    
+    .slide-image-card {
+      padding: 15px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .image-text-slider {
+      padding: 0;
+    }
+
+    .slider-title {
+      padding: 40px 0 0;
+    }
+
+    .slide-container {
+      padding: 30px 0 60px;
+    }
+
+    .slide-content-wrapper {
+      flex-direction: column-reverse;
+      gap: 20px;
+      padding: 0 15px;
+    }
+
+    .image-left {
+      flex-direction: column-reverse;
+    }
+
+    .slide-content, 
+    .slide-image {
+      width: 100%;
+      padding: 10px;
+    }
+
+    .slide-image {
+      margin-bottom: 20px;
+    }
+
+    .slide-content {
+      text-align: center;
+    }
+
+    .slide-image-card {
+      max-width: 280px;
+      padding: 15px;
+      margin: 0 auto;
+    }
+
+    .pagination-{{ section.id }} {
+      bottom: 10px;
+    }
+
+    .nav-prev-{{ section.id }},
+    .nav-next-{{ section.id }} {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Función para cargar Swiper.js de manera optimizada
+  function loadSlider() {
+    if (typeof Swiper === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+      script.async = true;
+      script.onload = initSwiper;
+      document.head.appendChild(script);
+      
+      const style = document.createElement('link');
+      style.rel = 'stylesheet';
+      style.href = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
+      document.head.appendChild(style);
+    } else {
+      initSwiper();
+    }
+  }
+
+  // Inicializar el slider cuando se cargue el script
+  function initSwiper() {
+    const sliderSection = document.getElementById('slider-{{ section.id }}');
+    const slides = sliderSection.querySelectorAll('.swiper-slide');
+    
+    // Establecer el fondo inicial de la sección con el primer slide
+    if (slides.length > 0) {
+      const initialBg = slides[0].getAttribute('data-background');
+      sliderSection.style.background = initialBg;
+    }
+    
+    const swiper = new Swiper('.slider-{{ section.id }}', {
+      loop: {{ section.settings.loop }},
+      speed: {{ section.settings.animation_speed }},
+      spaceBetween: 0,
+      slidesPerView: 1,
+      width: null, // Asegura que el ancho se ajuste al 100%
+      centeredSlides: false, // Importante para que ocupe todo el ancho
+      allowTouchMove: true,
+      grabCursor: true,
+      resistance: true,
+      resistanceRatio: 0.85,
+      watchSlidesProgress: true,
+      touchRatio: 1,
+      threshold: 5,
+      preventClicks: false,
+      preventClicksPropagation: false,
+      {% if section.settings.autoplay %}
+      autoplay: {
+        delay: {{ section.settings.delay }},
+        disableOnInteraction: {{ section.settings.disable_on_interaction }},
+        pauseOnMouseEnter: true,
+      },
+      {% endif %}
+      {% if section.settings.show_pagination %}
+      pagination: {
+        el: '.pagination-{{ section.id }}',
+        clickable: true,
+      },
+      {% endif %}
+      {% if section.settings.show_navigation %}
+      navigation: {
+        nextEl: '.nav-next-{{ section.id }}',
+        prevEl: '.nav-prev-{{ section.id }}',
+      },
+      {% endif %}
+      effect: 'slide',
+      keyboard: {
+        enabled: true,
+        onlyInViewport: true,
+      },
+      a11y: {
+        enabled: true,
+        prevSlideMessage: 'Previous slide',
+        nextSlideMessage: 'Next slide',
+        firstSlideMessage: 'This is the first slide',
+        lastSlideMessage: 'This is the last slide',
+        paginationBulletMessage: 'Go to slide {{index}}',
+      },
+      on: {
+        init: function() {
+          // Activar animaciones del primer slide
+          initSlideAnimations(this);
+          // Establecer el fondo inicial si está en un loop
+          updateSectionBackground(this);
+          // Asegurar que los slides ocupen todo el ancho
+          ensureFullWidth(this);
+        },
+        slideChangeTransitionStart: function() {
+          // Resetear animaciones
+          resetSlideAnimations(this);
+          // Actualizar el fondo de la sección cuando cambia el slide
+          updateSectionBackground(this);
+        },
+        slideChangeTransitionEnd: function() {
+          // Animar slide activo
+          animateActiveSlide(this);
+        },
+        resize: function() {
+          // Ajustar ancho al cambiar el tamaño de la ventana
+          ensureFullWidth(this);
+        }
+      }
+    });
+
+    // Función para asegurar que los slides ocupen todo el ancho
+    function ensureFullWidth(swiper) {
+      swiper.slides.forEach(slide => {
+        slide.style.width = '100%';
+      });
+      swiper.update();
+    }
+
+    // Función para actualizar el fondo de la sección completa
+    function updateSectionBackground(swiper) {
+      const activeSlide = swiper.slides[swiper.activeIndex];
+      if (activeSlide) {
+        const background = activeSlide.getAttribute('data-background');
+        if (background) {
+          sliderSection.style.background = background;
+        }
+      }
+    }
+
+    // Detener autoplay si el usuario prefiere reducir el movimiento
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      swiper.autoplay.stop();
+      
+      // Activar todas las animaciones inmediatamente
+      document.querySelectorAll('.animate-text').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    }
+    
+    // Funciones auxiliares para animaciones
+    function initSlideAnimations(swiper) {
+      const firstSlide = swiper.slides[swiper.activeIndex];
+      if (firstSlide) {
+        animateElements(firstSlide.querySelectorAll('.animate-text'));
+      }
+    }
+    
+    function resetSlideAnimations(swiper) {
+      swiper.slides.forEach(slide => {
+        resetElements(slide.querySelectorAll('.animate-text'));
+      });
+    }
+    
+    function animateActiveSlide(swiper) {
+      const activeSlide = swiper.slides[swiper.activeIndex];
+      if (activeSlide) {
+        const elements = activeSlide.querySelectorAll('.animate-text');
+        animateElements(elements);
+      }
+    }
+    
+    function animateElements(elements) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        elements.forEach(el => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        });
+        return;
+      }
+      
+      elements.forEach((el, index) => {
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, index * 200);
+      });
+    }
+    
+    function resetElements(elements) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      
+      elements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+      });
+    }
+  }
+
+  // Usar Intersection Observer para cargar Swiper solo cuando sea visible
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          loadSlider();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {rootMargin: '100px'});
+    
+    observer.observe(document.getElementById('slider-{{ section.id }}'));
+  } else {
+    // Fallback para navegadores sin soporte a Intersection Observer
+    document.addEventListener('DOMContentLoaded', loadSlider);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Image & Text Slider",
+  "tag": "section",
+  "class": "image-text-slider-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Título de la sección",
+      "default": "Descubre más"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Margen superior",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Margen inferior",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding lateral del contenido",
+      "default": 0,
+      "info": "Espacio entre el contenido y los bordes de la pantalla"
+    },
+    {
+      "type": "header",
+      "content": "Apariencia"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Radio de bordes del slider",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Radio de bordes de imágenes",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Radio de bordes de botones",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "control_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Radio de bordes de controles",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Sombra"
+    },
+    {
+      "type": "checkbox",
+      "id": "add_shadow",
+      "label": "Añadir sombra al slider",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "shadow_opacity",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacidad de la sombra",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "shadow_vertical_offset",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Desplazamiento vertical",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "shadow_blur",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Desenfoque",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título principal",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color de los títulos de slides",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Color de fondo del botón",
+      "default": "#4F46E5"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color de texto del botón",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Configuración del Slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Reproducción automática",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "min": 2000,
+      "max": 8000,
+      "step": 1000,
+      "unit": "ms",
+      "label": "Retardo entre slides",
+      "default": 5000
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "min": 300,
+      "max": 1000,
+      "step": 100,
+      "unit": "ms",
+      "label": "Velocidad de animación",
+      "default": 600
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_on_interaction",
+      "label": "Detener autoplay al interactuar",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Bucle infinito",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Controles"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Mostrar puntos de paginación",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "pagination_color",
+      "label": "Color de paginación",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "pagination_active_color",
+      "label": "Color de paginación activa",
+      "default": "#4F46E5"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Mostrar flechas de navegación",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "navigation_color",
+      "label": "Color de las flechas",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "navigation_hover_color",
+      "label": "Color de las flechas (hover)",
+      "default": "#4F46E5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Diapositiva",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "color_background",
+          "id": "background_color",
+          "label": "Color de fondo",
+          "default": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Posición de la imagen",
+          "options": [
+            { "value": "left", "label": "Izquierda" },
+            { "value": "right", "label": "Derecha" }
+          ],
+          "default": "right"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Título de la diapositiva"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Describe tu producto o servicio aquí. Usa texto enriquecido para dar formato.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del botón"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Enlace del botón"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image & Text Slider",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "image_position": "right",
+            "background_color": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+            "title": "Diseño Innovador",
+            "text": "<p>Una estética única pensada para armonizar perfectamente con tu espacio.</p>",
+            "button_text": "Ver detalles",
+            "button_url": "#"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "image_position": "left",
+            "background_color": "linear-gradient(135deg, #fef7f0 0%, #fed7aa 100%)",
+            "title": "Máxima Versatilidad",
+            "text": "<p>Disfruta de una amplia variedad de preparaciones que no imaginabas posibles.</p>",
+            "button_text": "Explorar",
+            "button_url": "#"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "image_position": "right",
+            "background_color": "linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)",
+            "title": "Calidad Superior",
+            "text": "<p>Superficie antiadherente que facilita la limpieza y mejora tu experiencia culinaria.</p>",
+            "button_text": "Comprar ahora",
+            "button_url": "#"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

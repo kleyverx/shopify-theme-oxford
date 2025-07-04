@@ -1,0 +1,236 @@
+{% # Solo mostrar en la página de inicio %}
+{% if template == 'index' %}
+<nav class="section-scroll-nav" aria-label="Navegación de secciones">
+  <ul class="section-scroll-nav__list">
+    <li><button class="section-scroll-nav__item" data-target="#section-intro" aria-label="Ir a la sección Introducción">Introducción</button></li>
+    <li><button class="section-scroll-nav__item" data-target="#section-news" aria-label="Ir a la sección Últimas noticias">Últimas noticias</button></li>
+    <li><button class="section-scroll-nav__item" data-target="#section-brands" aria-label="Ir a la sección Marcas">Marcas</button></li>
+    <li><button class="section-scroll-nav__item" data-target="#section-impact" aria-label="Ir a la sección Marcando la diferencia">Marcando la diferencia</button></li>
+    <li><button class="section-scroll-nav__item" data-target="#section-sites" aria-label="Ir a la sección Sitios web de P&G">Sitios web de P&G</button></li>
+  </ul>
+</nav>
+{% endif %}
+
+{% stylesheet %}
+  .section-scroll-nav {
+    position: fixed;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 2rem;
+    padding: 1rem 0.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .section-scroll-nav.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .section-scroll-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .section-scroll-nav__item {
+    background: none;
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-radius: 1.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .section-scroll-nav__item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+    z-index: -1;
+  }
+  
+  .section-scroll-nav__item:hover {
+    color: #333;
+    transform: translateX(-5px);
+  }
+  
+  .section-scroll-nav__item:hover::before {
+    width: 100%;
+  }
+  
+  .section-scroll-nav__item:hover {
+    color: white;
+  }
+  
+  .section-scroll-nav__item.active {
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateX(-5px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  /* Estilos para las secciones con fade */
+  .fade-section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease;
+  }
+  
+  .fade-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .section-scroll-nav {
+      right: 1rem;
+      padding: 0.75rem 0.25rem;
+    }
+    
+    .section-scroll-nav__item {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .section-scroll-nav {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Solo ejecutar en la página de inicio
+    if (!document.body.classList.contains('template-index')) return;
+    
+    const nav = document.querySelector('.section-scroll-nav');
+    const navItems = document.querySelectorAll('.section-scroll-nav__item');
+    const sections = document.querySelectorAll('[id^="section-"]');
+    
+    if (!nav || !navItems.length || !sections.length) return;
+    
+    // Configurar observer para las secciones (efecto fade)
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Aplicar clase fade-section y observar secciones
+    sections.forEach(section => {
+      section.classList.add('fade-section');
+      sectionObserver.observe(section);
+    });
+    
+    // Configurar observer para la navegación activa
+    const navObserver = new IntersectionObserver((entries) => {
+      let activeSection = null;
+      
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          activeSection = entry.target;
+        }
+      });
+      
+      // Actualizar navegación activa
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (activeSection && item.dataset.target === `#${activeSection.id}`) {
+          item.classList.add('active');
+        }
+      });
+    }, {
+      threshold: 0.5,
+      rootMargin: '0px 0px -20% 0px'
+    });
+    
+    sections.forEach(section => {
+      navObserver.observe(section);
+    });
+    
+    // Mostrar/ocultar navegación según scroll
+    let lastScrollY = window.scrollY;
+    const showNavAt = 300; // Mostrar después de 300px de scroll
+    
+    function handleScroll() {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > showNavAt) {
+        nav.classList.add('visible');
+      } else {
+        nav.classList.remove('visible');
+      }
+      
+      lastScrollY = currentScrollY;
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Manejar clicks en la navegación
+    navItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.dataset.target;
+        const targetSection = document.querySelector(targetId);
+        
+        if (targetSection) {
+          const headerOffset = 100; // Ajustar según altura del header
+          const elementPosition = targetSection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Llamada inicial
+    handleScroll();
+  });
+</script>
+
+{% comment %}
+Uso:
+1. Incluye este snippet en tu layout o en la página de inicio:
+   {% render 'section-scroll-nav' %}
+
+2. Asegúrate de que tus secciones tengan IDs como:
+   - section-intro
+   - section-news  
+   - section-brands
+   - section-impact
+   - section-sites
+
+3. Añade la clase 'template-index' al body en tu layout para la página de inicio
+{% endcomment %}

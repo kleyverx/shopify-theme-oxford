@@ -1,0 +1,375 @@
+{% liquid
+  assign section_id = section.id
+  assign blocks_count = section.blocks.size
+%}
+
+<div class="faq-section" id="FaqSection-{{ section_id }}" style="
+  --faq-section-padding-top: {{ section.settings.padding_top }}px;
+  --faq-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  --faq-title-color: {{ section.settings.title_color }};
+  --faq-question-color: {{ section.settings.question_color }};
+  --faq-answer-color: {{ section.settings.answer_color }};
+  --faq-border-color: {{ section.settings.border_color }};
+  --faq-accordion-bg: {{ section.settings.accordion_bg }};
+">
+  <div class="faq-container container">
+    <div class="faq-wrapper">
+      {% if section.settings.title != blank %}
+        <h2 class="faq-title">{{ section.settings.title }}</h2>
+      {% endif %}
+
+      {% if section.settings.subtitle != blank %}
+        <div class="faq-subtitle">{{ section.settings.subtitle }}</div>
+      {% endif %}
+
+      <div class="faq-content">
+        <div class="faq-image-column">
+          {% if section.settings.image != blank %}
+            <div class="faq-image-wrapper">
+              {{ section.settings.image | image_url: width: 600 | image_tag: 
+                loading: 'lazy',
+                class: 'faq-image',
+                widths: '360, 480, 590, 720',
+                sizes: '(min-width: 990px) 40vw, 100vw'
+              }}
+            </div>
+          {% else %}
+            <div class="faq-image-placeholder">
+              {{ 'image' | placeholder_svg_tag: 'faq-placeholder-svg' }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="faq-accordion-column">
+          {% if blocks_count > 0 %}
+            <div class="faq-accordion-list">
+              {% for block in section.blocks %}
+                {% case block.type %}
+                  {% when 'question' %}
+                    {% liquid
+                      assign block_id = block.id
+                      assign question = block.settings.question
+                      assign answer = block.settings.answer
+                    %}
+                    <details class="faq-accordion-item" id="FaqItem-{{ block_id }}" {{ block.shopify_attributes }}>
+                      <summary class="faq-question">
+                        <h3>{{ question }}</h3>
+                        <span class="faq-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="plus-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="minus-icon"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </span>
+                      </summary>
+                      <div class="faq-answer">
+                        {{ answer }}
+                      </div>
+                    </details>
+                {% endcase %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="faq-empty-message">Añade preguntas frecuentes desde el editor de temas.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const detailsElements = document.querySelectorAll('#FaqSection-{{ section_id }} details');
+    
+    // Agregar funcionalidad de acordeón
+    detailsElements.forEach(details => {
+      details.addEventListener('toggle', function() {
+        if (details.open) {
+          // Cerrar todos los demás detalles
+          detailsElements.forEach(otherDetails => {
+            if (otherDetails !== details && otherDetails.open) {
+              otherDetails.open = false;
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
+
+{% stylesheet %}
+  .faq-section {
+    padding-top: var(--faq-section-padding-top);
+    padding-bottom: var(--faq-section-padding-bottom);
+    width: 100%;
+  }
+
+  .faq-container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .faq-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--faq-title-color);
+  }
+
+  .faq-subtitle {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .faq-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .faq-content {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .faq-image-column {
+      width: 40%;
+    }
+
+    .faq-accordion-column {
+      width: 60%;
+    }
+  }
+
+  .faq-image-column {
+    position: relative;
+  }
+
+  .faq-image-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .faq-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .faq-image-placeholder {
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    aspect-ratio: 4/5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .faq-placeholder-svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.3;
+  }
+
+  .faq-accordion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .faq-accordion-item {
+    border: 1px solid var(--faq-border-color);
+    border-radius: 6px;
+    background-color: var(--faq-accordion-bg);
+  }
+
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq-question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-question h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--faq-question-color);
+  }
+
+  .faq-icon {
+    display: flex;
+    flex-shrink: 0;
+    margin-left: 1rem;
+    color: var(--faq-question-color);
+  }
+
+  .faq-icon .minus-icon {
+    display: none;
+  }
+
+  details[open] .faq-icon .plus-icon {
+    display: none;
+  }
+
+  details[open] .faq-icon .minus-icon {
+    display: block;
+  }
+
+  .faq-answer {
+    padding: 0 1.25rem 1.25rem;
+    color: var(--faq-answer-color);
+    line-height: 1.6;
+  }
+
+  .faq-empty-message {
+    padding: 2rem;
+    text-align: center;
+    background-color: #f7f7f7;
+    border-radius: 6px;
+    color: #777;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Preguntas Frecuentes",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Preguntas Frecuentes"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subtítulo",
+      "default": "<p>Encuentra respuestas a las preguntas más comunes sobre nuestros productos y servicios.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen"
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Color de la pregunta",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Color de la respuesta",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Color del borde",
+      "default": "#E0E0E0"
+    },
+    {
+      "type": "color",
+      "id": "accordion_bg",
+      "label": "Color de fondo del acordeón",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Relleno superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Relleno inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Pregunta",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Pregunta",
+          "default": "¿Cómo puedo hacer un pedido?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Respuesta",
+          "default": "<p>Puedes hacer un pedido fácilmente a través de nuestra tienda online. Simplemente navega por nuestro catálogo, selecciona los productos que te interesen y añádelos a tu carrito. Cuando estés listo para finalizar tu compra, procede al pago y completa el proceso de checkout.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Preguntas Frecuentes",
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "¿Cuáles son los métodos de pago aceptados?",
+            "answer": "<p>Aceptamos diferentes métodos de pago incluyendo tarjetas de crédito y débito (Visa, Mastercard, American Express), PayPal, y transferencia bancaria.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "¿Cuánto tiempo tarda en llegar mi pedido?",
+            "answer": "<p>El tiempo de entrega varía según tu ubicación. Generalmente, los pedidos nacionales se entregan en 2-5 días hábiles, mientras que los pedidos internacionales pueden tardar entre 7-14 días hábiles.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "¿Puedo devolver un producto?",
+            "answer": "<p>Sí, ofrecemos un período de devolución de 30 días desde la fecha de recepción del pedido. Los productos deben estar en su estado original, sin usar y con todas las etiquetas intactas.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

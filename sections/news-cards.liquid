@@ -1,0 +1,475 @@
+{% comment %}
+  Sección de noticias destacadas (máx 4 cards)
+  - Título editable
+  - Cards con imagen, título, botón a página de noticia
+  - Configurable desde el editor de temas
+{% endcomment %}
+
+<section class="news-cards-section" style="--bg-color: {{ section.settings.bg_color | default: '#ffffff' }}; --title-color: {{ section.settings.title_color | default: '#333333' }}; --card-bg: {{ section.settings.card_bg_color | default: '#ffffff' }}; --headline-color: {{ section.settings.headline_color | default: '#333333' }}; --reference-color: {{ section.settings.reference_color | default: '#666666' }}; --date-color: {{ section.settings.date_color | default: '#999999' }}; --button-color: {{ section.settings.button_color | default: '#2E4695' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; padding-top: {{ section.settings.margin_top | default: 48 }}px; padding-bottom: {{ section.settings.margin_bottom | default: 32 }}px;">
+  
+  <div class="news-cards-container">
+    {% if section.settings.title != blank %}
+      <h2 class="news-cards-title">{{ section.settings.title | escape }}</h2>
+    {% endif %}
+    
+    <div class="news-cards-grid">
+      {% for block in section.blocks limit: 4 %}
+        <article class="news-card" {{ block.shopify_attributes }} style="animation-delay: {{ forloop.index0 | times: 100 }}ms;">
+          <div class="news-card__image-wrapper">
+            {% if block.settings.image != blank %}
+              <img src="{{ block.settings.image | image_url: width: 400, height: 400, crop: 'center' }}"
+                   alt="{{ block.settings.image_alt | default: block.settings.headline | escape }}"
+                   class="news-card__image"
+                   width="400" height="400"
+                   loading="lazy">
+            {% else %}
+              <div class="news-card__placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                <span>Imagen</span>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="news-card__content">
+            <div class="news-card__meta">
+              {% if block.settings.reference != blank %}
+                <span class="news-card__category">{{ block.settings.reference | escape }}</span>
+              {% endif %}
+              {% if block.settings.date != blank %}
+                <time class="news-card__date" datetime="{{ block.settings.date | escape }}">{{ block.settings.date | escape }}</time>
+              {% endif %}
+            </div>
+            
+            {% if block.settings.headline != blank %}
+              <h3 class="news-card__headline">{{ block.settings.headline | escape }}</h3>
+            {% endif %}
+            
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="news-card__button" target="_blank" rel="noopener">
+                <span>{{ block.settings.button_label | default: 'Leer más' | escape }}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Noticias destacadas",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Últimas noticias"
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Color de fondo de las cards",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "headline_color",
+      "label": "Color del título de la noticia",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "reference_color",
+      "label": "Color de la categoría",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "date_color",
+      "label": "Color de la fecha",
+      "default": "#999999"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Color del botón",
+      "default": "#2E4695"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color del texto del botón",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Margen superior",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Margen inferior",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "noticia",
+      "name": "Noticia",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Texto alternativo de la imagen",
+          "info": "Describe la imagen para mejorar la accesibilidad"
+        },
+        {
+          "type": "text",
+          "id": "headline",
+          "label": "Título de la noticia"
+        },
+        {
+          "type": "text",
+          "id": "reference",
+          "label": "Categoría"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Fecha",
+          "info": "Ejemplo: 4 de julio de 2025"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón",
+          "default": "Leer más"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Noticias destacadas",
+      "blocks": [
+        {
+          "type": "noticia",
+          "settings": {
+            "headline": "Innovación tecnológica revoluciona el sector retail",
+            "reference": "Tecnología",
+            "date": "4 de julio de 2025",
+            "button_label": "Leer más",
+            "image_alt": "Innovación tecnológica en retail"
+          }
+        },
+        {
+          "type": "noticia",
+          "settings": {
+            "headline": "Nuevas tendencias en sostenibilidad empresarial para 2025",
+            "reference": "Sostenibilidad",
+            "date": "3 de julio de 2025",
+            "button_label": "Descubrir",
+            "image_alt": "Tendencias de sostenibilidad empresarial"
+          }
+        },
+        {
+          "type": "noticia",
+          "settings": {
+            "headline": "El futuro del comercio electrónico: IA y personalización",
+            "reference": "E-commerce",
+            "date": "2 de julio de 2025",
+            "button_label": "Ver más",
+            "image_alt": "Futuro del comercio electrónico"
+          }
+        },
+        {
+          "type": "noticia",
+          "settings": {
+            "headline": "Estrategias de marketing digital que transforman negocios",
+            "reference": "Marketing",
+            "date": "1 de julio de 2025",
+            "button_label": "Explorar",
+            "image_alt": "Estrategias de marketing digital"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.news-cards-section {
+  width: 100%;
+  padding: 0 1rem;
+  background-color: var(--bg-color, #ffffff);
+  box-sizing: border-box;
+}
+
+.news-cards-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.news-cards-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--title-color, #333333);
+  letter-spacing: -0.02em;
+}
+
+.news-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .news-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .news-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.news-card {
+  background: var(--card-bg, #ffffff);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border-color: #e0e0e0;
+}
+
+.news-card__image-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.news-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.news-card:hover .news-card__image {
+  transform: scale(1.05);
+}
+
+.news-card__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e0;
+  font-size: 0.875rem;
+  gap: 0.5rem;
+}
+
+.news-card__placeholder svg {
+  width: 3rem;
+  height: 3rem;
+  stroke: #cbd5e0;
+}
+
+.news-card__placeholder span {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.news-card__content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.news-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.news-card__category {
+  color: var(--reference-color, #666666);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+.news-card__date {
+  color: var(--date-color, #999999);
+  font-weight: 400;
+}
+
+.news-card__meta::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: var(--reference-color, #666666);
+  border-radius: 50%;
+  margin: 0 0.25rem;
+}
+
+.news-card__meta .news-card__category + .news-card__date::before {
+  display: none;
+}
+
+.news-card__headline {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--headline-color, #333333);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  letter-spacing: -0.01em;
+}
+
+.news-card__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--button-color, #2E4695);
+  color: var(--button-text-color, #ffffff);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.news-card__button:hover {
+  background: color-mix(in srgb, var(--button-color, #2E4695) 85%, black);
+  transform: translateX(2px);
+}
+
+.news-card__button svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.news-card__button:hover svg {
+  transform: translateX(2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .news-cards-section {
+    padding: 0 1rem;
+  }
+  
+  .news-cards-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .news-card__content {
+    padding: 1.25rem;
+  }
+  
+  .news-card__headline {
+    font-size: 1rem;
+  }
+}
+{% endstylesheet %}

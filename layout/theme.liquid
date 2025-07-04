@@ -18,6 +18,10 @@
 
     {{ content_for_layout }}
 
+    {{ 'section-scroll-nav.css' | asset_url | stylesheet_tag }}
+
+    <script src="{{ 'section-scroll-nav.js' | asset_url }}" defer></script>
+
     {% sections 'footer-group' %}
   </body>
 </html>
