@@ -3,7 +3,7 @@
   assign blocks_count = section.blocks.size
 %}
 
-<section class="trust-packery" id="TrustPackery-{{ section_id }}" style="
+<section class="trust-packery{% if section.settings.animate_on_scroll %} section-appear{% endif %}" id="TrustPackery-{{ section_id }}" style="
   --trust-cards-gap: {{ section.settings.gap }}px;
   --trust-text-color: {{ section.settings.text_color }};
   --trust-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
@@ -70,6 +70,10 @@
     </div>
   </div>
 </section>
+
+{% if section.settings.animate_on_scroll %}
+  <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+{% endif %}
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -361,6 +365,13 @@
       "label": "Mostrar texto al scroll en móvil",
       "default": true,
       "info": "Cuando está activado, el texto aparecerá al hacer scroll en dispositivos móviles"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_on_scroll",
+      "label": "Animar al aparecer",
+      "default": true,
+      "info": "Activa una animación elegante cuando la sección entra en pantalla."
     }
   ],
   "blocks": [

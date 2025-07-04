@@ -115,3 +115,15 @@ body {
 .shopify-section > .full-width {
   grid-column: 1 / -1;
 }
+
+/* Animación elegante al aparecer */
+.section-appear {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(.4,0,.2,1), transform 0.8s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.section-appear--visible {
+  opacity: 1;
+  transform: none;
+}

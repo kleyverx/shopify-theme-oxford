@@ -1,4 +1,4 @@
-<section class="brands-carousel-section" 
+<section class="brands-carousel-section{% if section.settings.animate_on_scroll %} section-appear{% endif %}" 
   style="--color-bg: {{ section.settings.background_color | default: '#fff' }}; 
          --title-color: {{ section.settings.title_color | default: '#333' }}; 
          --subtitle-color: {{ section.settings.subtitle_color | default: '#666' }}; 
@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         this.setupCarousel();
         
-        if (this.enableAutoplay) {
+        if this.enableAutoplay) {
           this.resetAutoplay();
         }
       }
@@ -626,6 +626,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+{% if section.settings.animate_on_scroll %}
+  <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+{% endif %}
 
 {% schema %}
 {
@@ -752,6 +756,13 @@ document.addEventListener('DOMContentLoaded', function() {
       "unit": "ms",
       "label": "Velocidad de transición",
       "default": 800
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_on_scroll",
+      "label": "Animar al aparecer",
+      "default": true,
+      "info": "Activa una animación elegante cuando la sección entra en pantalla."
     }
   ],
   "blocks": [

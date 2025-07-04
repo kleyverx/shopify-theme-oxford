@@ -4,7 +4,7 @@
 {% endcomment %}
 
 <section 
-  class="image-text-slider" 
+  class="image-text-slider{% if section.settings.animate_on_scroll %} section-appear{% endif %}" 
   id="slider-{{ section.id }}"
   aria-label="{{ section.settings.section_title | escape | default: 'Image and text slider' }}"
   style="border-radius: {{ section.settings.border_radius }}px; overflow: hidden;"
@@ -606,6 +606,10 @@
     // Fallback para navegadores sin soporte a Intersection Observer
     document.addEventListener('DOMContentLoaded', loadSlider);
   }
+
+  {% if section.settings.animate_on_scroll %}
+    <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+  {% endif %}
 </script>
 
 {% schema %}
