@@ -2,14 +2,14 @@
   class="carousel-banner" 
   data-autoplay="{{ section.settings.autoplay }}" 
   data-autoplay-speed="{{ section.settings.autoplay_speed }}"
-  data-transition-type="transition-{{ section.settings.transition_type }}"
+  data-transition-type="{{ section.settings.transition_type }}"
   data-transition-speed="{{ section.settings.transition_speed }}"
   data-min-height-desktop="{{ section.settings.min_height }}"
   data-min-height-mobile="{{ section.settings.min_height_mobile }}"
   style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px;">
   {% if section.blocks.size > 0 %}
     <div class="carousel-banner__container" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; --desktop-min-height: {{ section.settings.min_height }}px; --mobile-min-height: {{ section.settings.min_height_mobile }}px;">
-      <div class="carousel-banner__wrapper transition-{{ section.settings.transition_type }}" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; --transition-speed: {{ section.settings.transition_speed }}ms; --desktop-min-height: {{ section.settings.min_height }}px; --mobile-min-height: {{ section.settings.min_height_mobile }}px;">
+      <div class="carousel-banner__wrapper {{ section.settings.transition_type }}" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; --transition-speed: {{ section.settings.transition_speed }}ms; --desktop-min-height: {{ section.settings.min_height }}px; --mobile-min-height: {{ section.settings.min_height_mobile }}px;">
         {% for block in section.blocks %}
           <div class="carousel-banner__slide" data-index="{{ forloop.index0 }}" style="border-top-left-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-top-right-radius: {{ section.settings.border_radius_top | default: 0 }}px; border-bottom-left-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; border-bottom-right-radius: {{ section.settings.border_radius_bottom | default: 0 }}px; background-color: {{ section.settings.color_bg }}; aspect-ratio: {{ section.settings.aspect_ratio }}; min-height: {{ section.settings.min_height_mobile }}px;"
                data-desktop-min-height="{{ section.settings.min_height }}"
@@ -70,14 +70,14 @@
       
       {% if section.blocks.size > 1 %}
         {% if section.settings.show_arrows %}
-          <button class="carousel-banner__arrow carousel-banner__arrow--prev" style="background: {{ section.settings.arrow_bg_color }} !important; border-color: {{ section.settings.arrow_color }} !important; color: {{ section.settings.arrow_color }} !important;" aria-label="{{ 'carousel_banner.previous_slide' | t | default: 'Previous slide' }}">&#8592;</button>
-          <button class="carousel-banner__arrow carousel-banner__arrow--next" style="background: {{ section.settings.arrow_bg_color }} !important; border-color: {{ section.settings.arrow_color }} !important; color: {{ section.settings.arrow_color }} !important;" aria-label="{{ 'carousel_banner.next_slide' | t | default: 'Next slide' }}">&#8594;</button>
+          <button class="carousel-banner__arrow carousel-banner__arrow--prev" style="background: {{ section.settings.arrow_bg_color }} !important; border-color: {{ section.settings.arrow_color }} !important; color: {{ section.settings.arrow_color }} !important;" aria-label="{{ 'carousel_banner.previous_slide' | t }}">&#8592;</button>
+          <button class="carousel-banner__arrow carousel-banner__arrow--next" style="background: {{ section.settings.arrow_bg_color }} !important; border-color: {{ section.settings.arrow_color }} !important; color: {{ section.settings.arrow_color }} !important;" aria-label="{{ 'carousel_banner.next_slide' | t }}">&#8594;</button>
         {% endif %}
         
         {% if section.settings.show_dots %}
           <div class="carousel-banner__dots">
             {% for block in section.blocks %}
-              <button class="carousel-banner__dot" data-index="{{ forloop.index0 }}" style="border-color: {{ section.settings.dot_active_color }} !important;" aria-label="{{ 'carousel_banner.go_to_slide' | t | default: 'Go to slide' }} {{ forloop.index }}"></button>
+              <button class="carousel-banner__dot" data-index="{{ forloop.index0 }}" style="border-color: {{ section.settings.dot_active_color }} !important;" aria-label="{{ 'carousel_banner.go_to_slide' | t }} {{ forloop.index }}"></button>
             {% endfor %}
           </div>
         {% endif %}
@@ -591,13 +591,13 @@
   /* Estilos para diferentes tipos de transición */
   
   /* Transición Fade */
-  .carousel-banner__wrapper.transition-fade {
+  .carousel-banner__wrapper.fade {
     position: relative;
     height: 100%;
     display: block;
   }
   
-  .carousel-banner__wrapper.transition-fade .carousel-banner__slide {
+  .carousel-banner__wrapper.fade .carousel-banner__slide {
     position: absolute;
     left: 0;
     top: 0;
@@ -610,25 +610,25 @@
     transition: opacity var(--transition-speed, 400ms) ease-in-out;
   }
 
-  .carousel-banner__wrapper.transition-fade .carousel-banner__slide:first-child {
+  .carousel-banner__wrapper.fade .carousel-banner__slide:first-child {
     position: relative;
   }
   
-  .carousel-banner__wrapper.transition-fade .carousel-banner__slide.is-active {
+  .carousel-banner__wrapper.fade .carousel-banner__slide.is-active {
     opacity: 1;
     z-index: 3;
     pointer-events: auto;
   }
   
   /* Transición Zoom */
-  .carousel-banner__wrapper.transition-zoom {
+  .carousel-banner__wrapper.zoom {
     position: relative;
     height: 100%;
     overflow: hidden;
     display: block;
   }
   
-  .carousel-banner__wrapper.transition-zoom .carousel-banner__slide {
+  .carousel-banner__wrapper.zoom .carousel-banner__slide {
     position: absolute;
     left: 0;
     top: 0;
@@ -642,11 +642,11 @@
     transition: opacity var(--transition-speed, 400ms) ease-in-out, transform var(--transition-speed, 400ms) ease-in-out;
   }
 
-  .carousel-banner__wrapper.transition-zoom .carousel-banner__slide:first-child {
+  .carousel-banner__wrapper.zoom .carousel-banner__slide:first-child {
     position: relative;
   }
   
-  .carousel-banner__wrapper.transition-zoom .carousel-banner__slide.is-active {
+  .carousel-banner__wrapper.zoom .carousel-banner__slide.is-active {
     opacity: 1;
     transform: scale(1);
     z-index: 3;
@@ -656,26 +656,26 @@
   /* Transición Slide y otros tipos son manejados por sus propias clases */
 
   /* Transición Slide (horizontal) */
-  .carousel-banner__wrapper.transition-slide {
+  .carousel-banner__wrapper.slide {
     display: flex;
     flex-direction: row;
     transition: transform var(--transition-speed, 400ms) ease-in-out;
   }
   
-  .carousel-banner__wrapper.transition-slide .carousel-banner__slide {
+  .carousel-banner__wrapper.slide .carousel-banner__slide {
     flex: 0 0 100%;
     width: 100%;
   }
   
   /* Asegurar que el contenedor tenga altura para transiciones absolutas */
-  .carousel-banner__container:has(.transition-fade),
-  .carousel-banner__container:has(.transition-zoom) {
+  .carousel-banner__container:has(.fade),
+  .carousel-banner__container:has(.zoom) {
     min-height: 400px;
   }
   
   @media (max-width: 749px) {
-    .carousel-banner__container:has(.transition-fade),
-    .carousel-banner__container:has(.transition-zoom) {
+    .carousel-banner__container:has(.fade),
+    .carousel-banner__container:has(.zoom) {
       min-height: 250px;
     }
   }
@@ -702,8 +702,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configuración
     const autoplayEnabled = carouselElement.dataset.autoplay === 'true';
     const autoplaySpeed = parseInt(carouselElement.dataset.autoplaySpeed) || 5000;
-    const transitionType = carouselElement.dataset.transitionType || 'transition-slide';
-    const transitionSpeed = parseInt(carouselElement.dataset.transitionSpeed) || 400;
+    // El problema está aquí - necesitamos obtener el valor usando el nombre correcto del atributo
+    const rawTransitionType = carouselElement.getAttribute('data-transition-type');
+    const transitionType = rawTransitionType || 'slide';
+    const transitionSpeed = parseInt(carouselElement.getAttribute('data-transition-speed')) || 400;
+    
+    console.log('Carousel config:', {
+      autoplay: autoplayEnabled,
+      autoplaySpeed: autoplaySpeed,
+      transitionType: transitionType,
+      rawTransitionType: rawTransitionType,
+      transitionSpeed: transitionSpeed,
+      wrapper: wrapper ? wrapper.className : 'no-wrapper'
+    });
     
     // Obtener colores personalizados de dots desde el CSS computado
     const computedStyle = getComputedStyle(carouselElement);
@@ -722,6 +733,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (wrapper) {
       wrapper.style.transitionDuration = transitionSpeed + 'ms';
+      
+      // Asegurar que el wrapper tenga la clase correcta de transición
+      wrapper.classList.remove('slide', 'fade', 'zoom');
+      wrapper.classList.add(transitionType);
+      
+      console.log('Wrapper transition class updated:', wrapper.className);
     }
     
     // Inicializar primer slide
@@ -747,14 +764,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSlidePosition() {
       if (!wrapper) return;
       
+      console.log('Updating position for transition type:', transitionType);
+      
       switch (transitionType) {
-        case 'transition-slide':
+        case 'slide':
           wrapper.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
           break;
-        case 'transition-fade':
-        case 'transition-zoom':
+        case 'fade':
+        case 'zoom':
           // Para fade y zoom, las transiciones son manejadas por CSS
           break;
+        default:
+          console.warn('Unknown transition type:', transitionType);
+          // Default to slide if unknown
+          wrapper.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
       }
     }
     

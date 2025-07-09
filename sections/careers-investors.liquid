@@ -2,7 +2,7 @@
   assign section_id = section.id
 %}
 
-<section class="careers-investors" id="CareersInvestors-{{ section_id }}" style="
+<section class="careers-investors{% if section.settings.animate_on_scroll %} section-appear{% endif %}" data-section-type="careers-investors" id="CareersInvestors-{{ section_id }}" style="
   --ci-text-color: {{ section.settings.text_color }};
   --ci-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
   --ci-border-radius: {{ section.settings.border_radius }}px;
@@ -11,6 +11,13 @@
   --ci-button-background: {{ section.settings.button_background_color }};
   --ci-button-text: {{ section.settings.button_text_color }};
   --ci-background-color: {{ section.settings.background_color }};
+  background-color: {{ section.settings.background_color }};
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-top: var(--ci-section-padding-top);
+  padding-bottom: var(--ci-section-padding-bottom);
+  overflow: hidden;
 ">
   <div class="careers-investors__container container">
     {% if section.settings.title != blank %}
@@ -131,14 +138,18 @@
   .careers-investors {
     padding-top: var(--ci-section-padding-top);
     padding-bottom: var(--ci-section-padding-bottom);
-    width: 100%;
+    width: 100vw;
     background-color: var(--ci-background-color);
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
   }
 
   .careers-investors__container {
     max-width: var(--page-width);
     margin: 0 auto;
     padding: 0 1.5rem;
+    width: 100%;
   }
 
   .careers-investors__title {
@@ -373,6 +384,13 @@
       "max": 100,
       "step": 5,
       "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_on_scroll",
+      "label": "Animar al aparecer",
+      "default": true,
+      "info": "Activa una animación elegante cuando la sección entra en pantalla."
     }
   ],
   "blocks": [
@@ -462,3 +480,7 @@
   ]
 }
 {% endschema %}
+
+{% if section.settings.animate_on_scroll %}
+  <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+{% endif %}

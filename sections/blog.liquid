@@ -5,31 +5,187 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
 {% endcomment %}
 
-<h1>{{ blog.title }}</h1>
+<section class="blog-section" style="background-color: {{ section.settings.background_color }};">
+  <div class="blog-container">
+    <h1 class="blog-section__title">{{ blog.title }}</h1>
 
-{% paginate blog.articles by 5 %}
-  {% for article in blog.articles %}
-    <div>
-      {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
-      {% endif %}
-      <h2>
-        {{ article.title | link_to: article.url }}
-      </h2>
-      {% assign date = article.published_at | time_tag: format: 'date' %}
-      <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-      <p>{{ article.excerpt }}</p>
-    </div>
-  {% endfor %}
+    {% paginate blog.articles by 5 %}
+      <div class="blog-list">
+        {% for article in blog.articles %}
+          <article class="blog-list__item">
+            {% if article.image %}
+              <a href="{{ article.url }}" class="blog-list__image-link">
+                {{ article.image | image_url: width: 900 | image_tag: class: 'blog-list__image', loading: 'lazy', alt: article.title }}
+              </a>
+            {% endif %}
+            <div class="blog-list__content">
+              <h2 class="blog-list__title">
+                <a href="{{ article.url }}">{{ article.title }}</a>
+              </h2>
+              <div class="blog-list__meta">
+                {% assign date = article.published_at | time_tag: format: 'date' %}
+                <span class="blog-list__date">{{ date }}</span>
+                <span class="blog-list__author">{{ article.author }}</span>
+              </div>
+              <p class="blog-list__excerpt">{{ article.excerpt | truncatewords: 30 }}</p>
+              <a href="{{ article.url }}" class="blog-list__readmore">{{ 'blog.read_more' | t: 'Leer más' }}</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+      {%- if paginate.pages > 1 -%}
+        <div class="blog-section__pagination">{{ paginate | default_pagination }}</div>
+      {%- endif -%}
+    {% endpaginate %}
+  </div>
+</section>
 
-  {%- if paginate.pages > 1 -%}
-    {{- paginate | default_pagination -}}
-  {%- endif -%}
-{% endpaginate %}
+{% stylesheet %}
+.blog-section {
+  width: 100%;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 4rem 0 2rem 0;
+  background: var(--blog-bg, #fff);
+}
+.blog-container {
+  max-width: var(--page-width, 900px);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+.blog-section__title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--blog-title, #222);
+}
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+.blog-list__item {
+  display: flex;
+  flex-direction: row;
+  gap: 2.5rem;
+  align-items: flex-start;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0 0 2.5rem 0;
+  border-bottom: 1px solid var(--blog-divider, #ececec);
+}
+.blog-list__image-link {
+  flex-shrink: 0;
+  display: block;
+  width: 220px;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #f7f7f7;
+}
+.blog-list__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 1rem;
+  transition: transform 0.2s;
+}
+.blog-list__image-link:hover .blog-list__image {
+  transform: scale(1.03);
+}
+.blog-list__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.blog-list__title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 0.2em 0;
+  letter-spacing: -0.01em;
+  color: var(--blog-article-title, #181818);
+}
+.blog-list__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.blog-list__title a:hover {
+  color: var(--blog-link-hover, #0070f3);
+}
+.blog-list__meta {
+  font-size: 0.95rem;
+  color: var(--blog-meta, #888);
+  display: flex;
+  gap: 1.2em;
+  margin-bottom: 0.2em;
+}
+.blog-list__excerpt {
+  color: var(--blog-excerpt, #444);
+  font-size: 1.08rem;
+  line-height: 1.6;
+  margin: 0 0 0.5em 0;
+  max-width: 50ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.blog-list__readmore {
+  font-size: 1rem;
+  color: var(--blog-link, #0070f3);
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 0.2em;
+  align-self: flex-start;
+  transition: color 0.2s;
+}
+.blog-list__readmore:hover {
+  color: var(--blog-link-hover, #005bb5);
+}
+.blog-section__pagination {
+  margin-top: 3rem;
+  text-align: center;
+}
+@media screen and (max-width: 700px) {
+  .blog-list__item {
+    flex-direction: column;
+    gap: 1.2rem;
+    padding-bottom: 2rem;
+  }
+  .blog-list__image-link {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 0.7rem;
+  }
+  .blog-list__image {
+    border-radius: 0.7rem;
+  }
+}
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.blog",
-  "settings": []
+  "settings": [
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#FFFFFF"
+    }
+  ]
 }
 {% endschema %}

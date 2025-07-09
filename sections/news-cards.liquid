@@ -5,7 +5,7 @@
   - Configurable desde el editor de temas
 {% endcomment %}
 
-<section class="news-cards-section{% if section.settings.animate_on_scroll %} section-appear{% endif %}" id="news-cards-{{ section.id }}" style="--bg-color: {{ section.settings.bg_color | default: '#ffffff' }}; --title-color: {{ section.settings.title_color | default: '#333333' }}; --card-bg: {{ section.settings.card_bg_color | default: '#ffffff' }}; --headline-color: {{ section.settings.headline_color | default: '#333333' }}; --reference-color: {{ section.settings.reference_color | default: '#666666' }}; --date-color: {{ section.settings.date_color | default: '#999999' }}; --button-color: {{ section.settings.button_color | default: '#2E4695' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; padding-top: {{ section.settings.margin_top | default: 48 }}px; padding-bottom: {{ section.settings.margin_bottom | default: 32 }}px;">
+<section class="news-cards-section{% if section.settings.animate_on_scroll %} section-appear{% endif %}" id="news-cards-{{ section.id }}" data-section-type="news-cards" style="--bg-color: {{ section.settings.bg_color | default: '#ffffff' }}; --title-color: {{ section.settings.title_color | default: '#333333' }}; --card-bg: {{ section.settings.card_bg_color | default: '#ffffff' }}; --headline-color: {{ section.settings.headline_color | default: '#333333' }}; --reference-color: {{ section.settings.reference_color | default: '#666666' }}; --date-color: {{ section.settings.date_color | default: '#999999' }}; --button-color: {{ section.settings.button_color | default: '#2E4695' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; padding-top: {{ section.settings.margin_top | default: 48 }}px; padding-bottom: {{ section.settings.margin_bottom | default: 32 }}px; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);">
   
   <div class="news-cards-container">
     {% if section.settings.title != blank %}
@@ -269,7 +269,7 @@
 }
 
 .news-cards-container {
-  max-width: 1200px;
+  max-width: var(--page-width, 1200px);
   margin: 0 auto;
   width: 100%;
 }

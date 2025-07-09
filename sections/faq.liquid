@@ -3,77 +3,79 @@
   assign blocks_count = section.blocks.size
 %}
 
-<div class="faq-section" id="FaqSection-{{ section_id }}" style="
-  --faq-section-padding-top: {{ section.settings.padding_top }}px;
-  --faq-section-padding-bottom: {{ section.settings.padding_bottom }}px;
-  --faq-title-color: {{ section.settings.title_color }};
-  --faq-question-color: {{ section.settings.question_color }};
-  --faq-answer-color: {{ section.settings.answer_color }};
-  --faq-border-color: {{ section.settings.border_color }};
-  --faq-accordion-bg: {{ section.settings.accordion_bg }};
-">
-  <div class="faq-container container">
-    <div class="faq-wrapper">
-      {% if section.settings.title != blank %}
-        <h2 class="faq-title">{{ section.settings.title }}</h2>
-      {% endif %}
+<section class="faq-section-wrapper" style="background-color: {{ section.settings.background_color }};">
+  <div class="faq-inner{% if section.settings.animate_on_scroll %} section-appear{% endif %}" data-section-type="faq" id="FaqSection-{{ section_id }}" style="
+    --faq-section-padding-top: {{ section.settings.padding_top }}px;
+    --faq-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --faq-title-color: {{ section.settings.title_color }};
+    --faq-question-color: {{ section.settings.question_color }};
+    --faq-answer-color: {{ section.settings.answer_color }};
+    --faq-border-color: {{ section.settings.border_color }};
+    --faq-accordion-bg: {{ section.settings.accordion_bg }};
+  ">
+    <div class="faq-container">
+      <div class="faq-wrapper">
+        {% if section.settings.title != blank %}
+          <h2 class="faq-title">{{ section.settings.title }}</h2>
+        {% endif %}
 
-      {% if section.settings.subtitle != blank %}
-        <div class="faq-subtitle">{{ section.settings.subtitle }}</div>
-      {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <div class="faq-subtitle">{{ section.settings.subtitle }}</div>
+        {% endif %}
 
-      <div class="faq-content">
-        <div class="faq-image-column">
-          {% if section.settings.image != blank %}
-            <div class="faq-image-wrapper">
-              {{ section.settings.image | image_url: width: 600 | image_tag: 
-                loading: 'lazy',
-                class: 'faq-image',
-                widths: '360, 480, 590, 720',
-                sizes: '(min-width: 990px) 40vw, 100vw'
-              }}
-            </div>
-          {% else %}
-            <div class="faq-image-placeholder">
-              {{ 'image' | placeholder_svg_tag: 'faq-placeholder-svg' }}
-            </div>
-          {% endif %}
-        </div>
+        <div class="faq-content">
+          <div class="faq-image-column">
+            {% if section.settings.image != blank %}
+              <div class="faq-image-wrapper">
+                {{ section.settings.image | image_url: width: 600 | image_tag: 
+                  loading: 'lazy',
+                  class: 'faq-image',
+                  widths: '360, 480, 590, 720',
+                  sizes: '(min-width: 990px) 40vw, 100vw'
+                }}
+              </div>
+            {% else %}
+              <div class="faq-image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'faq-placeholder-svg' }}
+              </div>
+            {% endif %}
+          </div>
 
-        <div class="faq-accordion-column">
-          {% if blocks_count > 0 %}
-            <div class="faq-accordion-list">
-              {% for block in section.blocks %}
-                {% case block.type %}
-                  {% when 'question' %}
-                    {% liquid
-                      assign block_id = block.id
-                      assign question = block.settings.question
-                      assign answer = block.settings.answer
-                    %}
-                    <details class="faq-accordion-item" id="FaqItem-{{ block_id }}" {{ block.shopify_attributes }}>
-                      <summary class="faq-question">
-                        <h3>{{ question }}</h3>
-                        <span class="faq-icon">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="plus-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="minus-icon"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </span>
-                      </summary>
-                      <div class="faq-answer">
-                        {{ answer }}
-                      </div>
-                    </details>
-                {% endcase %}
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="faq-empty-message">Añade preguntas frecuentes desde el editor de temas.</div>
-          {% endif %}
+          <div class="faq-accordion-column">
+            {% if blocks_count > 0 %}
+              <div class="faq-accordion-list">
+                {% for block in section.blocks %}
+                  {% case block.type %}
+                    {% when 'question' %}
+                      {% liquid
+                        assign block_id = block.id
+                        assign question = block.settings.question
+                        assign answer = block.settings.answer
+                      %}
+                      <details class="faq-accordion-item" id="FaqItem-{{ block_id }}" {{ block.shopify_attributes }}>
+                        <summary class="faq-question">
+                          <h3>{{ question }}</h3>
+                          <span class="faq-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="plus-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <svg xmlns="http://2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="minus-icon"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                          </span>
+                        </summary>
+                        <div class="faq-answer">
+                          {{ answer }}
+                        </div>
+                      </details>
+                  {% endcase %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="faq-empty-message">Añade preguntas frecuentes desde el editor de temas.</div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -96,63 +98,122 @@
 </script>
 
 {% stylesheet %}
-  .faq-section {
+  /* Wrapper con ancho completo - este es el contenedor principal */
+  .faq-section-wrapper {
+    width: 100%;
+    min-width: 100vw;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    position: relative;
+    width: 100vw;
+  }
+
+  /* Contenedor interno con contenido centrado */
+  .faq-inner {
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto;
     padding-top: var(--faq-section-padding-top);
     padding-bottom: var(--faq-section-padding-bottom);
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* Contenedor principal del contenido */
+  .faq-container {
+    width: 100%;
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+  }
+  
+  @media screen and (min-width: 750px) {
+    .faq-container {
+      padding: 0 2rem;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .faq-container {
+      padding: 0 3rem;
+    }
+  }
+
+  /* Wrapper interno del contenido */
+  .faq-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     width: 100%;
   }
 
-  .faq-container {
-    max-width: var(--page-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-
+  /* Título centrado */
   .faq-title {
     text-align: center;
     margin-bottom: 1rem;
     font-size: 2rem;
     font-weight: 700;
     color: var(--faq-title-color);
+    width: 100%;
   }
 
+  /* Subtítulo centrado */
   .faq-subtitle {
     text-align: center;
     margin-bottom: 3rem;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
   }
 
+  /* Contenido principal del FAQ */
   .faq-content {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
+  /* Responsive design para escritorio */
   @media screen and (min-width: 990px) {
     .faq-content {
       flex-direction: row;
       align-items: flex-start;
+      justify-content: center;
     }
 
     .faq-image-column {
       width: 40%;
+      max-width: 450px;
     }
 
     .faq-accordion-column {
       width: 60%;
+      max-width: 600px;
     }
   }
 
+  /* Columna de imagen */
   .faq-image-column {
     position: relative;
+    width: 100%;
   }
 
   .faq-image-wrapper {
     border-radius: 8px;
     overflow: hidden;
     height: 100%;
+    width: 100%;
   }
 
   .faq-image {
@@ -169,6 +230,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
   }
 
   .faq-placeholder-svg {
@@ -177,18 +239,23 @@
     opacity: 0.3;
   }
 
+  /* Lista de acordeones */
   .faq-accordion-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
   }
 
+  /* Items del acordeón */
   .faq-accordion-item {
     border: 1px solid var(--faq-border-color);
     border-radius: 6px;
     background-color: var(--faq-accordion-bg);
+    width: 100%;
   }
 
+  /* Pregunta del acordeón */
   .faq-question {
     display: flex;
     justify-content: space-between;
@@ -196,6 +263,8 @@
     padding: 1.25rem;
     cursor: pointer;
     list-style: none;
+    text-align: left;
+    width: 100%;
   }
 
   .faq-question::-webkit-details-marker {
@@ -207,8 +276,10 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--faq-question-color);
+    text-align: left;
   }
 
+  /* Iconos del acordeón */
   .faq-icon {
     display: flex;
     flex-shrink: 0;
@@ -228,18 +299,51 @@
     display: block;
   }
 
+  /* Respuesta del acordeón */
   .faq-answer {
     padding: 0 1.25rem 1.25rem;
     color: var(--faq-answer-color);
     line-height: 1.6;
+    text-align: left;
   }
 
+  /* Mensaje vacío */
   .faq-empty-message {
     padding: 2rem;
     text-align: center;
     background-color: #f7f7f7;
     border-radius: 6px;
     color: #777;
+    width: 100%;
+  }
+
+  /* Animaciones suaves */
+  .faq-section-wrapper * {
+    transition: all 0.3s ease;
+  }
+
+  /* Mejoras adicionales para asegurar el centrado */
+  .faq-content > * {
+    align-self: center;
+  }
+  
+  /* Centrado del contenido */
+  .faq-wrapper {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Ajustes para móviles */
+  @media screen and (max-width: 989px) {
+    .faq-content {
+      align-items: center;
+    }
+    
+    .faq-image-column,
+    .faq-accordion-column {
+      width: 100%;
+      max-width: 600px;
+    }
   }
 {% endstylesheet %}
 
@@ -269,6 +373,12 @@
     {
       "type": "header",
       "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo de la sección",
+      "default": "#FFFFFF"
     },
     {
       "type": "color",
@@ -321,6 +431,13 @@
       "max": 100,
       "step": 5,
       "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_on_scroll",
+      "label": "Animar al aparecer",
+      "default": true,
+      "info": "Activa una animación elegante cuando la sección entra en pantalla."
     }
   ],
   "blocks": [
@@ -373,3 +490,7 @@
   ]
 }
 {% endschema %}
+
+{% if section.settings.animate_on_scroll %}
+  <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+{% endif %}

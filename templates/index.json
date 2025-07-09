@@ -1,20 +1,43 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
+    "carousel-banner": {
       "type": "carousel-banner",
       "settings": {}
+    },
+    "news-cards": {
+      "type": "news-cards",
+      "settings": {
+        "heading": "Últimas Noticias",
+        "show_animation": true
+      }
+    },
+    "why-trust-us": {
+      "type": "why-trust-us",
+      "settings": {
+        "heading": "¿Por qué confiar en nosotros?",
+        "show_animation": true
+      }
+    },
+    "brands-carousel": {
+      "type": "brands-carousel",
+      "settings": {
+        "heading": "Marcas que confían en nosotros",
+        "show_animation": true
+      }
+    },
+    "image-text-slider": {
+      "type": "image-text-slider",
+      "settings": {
+        "heading": "Nuestros Productos",
+        "show_animation": true
+      }
     }
   },
   "order": [
-    "main"
+    "carousel-banner",
+    "news-cards", 
+    "why-trust-us",
+    "brands-carousel",
+    "image-text-slider"
   ]
 }

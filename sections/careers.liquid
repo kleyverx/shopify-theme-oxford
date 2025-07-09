@@ -3,81 +3,91 @@
   assign blocks_count = section.blocks.size
 %}
 
-<section class="careers-section" id="CareersSection-{{ section_id }}" style="
-  --careers-cards-gap: {{ section.settings.gap }}px;
-  --careers-text-color: {{ section.settings.text_color }};
-  --careers-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
-  --careers-border-radius: {{ section.settings.border_radius }}px;
-  --careers-section-padding-top: {{ section.settings.padding_top }}px;
-  --careers-section-padding-bottom: {{ section.settings.padding_bottom }}px;
-  --careers-button-bg-color: {{ section.settings.button_bg_color }};
-  --careers-button-text-color: {{ section.settings.button_text_color }};
+<section class="careers-section-wrapper" style="
+  background-color: {{ section.settings.background_color }};
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-top: {{ section.settings.padding_top }}px;
+  padding-bottom: {{ section.settings.padding_bottom }}px;
+  overflow: hidden;
 ">
-  <div class="careers-section__container container">
-    {% if section.settings.title != blank %}
-      <h2 class="careers-section__title">{{ section.settings.title }}</h2>
-    {% endif %}
-    
-    {% if section.settings.description != blank %}
-      <div class="careers-section__description">{{ section.settings.description }}</div>
-    {% endif %}
+  <div class="careers-section{% if section.settings.animate_on_scroll %} section-appear{% endif %}" data-section-type="careers" id="CareersSection-{{ section_id }}" style="
+    --careers-cards-gap: {{ section.settings.gap }}px;
+    --careers-text-color: {{ section.settings.text_color }};
+    --careers-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
+    --careers-border-radius: {{ section.settings.border_radius }}px;
+    --careers-section-padding-top: {{ section.settings.padding_top }}px;
+    --careers-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --careers-button-bg-color: {{ section.settings.button_bg_color }};
+    --careers-button-text-color: {{ section.settings.button_text_color }};
+  ">
+    <div class="careers-section__container container">
+      {% if section.settings.title != blank %}
+        <h2 class="careers-section__title">{{ section.settings.title }}</h2>
+      {% endif %}
+      
+      {% if section.settings.description != blank %}
+        <div class="careers-section__description">{{ section.settings.description }}</div>
+      {% endif %}
 
-    <div class="careers-section__grid" style="--blocks-count: {{ blocks_count }}">
-      {% for block in section.blocks %}
-        {% case block.type %}
-          {% when 'career_item' %}
-            {% liquid
-              assign block_id = block.id
-              assign image = block.settings.image
-              assign title = block.settings.title
-              assign text = block.settings.text
-              assign button_text = block.settings.button_text
-              assign button_url = block.settings.button_url
-              assign layout_style = block.settings.layout_style
-            %}
-            
-            <div class="careers-section__item careers-section__item--{{ layout_style }}" 
-                 id="CareerItem-{{ block_id }}" 
-                 {{ block.shopify_attributes }}>
-              <div class="careers-section__item-inner">
-                {% if image != blank %}
-                  <div class="careers-section__image-wrapper">
-                    {{ image | image_url: width: 800 | image_tag: 
-                      loading: 'lazy',
-                      class: 'careers-section__image',
-                      widths: '360, 540, 720, 900, 1080',
-                      sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
-                    }}
-                  </div>
-                {% else %}
-                  <div class="careers-section__placeholder">
-                    {{ 'image' | placeholder_svg_tag: 'careers-section__placeholder-svg' }}
-                  </div>
-                {% endif %}
-                
-                <div class="careers-section__overlay">
-                  <div class="careers-section__content">
-                    {% if title != blank %}
-                      <h3 class="careers-section__item-title">{{ title }}</h3>
-                    {% endif %}
-                    
-                    {% if text != blank %}
-                      <div class="careers-section__item-text">{{ text }}</div>
-                    {% endif %}
-                    
-                    {% if button_text != blank %}
-                      <div class="careers-section__button-wrapper">
-                        <a href="{{ button_url | default: '#' }}" class="careers-section__button">
-                          {{ button_text }}
-                        </a>
-                      </div>
-                    {% endif %}
+      <div class="careers-section__grid" style="--blocks-count: {{ blocks_count }}">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'career_item' %}
+              {% liquid
+                assign block_id = block.id
+                assign image = block.settings.image
+                assign title = block.settings.title
+                assign text = block.settings.text
+                assign button_text = block.settings.button_text
+                assign button_url = block.settings.button_url
+                assign layout_style = block.settings.layout_style
+              %}
+              
+              <div class="careers-section__item careers-section__item--{{ layout_style }}" 
+                   id="CareerItem-{{ block_id }}" 
+                   {{ block.shopify_attributes }}>
+                <div class="careers-section__item-inner">
+                  {% if image != blank %}
+                    <div class="careers-section__image-wrapper">
+                      {{ image | image_url: width: 800 | image_tag: 
+                        loading: 'lazy',
+                        class: 'careers-section__image',
+                        widths: '360, 540, 720, 900, 1080',
+                        sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+                      }}
+                    </div>
+                  {% else %}
+                    <div class="careers-section__placeholder">
+                      {{ 'image' | placeholder_svg_tag: 'careers-section__placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                  
+                  <div class="careers-section__overlay">
+                    <div class="careers-section__content">
+                      {% if title != blank %}
+                        <h3 class="careers-section__item-title">{{ title }}</h3>
+                      {% endif %}
+                      
+                      {% if text != blank %}
+                        <div class="careers-section__item-text">{{ text }}</div>
+                      {% endif %}
+                      
+                      {% if button_text != blank %}
+                        <div class="careers-section__button-wrapper">
+                          <a href="{{ button_url | default: '#' }}" class="careers-section__button">
+                            {{ button_text }}
+                          </a>
+                        </div>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-        {% endcase %}
-      {% endfor %}
+          {% endcase %}
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>
@@ -118,18 +128,45 @@
 </script>
 
 {% stylesheet %}
+  /* Wrapper con fondo full width */
+  .careers-section-wrapper {
+    width: 100%;
+    min-width: 100vw;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Sección principal con padding */
   .careers-section {
     padding-top: var(--careers-section-padding-top);
     padding-bottom: var(--careers-section-padding-bottom);
     width: 100%;
+    position: relative;
   }
 
+  /* Contenedor centrado */
   .careers-section__container {
-    max-width: var(--page-width);
+    max-width: var(--page-width, 1200px);
     margin: 0 auto;
     padding: 0 1.5rem;
+    box-sizing: border-box;
   }
 
+  @media screen and (min-width: 750px) {
+    .careers-section__container {
+      padding: 0 2rem;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .careers-section__container {
+      padding: 0 3rem;
+    }
+  }
+
+  /* Título centrado */
   .careers-section__title {
     text-align: center;
     margin-bottom: 2rem;
@@ -137,6 +174,7 @@
     font-weight: 700;
   }
 
+  /* Descripción centrada */
   .careers-section__description {
     text-align: center;
     margin-bottom: 3rem;
@@ -145,10 +183,12 @@
     margin-right: auto;
   }
 
+  /* Grid de elementos */
   .careers-section__grid {
     display: grid;
     gap: var(--careers-cards-gap);
     grid-template-columns: repeat(1, 1fr);
+    width: 100%;
   }
 
   @media screen and (min-width: 750px) {
@@ -176,10 +216,12 @@
     }
   }
 
+  /* Elementos individuales */
   .careers-section__item {
     position: relative;
     border-radius: var(--careers-border-radius);
     overflow: hidden;
+    width: 100%;
   }
 
   .careers-section__item-inner {
@@ -210,6 +252,7 @@
     }
   }
 
+  /* Imagen y placeholder */
   .careers-section__image-wrapper {
     width: 100%;
     height: 100%;
@@ -242,6 +285,7 @@
     opacity: 0.3;
   }
 
+  /* Overlay y contenido */
   .careers-section__overlay {
     position: absolute;
     top: 0;
@@ -324,6 +368,17 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
+
+  /* Animaciones suaves */
+  .careers-section-wrapper * {
+    transition: all 0.3s ease;
+  }
+
+  /* Asegurar que todo esté centrado */
+  .careers-section__container > * {
+    position: relative;
+    z-index: 1;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -343,6 +398,17 @@
       "id": "description",
       "label": "Descripción",
       "default": "<p>Descubre oportunidades profesionales en nuestra empresa.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Diseño y Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo de la sección",
+      "default": "#FFFFFF",
+      "info": "Color de fondo que se extiende a todo el ancho de la pantalla"
     },
     {
       "type": "range",
@@ -396,6 +462,10 @@
       "default": 8
     },
     {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
       "type": "range",
       "id": "padding_top",
       "label": "Relleno superior",
@@ -412,6 +482,13 @@
       "max": 100,
       "step": 5,
       "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_on_scroll",
+      "label": "Animar al aparecer",
+      "default": true,
+      "info": "Activa una animación elegante cuando la sección entra en pantalla."
     }
   ],
   "blocks": [
@@ -492,3 +569,7 @@
   ]
 }
 {% endschema %}
+
+{% if section.settings.animate_on_scroll %}
+  <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+{% endif %}

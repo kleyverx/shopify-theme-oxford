@@ -11,16 +11,20 @@
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
+
+    {% if settings.favicon_image != blank %}
+      <link rel="icon" type="image/png" href="{{ settings.favicon_image | image_url: width: 64, height: 64 }}">
+    {% endif %}
   </head>
 
-  <body>
+  <body class="template-{{ template.name }}{% if template.name == 'index' %} template-index{% endif %}">
     {% sections 'header-group' %}
 
     {{ content_for_layout }}
 
-    {{ 'section-scroll-nav.css' | asset_url | stylesheet_tag }}
-
-    <script src="{{ 'section-scroll-nav.js' | asset_url }}" defer></script>
+    {% if template.name == 'index' %}
+      {% render 'section-scroll-nav' %}
+    {% endif %}
 
     {% sections 'footer-group' %}
   </body>

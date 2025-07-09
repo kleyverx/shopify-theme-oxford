@@ -2,96 +2,105 @@
   Galería de productos con modal elegante - Diseños optimizados para alta calidad
 {% endcomment %}
 
-<section class="product-gallery" id="gallery-{{ section.id }}">
-  <div class="container">
-    {% if section.settings.title != blank %}
-      <h2 class="gallery-title">{{ section.settings.title }}</h2>
-    {% endif %}
-    
-    <div class="products-grid">
-      {% if section.settings.collection != blank %}
-        {% assign collection = section.settings.collection %}
-        {% assign products_to_show = section.settings.products_limit %}
-        {% assign sort_by = section.settings.sort_by %}
-        
-        {% case sort_by %}
-          {% when 'best-selling' %}
-            {% assign sorted_products = collection.products | sort: 'bestselling' %}
-          {% when 'title-ascending' %}
-            {% assign sorted_products = collection.products | sort: 'title' %}
-          {% when 'title-descending' %}
-            {% assign sorted_products = collection.products | sort: 'title' | reverse %}
-          {% when 'price-ascending' %}
-            {% assign sorted_products = collection.products | sort: 'price' %}
-          {% when 'price-descending' %}
-            {% assign sorted_products = collection.products | sort: 'price' | reverse %}
-          {% when 'created-ascending' %}
-            {% assign sorted_products = collection.products | sort: 'created_at' %}
-          {% when 'created-descending' %}
-            {% assign sorted_products = collection.products | sort: 'created_at' | reverse %}
-          {% else %}
-            {% assign sorted_products = collection.products %}
-        {% endcase %}
-        
-        {% for product in sorted_products limit: products_to_show %}
-          <div class="product-card style-{{ section.settings.card_style }}" data-product-id="{{ product.id }}" {% if section.settings.enable_modal %}onclick="openModal('{{ product.id }}')" class="modal-enabled"{% endif %}>
-            {% if section.settings.card_style == '6' %}
-              <div class="product-content">
-            {% endif %}
-            {% if product.featured_image %}
-              <img 
-                src="{{ product.featured_image | image_url: width: 800 }}" 
-                alt="{{ product.title }}"
-                class="product-image"
-                width="800"
-                height="800"
-                loading="lazy"
-                srcset="{{ product.featured_image | image_url: width: 400 }} 400w,
-                        {{ product.featured_image | image_url: width: 600 }} 600w,
-                        {{ product.featured_image | image_url: width: 800 }} 800w,
-                        {{ product.featured_image | image_url: width: 1200 }} 1200w"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              >
-            {% endif %}
-            <div class="product-info">
-              <h3>{{ product.title }}</h3>
-              <p class="price">{{ product.price | money }}</p>
-            </div>
-            {% if section.settings.card_style == '6' %}
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <!-- Mensaje cuando no hay colección seleccionada -->
-        <div class="no-collection-message">
-          <p>Por favor selecciona una colección para mostrar productos.</p>
-        </div>
+<section class="product-gallery-section">
+  <div class="product-gallery" id="gallery-{{ section.id }}">
+    <div class="container">
+      {% if section.settings.title != blank %}
+        <h2 class="gallery-title">{{ section.settings.title }}</h2>
       {% endif %}
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div id="product-modal" class="modal">
-    <div class="modal-overlay" onclick="closeModal()"></div>
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div class="modal-body">
-        <div class="modal-image">
-          <img id="modal-img" src="" alt="" width="600" height="600" loading="lazy">
-        </div>
-        <div class="modal-info">
-          <div class="modal-header">
-            <h2 id="modal-title"></h2>
-            <div class="modal-price" id="modal-price"></div>
+      
+      <div class="products-grid">
+        {% if section.settings.collection != blank %}
+          {% assign collection = section.settings.collection %}
+          {% assign products_to_show = section.settings.products_limit %}
+          {% assign sort_by = section.settings.sort_by %}
+          
+          {% case sort_by %}
+            {% when 'best-selling' %}
+              {% assign sorted_products = collection.products | sort: 'bestselling' %}
+            {% when 'title-ascending' %}
+              {% assign sorted_products = collection.products | sort: 'title' %}
+            {% when 'title-descending' %}
+              {% assign sorted_products = collection.products | sort: 'title' | reverse %}
+            {% when 'price-ascending' %}
+              {% assign sorted_products = collection.products | sort: 'price' %}
+            {% when 'price-descending' %}
+              {% assign sorted_products = collection.products | sort: 'price' | reverse %}
+            {% when 'created-ascending' %}
+              {% assign sorted_products = collection.products | sort: 'created_at' %}
+            {% when 'created-descending' %}
+              {% assign sorted_products = collection.products | sort: 'created_at' | reverse %}
+            {% else %}
+              {% assign sorted_products = collection.products %}
+          {% endcase %}
+          
+          {% for product in sorted_products limit: products_to_show %}
+            <div class="product-card style-{{ section.settings.card_style }}" data-product-id="{{ product.id }}" {% if section.settings.enable_modal %}onclick="openModal('{{ product.id }}')" class="modal-enabled"{% endif %}>
+              {% if section.settings.card_style == '6' %}
+                <div class="product-content">
+              {% endif %}
+              {% if product.featured_image %}
+                <img 
+                  src="{{ product.featured_image | image_url: width: 800 }}" 
+                  alt="{{ product.title }}"
+                  class="product-image"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                  srcset="{{ product.featured_image | image_url: width: 400 }} 400w,
+                          {{ product.featured_image | image_url: width: 600 }} 600w,
+                          {{ product.featured_image | image_url: width: 800 }} 800w,
+                          {{ product.featured_image | image_url: width: 1200 }} 1200w"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                >
+              {% endif %}
+              {% if section.settings.card_style == '7' %}
+                <div class="product-info">
+                  <h3>{{ product.title }}</h3>
+                  <p class="price">{{ product.price | money }}</p>
+                </div>
+              {% else %}
+                <div class="product-info">
+                  <h3>{{ product.title }}</h3>
+                  <p class="price">{{ product.price | money }}</p>
+                </div>
+              {% endif %}
+              {% if section.settings.card_style == '6' %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- Mensaje cuando no hay colección seleccionada -->
+          <div class="no-collection-message">
+            <p>Por favor selecciona una colección para mostrar productos.</p>
           </div>
-          <div class="modal-description" id="modal-description"></div>
-          <div class="modal-actions">
-            <button class="btn-primary" onclick="window.location.href='#'">Ver producto</button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="product-modal" class="modal">
+      <div class="modal-overlay" onclick="closeModal()"></div>
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="modal-body">
+          <div class="modal-image">
+            <img id="modal-img" src="" alt="" width="600" height="600" loading="lazy">
+          </div>
+          <div class="modal-info">
+            <div class="modal-header">
+              <h2 id="modal-title"></h2>
+              <div class="modal-price" id="modal-price"></div>
+            </div>
+            <div class="modal-description" id="modal-description"></div>
+            <div class="modal-actions">
+              <button class="btn-primary" onclick="window.location.href='#'">Ver producto</button>
+            </div>
           </div>
         </div>
       </div>
@@ -100,16 +109,27 @@
 </section>
 
 <style>
-  .product-gallery {
-    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px 0;
+  .product-gallery-section {
+    width: 100%;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     background: {{ section.settings.background_color }};
-    min-height: auto;
+    overflow: hidden;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    width: 100vw;
+    padding-top: {{ section.settings.section_padding_top }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom }}px;
   }
 
-  .container {
+  .product-gallery {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 40px;
+    min-height: auto;
   }
   
   .gallery-title {
@@ -525,6 +545,87 @@
     color: #666666;
     margin: 0;
     letter-spacing: 0.5px;
+  }
+
+  /* ESTILO 7 - Transparente, nombre debajo de la imagen */
+  .product-card.style-7 {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+    padding: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .product-card.style-7:hover {
+    transform: translateY(-10px) scale(1.04) rotate(-1deg);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    z-index: 2;
+  }
+  .product-card.style-7 .product-image {
+    border-radius: 0;
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+    display: block;
+    box-shadow: none;
+    aspect-ratio: unset;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .product-card.style-7:hover .product-image {
+    transform: scale(1.07) rotate(1deg);
+  }
+  .product-card.style-7 .product-info {
+    position: static;
+    background: none;
+    color: #222;
+    text-align: center;
+    padding: 18px 0 0 0;
+    z-index: 1;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .product-card.style-7 .product-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
+    text-shadow: none;
+    line-height: 1.2;
+  }
+  .product-card.style-7 .price {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #444;
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    display: inline-block;
+    margin: 0 auto;
+    text-shadow: none;
+  }
+  @media (max-width: 768px) {
+    .product-card.style-7 .product-info {
+      padding: 12px 0 0 0;
+    }
+    .product-card.style-7 .product-info h3 {
+      font-size: 1rem;
+    }
+    .product-card.style-7 .price {
+      font-size: 0.9rem;
+    }
   }
 
   /* Modal - Solo visible en desktop */
@@ -1048,7 +1149,8 @@
         { "value": "3", "label": "Overlay (Comida/Bebidas)" },
         { "value": "4", "label": "Con badge (Productos nuevos)" },
         { "value": "5", "label": "Limpio y hogareño" },
-        { "value": "6", "label": "Elegante minimalista" }
+        { "value": "6", "label": "Elegante minimalista" },
+        { "value": "7", "label": "Transparente (nombre sobre imagen)" }
       ],
       "default": "2",
       "info": "Selecciona el estilo que se aplicará a todas las tarjetas de la galería"

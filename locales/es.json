@@ -11,7 +11,8 @@
     "comment_form_email": "Correo electrónico",
     "comment_form_name": "Nombre",
     "comment_form_submit": "Publicar",
-    "comment_form_title": "Agregar un comentario"
+    "comment_form_title": "Agregar un comentario",
+    "read_more": "Leer más"
   },
   "cart": {
     "checkout": "Finalizar compra",
@@ -59,6 +60,7 @@
       "border_radius_bottom": "Radio de borde inferior (px)",
       "overlay_color": "Color de superposición",
       "overlay_opacity": "Opacidad de superposición (%)",
+      "background_color": "Color de fondo de la sección",
       "background_image": "Imagen de fondo (opcional)",
       "border_radius_top": "Radio de borde superior (px)",
       "min_height": "Altura mínima (desktop, px)",
@@ -73,6 +75,10 @@
       "content_padding": "Padding del contenido (px)",
       "button_bg_color": "Color de fondo del botón",
       "button_text_color": "Color del texto del botón",
+      "button_border_radius": "Radio de borde del botón (px)",
+      "logo_image": "Imagen del logo",
+      "favicon_image": "Imagen favicon",
+      "section_vertical_spacing": "Espaciado vertical entre secciones (px)",
       "arrow_color": "Color de la flecha",
       "arrow_bg_color": "Color de fondo de la flecha",
       "dot_active_color": "Color del punto activo",
@@ -132,7 +138,14 @@
       "menu_open": "Abrir menú",
       "menu_close": "Cerrar menú"
     },
-    "header": "Encabezado"
+    "slider": {
+      "previous_slide": "Diapositiva anterior",
+      "next_slide": "Siguiente diapositiva"
+    },
+    "header": "Encabezado",
+    "buttons": "Botones",
+    "images": "Imágenes",
+    "spacing": "Espaciado"
   },
   "labels": {
     "menu": "Menú",

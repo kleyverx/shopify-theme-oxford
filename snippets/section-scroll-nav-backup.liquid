@@ -52,34 +52,49 @@
     visibility: visible;
   }
   
+  .section-scroll-nav.auto-hidden {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+  }
+  
+  .section-scroll-nav[style*="--nav-position: left"].auto-hidden {
+    transform: translateY(-50%) translateX(-80%);
+  }
+  
+  .section-scroll-nav[style*="--nav-position: right"].auto-hidden {
+    transform: translateY(-50%) translateX(80%);
+  }
+  
+  .section-scroll-nav:hover.auto-hidden {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  
   .section-scroll-nav__list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
   
   .section-scroll-nav__item {
-    display: block;
+    background: none;
+    border: none;
     padding: 0.75rem 1rem;
-    color: var(--nav-text-color);
-    text-decoration: none;
+    cursor: pointer;
+    border-radius: calc(var(--nav-border-radius) * 0.75);
+    transition: all 0.3s ease;
     font-size: 0.875rem;
     font-weight: 500;
-    border-radius: calc(var(--nav-border-radius) * 0.5);
-    transition: all 0.3s ease;
-    cursor: pointer;
+    color: var(--nav-text-color);
     white-space: nowrap;
-    text-align: center;
-    min-width: max-content;
-    border: 1px solid transparent;
   }
   
   .section-scroll-nav__item:hover {
-    background: color-mix(in srgb, var(--nav-active-bg) 15%, transparent);
-    border-color: color-mix(in srgb, var(--nav-active-bg) 30%, transparent);
+    color: var(--nav-active-text);
+    background: var(--nav-active-bg);
   }
   
   .section-scroll-nav[style*="--nav-position: left"] .section-scroll-nav__item:hover {
@@ -113,36 +128,34 @@
 {% endstylesheet %}
 
 <script>
+console.log('🚀 Iniciando navegación de secciones');
+
 // Configuración de nombres de secciones
 const SECTION_NAMES = {
-  "404": { "es": "Error 404", "en": "404 Error" },
-  "article": { "es": "Artículo", "en": "Article" },
-  "benefits": { "es": "Beneficios", "en": "Benefits" },
-  "blog": { "es": "Blog", "en": "Blog" },
+  "carousel-banner": { "es": "Inicio", "en": "Home" },
+  "hero-banner": { "es": "Banner Principal", "en": "Hero Banner" },
+  "hero": { "es": "Inicio", "en": "Home" },
+  "banner": { "es": "Inicio", "en": "Home" },
+  "main-banner": { "es": "Inicio", "en": "Home" },
+  "news-cards": { "es": "Noticias", "en": "News" },
+  "why-trust-us": { "es": "Confianza", "en": "Trust" },
+  "why-trust": { "es": "Confianza", "en": "Trust" },
+  "trust-us": { "es": "Confianza", "en": "Trust" },
+  "trust": { "es": "Confianza", "en": "Trust" },
   "brands-carousel": { "es": "Marcas", "en": "Brands" },
+  "image-text-slider": { "es": "Productos", "en": "Products" },
+  "image-text-slider-section": { "es": "Productos", "en": "Products" },
+  "vision-mission": { "es": "Misión y Visión", "en": "Mission & Vision" },
+  "faq": { "es": "Preguntas Frecuentes", "en": "FAQ" },
   "careers-investors": { "es": "Únete al Equipo", "en": "Join Our Team" },
   "careers": { "es": "Carreras", "en": "Careers" },
-  "carousel-banner": { "es": "Inicio", "en": "Home" },
-  "cart": { "es": "Carrito", "en": "Cart" },
-  "collections": { "es": "Colecciones", "en": "Collections" },
-  "custom-section": { "es": "Sección Personalizada", "en": "Custom Section" },
-  "faq": { "es": "Preguntas Frecuentes", "en": "FAQ" },
-  "featured-recipes": { "es": "Recetas Destacadas", "en": "Featured Recipes" },
-  "footer": { "es": "Pie de página", "en": "Footer" },
-  "header": { "es": "Encabezado", "en": "Header" },
-  "image-text-slider": { "es": "Productos", "en": "Products" },
-  "news-cards": { "es": "Noticias", "en": "News" },
-  "page": { "es": "Página", "en": "Page" },
-  "password": { "es": "Contraseña", "en": "Password" },
-  "product-banner-carousel": { "es": "Banner de Producto", "en": "Product Banner" },
-  "product-banner-simple": { "es": "Banner Simple", "en": "Simple Banner" },
-  "product-gallery": { "es": "Galería de Producto", "en": "Product Gallery" },
-  "product": { "es": "Producto", "en": "Product" },
-  "search": { "es": "Buscar", "en": "Search" },
-  "vision-mission": { "es": "Misión y Visión", "en": "Mission & Vision" },
-  "why-trust-us": { "es": "Confianza", "en": "Trust" },
-  // ...otros nombres comerciales existentes...
+  "about-us": { "es": "Nosotros", "en": "About Us" },
+  "testimonials": { "es": "Testimonios", "en": "Testimonials" },
+  "contact": { "es": "Contacto", "en": "Contact" },
+  "services": { "es": "Servicios", "en": "Services" }
 };
+
+console.log('📋 Configuración cargada:', SECTION_NAMES);
 
 // Función helper para obtener nombre de sección
 function getSectionDisplayName(sectionType, language = 'es') {
@@ -162,38 +175,46 @@ function getSectionDisplayName(sectionType, language = 'es') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 [DEBUG] Navegación iniciando...');
-  console.log('📍 [DEBUG] URL:', window.location.pathname);
-  console.log('📱 [DEBUG] Window width:', window.innerWidth);
+  console.log('� Iniciando navegación de secciones');
   
   // Solo ejecutar en página de inicio y en desktop
   const isIndex = window.location.pathname === '/' || 
                   window.location.pathname === '' ||
                   document.body.classList.contains('template-index');
   
-  console.log('✅ [DEBUG] Es página de inicio:', isIndex);
-  console.log('✅ [DEBUG] Es desktop:', window.innerWidth > 768);
+  console.log('🔍 Verificaciones:', {
+    pathname: window.location.pathname,
+    isIndex: isIndex,
+    windowWidth: window.innerWidth,
+    isDesktop: window.innerWidth > 768
+  });
   
   if (!isIndex || window.innerWidth <= 768) {
-    console.log('❌ [DEBUG] Saliendo - no cumple condiciones');
+    console.log('❌ Saliendo: no es página de inicio o no es desktop');
     return;
   }
   
   const nav = document.querySelector('.section-scroll-nav');
   const navList = document.querySelector('.section-scroll-nav__list');
   
-  console.log('🔍 [DEBUG] Nav element:', nav);
-  console.log('🔍 [DEBUG] NavList element:', navList);
-  
   if (!nav || !navList) {
-    console.log('❌ [DEBUG] No se encontraron elementos DOM');
+    console.log('❌ No se encontraron elementos de navegación');
     return;
   }
 
+  console.log('✅ Elementos encontrados, detectando secciones...');
+
   // Obtener configuraciones del elemento nav
+  const navStyles = getComputedStyle(nav);
   const scrollTrigger = parseInt(nav.style.getPropertyValue('--nav-scroll-trigger')) || 300;
   const autoHide = nav.style.getPropertyValue('--nav-auto-hide') === 'true';
   const hideDelay = parseInt(nav.style.getPropertyValue('--nav-hide-delay')) || 5;
+
+  console.log('⚙️ Configuraciones:', {
+    scrollTrigger: scrollTrigger,
+    autoHide: autoHide,
+    hideDelay: hideDelay
+  });
 
   // Función para obtener nombre de sección
   function getSectionName(element) {
@@ -254,11 +275,22 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     
+    console.log('🔍 Sección detectada:', {
+      element: element,
+      sectionType: sectionType,
+      id: element.getAttribute('id'),
+      dataType: element.getAttribute('data-section-type'),
+      className: element.className
+    });
+    
     // Usar nuestra función de configuración
     if (sectionType) {
-      return getSectionDisplayName(sectionType, 'es');
+      const configuredName = getSectionDisplayName(sectionType, 'es');
+      console.log('📝 Nombre final:', configuredName);
+      return configuredName;
     }
     
+    console.log('❌ Sin tipo de sección detectado');
     return 'Sección';
   }
 
@@ -266,137 +298,197 @@ document.addEventListener('DOMContentLoaded', function() {
   const sections = [];
   const allSections = document.querySelectorAll('.shopify-section');
   let isFirstSection = true;
-
-  console.log('🔍 [DEBUG] Total secciones encontradas:', allSections.length);
-
+  
+  console.log('🔍 Total secciones encontradas:', allSections.length);
+  
   allSections.forEach((element, index) => {
-    console.log(`📋 [DEBUG] Sección ${index}:`, {
-      id: element.id,
-      dataType: element.getAttribute('data-section-type'),
-      className: element.className,
-      height: element.offsetHeight,
-      width: element.offsetWidth
-    });
+    console.log(`Analizando sección ${index + 1}:`, element);
     
-    // Saltar header y footer
-    if (element.id && (element.id.includes('header') || element.id.includes('footer'))) {
-      console.log(`❌ [DEBUG] Saltando header/footer: ${element.id}`);
+    // Excluir header y footer
+    const isHeader = element.querySelector('header') || 
+                     element.getAttribute('data-section-type') === 'header-group';
+    const isFooter = element.querySelector('footer') || 
+                     element.getAttribute('data-section-type') === 'footer-group';
+    
+    if (isHeader || isFooter) {
+      console.log('❌ Saltando header/footer');
       return;
     }
-
-    const name = getSectionName(element);
-    console.log(`📝 [DEBUG] Nombre generado: "${name}"`);
     
-    // Solo añadir secciones que sean visibles
-    if (element.offsetHeight > 50 && element.offsetWidth > 50) {
+    // Solo secciones visibles
+    if (element.offsetHeight > 50 && element.offsetWidth > 0) {
+      const name = isFirstSection ? 'Inicio' : getSectionName(element);
+      
       sections.push({
         element: element,
-        name: name,
-        id: element.id || `section-${index}`,
-        isFirst: isFirstSection
+        name: name
       });
-      console.log(`✅ [DEBUG] Sección añadida: "${name}"`);
+      
+      console.log('✅ Sección añadida:', name);
       isFirstSection = false;
     } else {
-      console.log(`❌ [DEBUG] Sección muy pequeña: ${element.offsetHeight}x${element.offsetWidth}`);
+      console.log('❌ Sección no visible (height:', element.offsetHeight, 'width:', element.offsetWidth, ')');
     }
   });
-
-  console.log('📊 [DEBUG] Secciones finales:', sections.map(s => s.name));
-
-  // Si hay muy pocas secciones, no mostrar navegación
-  if (sections.length < 2) {
-    console.log(`❌ [DEBUG] Muy pocas secciones (${sections.length}), no mostrando navegación`);
+  
+  // Solo mostrar si hay más de 1 sección
+  if (sections.length <= 1) {
+    console.log('❌ Muy pocas secciones (', sections.length, '), ocultando navegación');
+    nav.style.display = 'none';
     return;
   }
-
+  
+  console.log('📊 Secciones finales:', sections.map(s => s.name));
+  
   // Crear botones de navegación
-  sections.forEach(section => {
-    const button = document.createElement('a');
+  sections.forEach((section, index) => {
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    
     button.className = 'section-scroll-nav__item';
     button.textContent = section.name;
-    button.href = `#${section.id}`;
+    button.setAttribute('data-index', index);
     
-    button.addEventListener('click', function(e) {
-      e.preventDefault();
+    // Click para scroll suave
+    button.addEventListener('click', function() {
+      console.log('🖱️ Click en:', section.name);
+      const rect = section.element.getBoundingClientRect();
+      const scrollTop = window.pageYOffset;
+      const targetY = rect.top + scrollTop - 80;
       
-      section.element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+      window.scrollTo({
+        top: Math.max(0, targetY),
+        behavior: 'smooth'
       });
     });
     
-    navList.appendChild(button);
+    li.appendChild(button);
+    navList.appendChild(li);
   });
-
-  console.log('🎯 [DEBUG] Navegación creada con', sections.length, 'secciones');
-  console.log('🔗 [DEBUG] Botones creados:', navList.children.length);
-
-  // Función para actualizar sección activa
-  function updateActiveSection() {
-    const scrollY = window.scrollY;
-    let activeIndex = 0;
-
-    // Encontrar la sección que está más cerca del viewport
-    for (let i = 0; i < sections.length; i++) {
-      const sectionTop = sections[i].element.offsetTop;
-      const sectionHeight = sections[i].element.offsetHeight;
+  
+  console.log('✅ Botones creados');
+  
+  // Observer para resaltar sección activa
+  const observer = new IntersectionObserver((entries) => {
+    let activeEntry = null;
+    let maxRatio = 0;
+    
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+        maxRatio = entry.intersectionRatio;
+        activeEntry = entry;
+      }
+    });
+    
+    if (activeEntry) {
+      const sectionIndex = sections.findIndex(s => s.element === activeEntry.target);
       
-      if (scrollY >= sectionTop - 200) {
-        activeIndex = i;
+      if (sectionIndex !== -1) {
+        document.querySelectorAll('.section-scroll-nav__item').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        const activeButton = document.querySelector(`[data-index="${sectionIndex}"]`);
+        if (activeButton) {
+          activeButton.classList.add('active');
+          console.log('🎯 Sección activa:', sections[sectionIndex].name);
+        }
       }
     }
-
-    // Actualizar clases activas
-    document.querySelectorAll('.section-scroll-nav__item').forEach((item, index) => {
-      item.classList.toggle('active', index === activeIndex);
-    });
-  }
-
-  // Control de visibilidad basado en scroll
-  let hideTimeout;
-  
-  function showNav() {
-    nav.classList.add('visible');
-    if (autoHide) {
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => {
-        nav.classList.remove('visible');
-      }, hideDelay * 1000);
-    }
-  }
-  
-  function hideNav() {
-    nav.classList.remove('visible');
-  }
-
-  // Event listeners
-  window.addEventListener('scroll', function() {
-    const scrollY = window.scrollY;
-    
-    if (scrollY > scrollTrigger) {
-      showNav();
-    } else {
-      hideNav();
-    }
-    
-    updateActiveSection();
+  }, {
+    threshold: [0.2, 0.5],
+    rootMargin: '-20% 0px -20% 0px'
   });
-
-  // Si auto-hide está habilitado, manejar hover
+  
+  // Observar secciones
+  sections.forEach(section => {
+    observer.observe(section.element);
+  });
+  
+  console.log('👁️ Observer configurado');
+  
+  // Control de visibilidad con scroll
+  let isVisible = false;
+  let autoHideTimeout = null;
+  
+  function handleScroll() {
+    const shouldShow = window.scrollY > scrollTrigger;
+    
+    if (shouldShow && !isVisible) {
+      nav.classList.add('visible');
+      isVisible = true;
+      console.log('👁️ Navegación visible');
+      
+      // Auto-hide si está habilitado
+      if (autoHide) {
+        startAutoHideTimer();
+      }
+    } else if (!shouldShow && isVisible) {
+      nav.classList.remove('visible');
+      nav.classList.remove('auto-hidden');
+      isVisible = false;
+      clearAutoHideTimer();
+      console.log('👁️ Navegación oculta');
+    }
+  }
+  
+  function startAutoHideTimer() {
+    clearAutoHideTimer();
+    autoHideTimeout = setTimeout(() => {
+      if (isVisible) {
+        nav.classList.add('auto-hidden');
+        console.log('⏰ Auto-hide activado');
+      }
+    }, hideDelay * 1000);
+  }
+  
+  function clearAutoHideTimer() {
+    if (autoHideTimeout) {
+      clearTimeout(autoHideTimeout);
+      autoHideTimeout = null;
+    }
+  }
+  
+  // Eventos para auto-hide
   if (autoHide) {
     nav.addEventListener('mouseenter', () => {
-      clearTimeout(hideTimeout);
+      nav.classList.remove('auto-hidden');
+      clearAutoHideTimer();
     });
     
     nav.addEventListener('mouseleave', () => {
-      hideTimeout = setTimeout(() => {
-        nav.classList.remove('visible');
-      }, hideDelay * 1000);
+      if (isVisible) {
+        startAutoHideTimer();
+      }
     });
   }
-
-  // Inicializar estado
-  updateActiveSection();
+  
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  console.log('✅ Navegación completamente inicializada');
 });
 </script>
+
+{% comment %}
+Navegación automática por secciones - VERSIÓN FINAL CON DEBUG:
+
+Características principales:
+1. Detección automática de secciones en la página de inicio
+2. Nombres configurados para todas las secciones principales
+3. Solo se muestra en desktop (> 768px)
+4. Aparece después de 300px de scroll
+5. Navegación suave y resaltado de sección activa
+6. Configuración integrada para evitar problemas de timing
+7. Logs detallados para debug
+
+Secciones configuradas:
+- carousel-banner → Inicio
+- news-cards → Noticias  
+- why-trust-us → Confianza
+- brands-carousel → Marcas
+- image-text-slider → Productos
+
+Para agregar nuevas secciones:
+1. Añadir entrada en SECTION_NAMES
+2. Definir nombres en español e inglés
+3. Guardar y recargar
+{% endcomment %}

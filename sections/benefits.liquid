@@ -1,0 +1,240 @@
+{% comment %} Sección de beneficios con hasta 4 bloques, cada uno con icono SVG, título y descripción. {% endcomment %}
+
+{% stylesheet %}
+.benefits-section-bg {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  box-sizing: border-box;
+  /* Asegura que el fondo cubra todo el ancho de la ventana */
+  z-index: 0;
+}
+.benefits-section-bg > .benefits {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 2rem;
+  text-align: center;
+  justify-items: center;
+}
+@media screen and (min-width: 600px) {
+  .benefits {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+@media screen and (min-width: 900px) {
+  .benefits {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+.benefit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.benefit__icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.benefit__title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.benefit__desc {
+  color: var(--color-foreground-secondary, #666);
+  font-size: 1rem;
+}
+{% endstylesheet %}
+
+<section class="benefits-section-bg" style="
+  {% if section.settings.bg_color != blank %}background-color: {{ section.settings.bg_color }};{% endif %}
+  {% if section.settings.margin_top != blank %}margin-top: {{ section.settings.margin_top }}px;{% endif %}
+  {% if section.settings.margin_bottom != blank %}margin-bottom: {{ section.settings.margin_bottom }}px;{% endif %}
+  {% if section.settings.padding != blank %}padding: {{ section.settings.padding }}px;{% endif %}
+">
+  {% if section.settings.section_title != blank %}
+    <h2 class="benefits-section-title" style="text-align:center;{% if section.settings.title_color != blank %}color: {{ section.settings.title_color }};{% endif %}{% if section.settings.section_title_size != blank %} font-size: {{ section.settings.section_title_size }}px;{% endif %} margin-bottom: 2rem;">{{ section.settings.section_title }}</h2>
+  {% endif %}
+  <div class="benefits" aria-label="Benefits">
+    {% for block in section.blocks %}
+      <div class="benefit" {{ block.shopify_attributes }}>
+        {% if block.settings.svg_icon != blank %}
+          <span class="benefit__icon" aria-hidden="true">{{ block.settings.svg_icon }}</span>
+        {% elsif block.settings.icon != blank %}
+          <span class="benefit__icon">
+            <img src="{{ block.settings.icon | image_url }}" alt="" width="56" height="56" loading="lazy">
+          </span>
+        {% endif %}
+        <div class="benefit__title" style="{% if section.settings.title_color != blank %}color: {{ section.settings.title_color }};{% endif %}{% if section.settings.benefit_title_size != blank %} font-size: {{ section.settings.benefit_title_size }}px;{% endif %}">{{ block.settings.title }}</div>
+        <div class="benefit__desc" style="{% if section.settings.desc_color != blank %}color: {{ section.settings.desc_color }};{% endif %}{% if section.settings.benefit_desc_size != blank %} font-size: {{ section.settings.benefit_desc_size }}px;{% endif %}">{{ block.settings.desc }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Benefits",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Título de la sección",
+      "default": "Nuestros beneficios"
+    },
+    {
+      "type": "range",
+      "id": "section_title_size",
+      "label": "Tamaño de fuente del título de sección (px)",
+      "min": 18,
+      "max": 56,
+      "step": 1,
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Color de fondo"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título"
+    },
+    {
+      "type": "range",
+      "id": "benefit_title_size",
+      "label": "Tamaño de fuente de los títulos de beneficio (px)",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "desc_color",
+      "label": "Color del texto descriptivo"
+    },
+    {
+      "type": "range",
+      "id": "benefit_desc_size",
+      "label": "Tamaño de fuente de las descripciones (px)",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margen superior (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margen inferior (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título"
+        },
+        {
+          "type": "textarea",
+          "id": "desc",
+          "label": "Descripción"
+        },
+        {
+          "type": "textarea",
+          "id": "svg_icon",
+          "label": "SVG inline",
+          "info": "Pega aquí el código SVG, por ejemplo: <svg ...>...</svg>. Si se rellena, tiene prioridad sobre la imagen."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "SVG como imagen (opcional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Benefits",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "Envío rápido",
+            "desc": "Recibe tus productos en tiempo récord en todo el país.",
+            "svg_icon": "<svg width=\"56\" height=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><rect x=\"1\" y=\"7\" width=\"15\" height=\"13\" rx=\"2\"/><path d=\"M16 10h4l2 2v5a2 2 0 0 1-2 2h-2\"/><circle cx=\"5.5\" cy=\"20.5\" r=\"1.5\"/><circle cx=\"18.5\" cy=\"20.5\" r=\"1.5\"/></svg>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "Pago seguro",
+            "desc": "Tus datos protegidos con tecnología de última generación.",
+            "svg_icon": "<svg width=\"56\" height=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "Atención personalizada",
+            "desc": "Soporte humano y cercano para resolver tus dudas.",
+            "svg_icon": "<svg width=\"56\" height=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"7\" r=\"4\"/><path d=\"M5.5 21a8.38 8.38 0 0 1 13 0\"/></svg>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "Garantía de satisfacción",
+            "desc": "Devoluciones fáciles y sin complicaciones.",
+            "svg_icon": "<svg width=\"56\" height=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path d=\"M20 6L9 17l-5-5\"/></svg>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -3,7 +3,7 @@
   assign blocks_count = section.blocks.size
 %}
 
-<section class="trust-packery{% if section.settings.animate_on_scroll %} section-appear{% endif %}" id="TrustPackery-{{ section_id }}" style="
+<section class="trust-packery{% if section.settings.animate_on_scroll %} section-appear{% endif %}" data-section-type="why-trust-us" id="TrustPackery-{{ section_id }}" style="
   --trust-cards-gap: {{ section.settings.gap }}px;
   --trust-text-color: {{ section.settings.text_color }};
   --trust-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
@@ -11,6 +11,13 @@
   --trust-section-padding-top: {{ section.settings.padding_top }}px;
   --trust-section-padding-bottom: {{ section.settings.padding_bottom }}px;
   --trust-mobile-text: {{ section.settings.show_mobile_text }};
+  background-color: {{ section.settings.background_color }};
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-top: var(--trust-section-padding-top);
+  padding-bottom: var(--trust-section-padding-bottom);
+  overflow: hidden;
 ">
   <div class="trust-packery__container container">
     {% if section.settings.title != blank %}
@@ -72,6 +79,24 @@
 </section>
 
 {% if section.settings.animate_on_scroll %}
+  <script>
+    // Forzar animación visible en el editor de temas de Shopify y refrescar al editar
+    document.addEventListener('DOMContentLoaded', function() {
+      var el = document.getElementById('TrustPackery-{{ section_id }}');
+      if (window.Shopify && Shopify.designMode && el) {
+        el.classList.add('section-appear--visible');
+        // Permitir ver la animación cada vez que se edita la sección
+        document.addEventListener('shopify:section:select', function(e) {
+          if (e.detail && e.detail.sectionId === '{{ section_id }}') {
+            el.classList.remove('section-appear--visible');
+            setTimeout(function() {
+              el.classList.add('section-appear--visible');
+            }, 100);
+          }
+        });
+      }
+    });
+  </script>
   <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
 {% endif %}
 
@@ -112,15 +137,16 @@
 
 {% stylesheet %}
   .trust-packery {
-    padding-top: var(--trust-section-padding-top);
-    padding-bottom: var(--trust-section-padding-bottom);
     width: 100%;
+    /* El fondo y paddings ahora van en el atributo style inline */
+    position: relative;
   }
 
   .trust-packery__container {
-    max-width: var(--page-width);
+    max-width: var(--page-width, 1200px);
     margin: 0 auto;
     padding: 0 1.5rem;
+    width: 100%;
   }
 
   .trust-packery__title {
@@ -303,13 +329,14 @@
       "default": "<p>Estas son algunas razones por las que nuestros clientes confían en nosotros.</p>"
     },
     {
-      "type": "range",
-      "id": "gap",
-      "label": "Espacio entre elementos",
-      "min": 0,
-      "max": 50,
-      "step": 2,
-      "default": 20
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#FFFFFF"
     },
     {
       "type": "color",
@@ -331,6 +358,19 @@
       "id": "text_color",
       "label": "Color del texto",
       "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Espacio entre elementos",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "default": 20
     },
     {
       "type": "range",

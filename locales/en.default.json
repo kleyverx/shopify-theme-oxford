@@ -11,7 +11,8 @@
     "comment_form_email": "Email",
     "comment_form_name": "Name",
     "comment_form_submit": "Post",
-    "comment_form_title": "Add a comment"
+    "comment_form_title": "Add a comment",
+    "read_more": "Read more"
   },
   "cart": {
     "checkout": "Checkout",
@@ -59,6 +60,7 @@
       "border_radius_bottom": "Bottom border radius (px)",
       "overlay_color": "Overlay color",
       "overlay_opacity": "Overlay opacity (%)",
+      "background_color": "Section background color",
       "background_image": "Background image (optional)",
       "border_radius_top": "Top border radius (px)",
       "min_height": "Min height (desktop, px)",
@@ -73,6 +75,10 @@
       "content_padding": "Content padding (px)",
       "button_bg_color": "Button background color",
       "button_text_color": "Button text color",
+      "button_border_radius": "Button border radius (px)",
+      "logo_image": "Logo image",
+      "favicon_image": "Favicon image",
+      "section_vertical_spacing": "Section vertical spacing (px)",
       "arrow_color": "Arrow color",
       "arrow_bg_color": "Arrow background color",
       "dot_active_color": "Active dot color",
@@ -132,7 +138,14 @@
       "menu_open": "Open menu",
       "menu_close": "Close menu"
     },
-    "header": "Header"
+    "slider": {
+      "previous_slide": "Previous slide",
+      "next_slide": "Next slide"
+    },
+    "header": "Header",
+    "buttons": "Buttons",
+    "images": "Images",
+    "spacing": "Spacing"
   },
   "labels": {
     "menu": "Menu",

@@ -1,0 +1,203 @@
+{% comment %}
+Configuración de nombres de secciones para la navegación automática
+Este archivo define los nombres que aparecerán en la navegación flotante
+{% endcomment %}
+
+{% capture section_names_json %}
+{
+  "carousel-banner": {
+    "es": "Inicio",
+    "en": "Home"
+  },
+  "hero-banner": {
+    "es": "Banner Principal",
+    "en": "Hero Banner"
+  },
+  "hero": {
+    "es": "Inicio",
+    "en": "Home"
+  },
+  "banner": {
+    "es": "Inicio", 
+    "en": "Home"
+  },
+  "main-banner": {
+    "es": "Inicio",
+    "en": "Home"
+  },
+  "news-cards": {
+    "es": "Noticias",
+    "en": "News"
+  },
+  "why-trust-us": {
+    "es": "Confianza",
+    "en": "Trust"
+  },
+  "why-trust": {
+    "es": "Confianza",
+    "en": "Trust"
+  },
+  "trust-us": {
+    "es": "Confianza",
+    "en": "Trust"
+  },
+  "trust": {
+    "es": "Confianza",
+    "en": "Trust"
+  },
+  "brands-carousel": {
+    "es": "Marcas",
+    "en": "Brands"
+  },
+  "image-text-slider": {
+    "es": "Productos",
+    "en": "Products"
+  },
+  "image-text-slider-section": {
+    "es": "Productos",
+    "en": "Products"
+  },
+  "careers": {
+    "es": "Carreras",
+    "en": "Careers"
+  },
+  "careers-investors": {
+    "es": "Únete",
+    "en": "Join Us"
+  },
+  "faq": {
+    "es": "FAQ",
+    "en": "FAQ"
+  },
+  "vision-mission": {
+    "es": "Misión",
+    "en": "Mission"
+  },
+  "about-us": {
+    "es": "Nosotros",
+    "en": "About Us"
+  },
+  "testimonials": {
+    "es": "Testimonios",
+    "en": "Testimonials"
+  },
+  "contact": {
+    "es": "Contacto",
+    "en": "Contact"
+  },
+  "services": {
+    "es": "Servicios",
+    "en": "Services"
+  },
+  "portfolio": {
+    "es": "Portafolio",
+    "en": "Portfolio"
+  },
+  "team": {
+    "es": "Equipo",
+    "en": "Team"
+  },
+  "blog": {
+    "es": "Blog",
+    "en": "Blog"
+  },
+  "gallery": {
+    "es": "Galería",
+    "en": "Gallery"
+  },
+  "features": {
+    "es": "Características",
+    "en": "Features"
+  },
+  "pricing": {
+    "es": "Precios",
+    "en": "Pricing"
+  },
+  "newsletter": {
+    "es": "Newsletter",
+    "en": "Newsletter"
+  },
+  "social": {
+    "es": "Redes Sociales",
+    "en": "Social Media"
+  },
+  "custom-section": {
+    "es": "Sección Personalizada",
+    "en": "Custom Section"
+  }
+}
+{% endcapture %}
+
+{% assign section_names_data = section_names_json | strip %}
+
+<script>
+  // Configuración de nombres de secciones disponible globalmente
+  window.SECTION_NAMES_CONFIG = {{ section_names_data }};
+  
+  // Función helper para obtener nombre de sección
+  window.getSectionName = function(sectionType, language = 'es') {
+    const config = window.SECTION_NAMES_CONFIG;
+    
+    if (config[sectionType] && config[sectionType][language]) {
+      return config[sectionType][language];
+    }
+    
+    // Fallback: generar nombre automático
+    if (sectionType) {
+      return sectionType
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+    
+    return language === 'es' ? 'Sección' : 'Section';
+  };
+  
+  console.log('📋 Configuración de nombres de secciones cargada:', window.SECTION_NAMES_CONFIG);
+</script>
+
+{% comment %}
+INSTRUCCIONES PARA AGREGAR NUEVAS SECCIONES:
+
+1. Agregar la nueva sección al JSON con su data-section-type
+2. Definir nombres en español (es) e inglés (en)
+3. Guardar el archivo y recargar la página
+
+Ejemplo:
+"mi-nueva-seccion": {
+  "es": "Mi Nueva Sección",
+  "en": "My New Section"
+}
+
+SECCIONES ACTUALMENTE CONFIGURADAS:
+- carousel-banner → Inicio / Home
+- hero-banner → Banner Principal / Hero Banner
+- hero → Inicio / Home
+- banner → Inicio / Home
+- main-banner → Inicio / Home
+- news-cards → Noticias / News
+- why-trust-us → Confianza / Trust
+- why-trust → Confianza / Trust
+- trust-us → Confianza / Trust
+- trust → Confianza / Trust
+- brands-carousel → Marcas / Brands
+- image-text-slider → Productos / Products
+- image-text-slider-section → Productos / Products
+- careers → Carreras / Careers
+- careers-investors → Únete / Join Us
+- faq → FAQ / FAQ
+- vision-mission → Misión / Mission
+- about-us → Nosotros / About Us
+- testimonials → Testimonios / Testimonials
+- contact → Contacto / Contact
+- services → Servicios / Services
+- portfolio → Portafolio / Portfolio
+- team → Equipo / Team
+- blog → Blog / Blog
+- gallery → Galería / Gallery
+- features → Características / Features
+- pricing → Precios / Pricing
+- newsletter → Newsletter / Newsletter
+- social → Redes Sociales / Social Media
+- custom-section → Sección Personalizada / Custom Section
+{% endcomment %}

@@ -5,9 +5,10 @@
 
 <section 
   class="image-text-slider{% if section.settings.animate_on_scroll %} section-appear{% endif %}" 
+  data-section-type="image-text-slider"
   id="slider-{{ section.id }}"
   aria-label="{{ section.settings.section_title | escape | default: 'Image and text slider' }}"
-  style="border-radius: {{ section.settings.border_radius }}px; overflow: hidden;"
+  style="border-radius: {{ section.settings.border_radius }}px; overflow: hidden; background-color: {{ section.settings.background_color }};"
 >
   {% if section.settings.section_title != blank %}
     <div class="section-header">
@@ -28,9 +29,8 @@
               <div class="slide-image">
                 <div class="slide-image-card" style="border-radius: {{ section.settings.image_border_radius }}px;">
                   {% if block.settings.image != blank %}
-                    {% assign img_url = block.settings.image | image_url: width: 800 %}
                     <img 
-                      src="{{ img_url }}" 
+                      src="{{ block.settings.image | image_url: width: 800 }}" 
                       alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
                       loading="lazy"
                       width="{{ block.settings.image.width }}"
@@ -85,8 +85,12 @@
 <style>
   .image-text-slider {
     padding: 0;
-    width: 100%;
-    margin: {{ section.settings.margin_top }}px 0 {{ section.settings.margin_bottom }}px 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
     position: relative;
     transition: background {{ section.settings.animation_speed }}ms ease;
     {% if section.settings.add_shadow %}
@@ -135,6 +139,8 @@
     width: 100%;
     padding: 40px 0;
     max-width: 100vw;
+    display: flex;
+    justify-content: center;
   }
 
   .slide-content-wrapper {
@@ -143,7 +149,7 @@
     width: 100%;
     padding: 0 {{ section.settings.content_padding }}px;
     gap: 40px;
-    max-width: 100vw;
+    max-width: 1200px;
     margin: 0 auto;
   }
 
@@ -481,7 +487,7 @@
         nextSlideMessage: 'Next slide',
         firstSlideMessage: 'This is the first slide',
         lastSlideMessage: 'This is the last slide',
-        paginationBulletMessage: 'Go to slide {{index}}',
+        paginationBulletMessage: 'Go to slide %index%',
       },
       on: {
         init: function() {
@@ -746,6 +752,12 @@
     {
       "type": "header",
       "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo de la sección",
+      "default": "#ffffff"
     },
     {
       "type": "color",

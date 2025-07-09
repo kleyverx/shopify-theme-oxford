@@ -5,33 +5,97 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+<section class="cart-section" style="background-color: {{ section.settings.background_color }};">
+  <div class="cart-container">
+    <h1>{{ 'cart.title' | t }}</h1>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+    <form action="{{ routes.cart_url }}" method="post" class="cart-form">
+      <table class="cart-table">
+        {% for item in cart.items %}
+          <tr>
+            <td>
+              {% render 'image', image: item.image, url: item.url %}
+            </td>
+            <td>
+              <p>{{ item.product.title }}</p>
+              {{ 'cart.remove' | t | link_to: item.url_to_remove }}
+            </td>
+            <td>
+              <input type="text" name="updates[]" value="{{ item.quantity }}">
+              <input type="submit" value="{{ 'cart.update' | t }}">
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+      <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
+    </form>
+  </div>
+</section>
 
 {% schema %}
 {
   "name": "t:general.cart",
-  "settings": []
+  "settings": [
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#FFFFFF"
+    }
+  ]
 }
 {% endschema %}
+
+{% stylesheet %}
+  .cart-section {
+    width: 100%;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 4rem 0;
+  }
+  
+  .cart-container {
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+  }
+  
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+  }
+  
+  .cart-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .cart-form input[type="text"] {
+    padding: 0.5rem;
+    width: 60px;
+    text-align: center;
+  }
+  
+  .cart-form input[type="submit"] {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-foreground, #333);
+    color: var(--color-background, #fff);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .cart-form input[name="checkout"] {
+    display: block;
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    background-color: var(--color-accent, #005bd3);
+  }
+{% endstylesheet %}

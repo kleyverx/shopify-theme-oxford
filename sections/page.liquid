@@ -5,13 +5,50 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<h1>{{ page.title }}</h1>
+<section class="page-section" style="background-color: {{ section.settings.background_color }};">
+  <div class="page-container">
+    <h1>{{ page.title }}</h1>
 
-{{ page.content }}
+    <div class="page-content">
+      {{ page.content }}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .page-section {
+    width: 100%;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 2rem 0;
+  }
+  
+  .page-container {
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+  }
+  
+  .page-content {
+    margin: 2rem 0;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.page",
-  "settings": []
+  "settings": [
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#FFFFFF"
+    }
+  ]
 }
 {% endschema %}

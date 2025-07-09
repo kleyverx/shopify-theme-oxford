@@ -1,15 +1,10 @@
 {% comment %}
-  Sección de Visi            {% if block.settings.icon != blank %}
-              <img src="{{ block.settings.icon | image_url: width: 120 }}" 
-                   alt="{{ block.settings.title }}"
-                   class="vision-mission__icon vision-mission__icon--image"
-                   width="80"
-                   height="80"
-                   loading="lazy">sión
+  Sección de Visión y Misión
   Una sección para mostrar la filosofía de la empresa, dividida en visión, misión y valores.
 {% endcomment %}
 
-<section class="vision-mission {% if section.settings.full_width %}vision-mission--full-width{% endif %}"
+<section class="vision-mission{% if section.settings.animate_on_scroll %} section-appear{% endif %} vision-mission--full-width"
+  data-section-type="vision-mission"
   style="background-color: {{ section.settings.background_color }};">
   <div class="vision-mission__container">
     
@@ -158,8 +153,9 @@
 }
 
 .vision-mission__container {
-  max-width: 1200px;
+  max-width: var(--page-width, 1200px);
   margin: 0 auto;
+  width: 100%;
 }
 
 .vision-mission__title {
@@ -379,6 +375,13 @@
       "id": "full_width",
       "label": "Ancho completo",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_on_scroll",
+      "label": "Animar al aparecer",
+      "default": true,
+      "info": "Activa una animación elegante cuando la sección entra en pantalla."
     }
   ],
   "blocks": [
@@ -530,3 +533,7 @@
   ]
 }
 {% endschema %}
+
+{% if section.settings.animate_on_scroll %}
+  <script src="{{ 'section-appear.js' | asset_url }}" defer></script>
+{% endif %}

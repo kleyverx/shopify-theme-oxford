@@ -1,4 +1,4 @@
-<div class="custom-section full-width">
+<div class="custom-section full-width" style="background-color: {{ section.settings.background_color }};">
   {% if section.settings.background_image %}
     <div class="custom-section__background">
       {{ section.settings.background_image | image_url: width: 2000 | image_tag }}
@@ -46,9 +46,19 @@
   "blocks": [{ "type": "@theme" }],
   "settings": [
     {
+      "type": "header",
+      "content": "Fondo"
+    },
+    {
       "type": "image_picker",
       "id": "background_image",
       "label": "t:labels.background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#FFFFFF"
     }
   ],
   "presets": [

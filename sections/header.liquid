@@ -19,7 +19,17 @@
     </nav>
 
     <div class="header__logo-wrapper">
-      {% if section.settings.logo != blank %}
+      {% if settings.logo_image != blank %}
+        <a href="{{ routes.root_url }}" class="header__logo-link">
+          {{ settings.logo_image | image_url: width: 160 | image_tag:
+              class: 'header__logo',
+              widths: '50, 100, 150, 200, 250, 300',
+              sizes: '(max-width: 749px) 50vw, 160px',
+              alt: shop.name,
+              preload: true
+          }}
+        </a>
+      {% elsif section.settings.logo != blank %}
         <a href="{{ routes.root_url }}" class="header__logo-link">
           {{ section.settings.logo | image_url: width: 160 | image_tag:
               class: 'header__logo',

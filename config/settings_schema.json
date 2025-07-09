@@ -79,5 +79,196 @@
         "default": 4
       }
     ]
+  },
+  {
+    "name": "Navegación de Secciones",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración de la navegación flotante"
+      },
+      {
+        "type": "checkbox",
+        "id": "section_nav_enable",
+        "label": "Habilitar navegación de secciones",
+        "default": true,
+        "info": "Muestra una navegación flotante en el lado derecho en desktop"
+      },
+      {
+        "type": "select",
+        "id": "section_nav_position",
+        "label": "Posición de la navegación",
+        "options": [
+          {
+            "value": "right",
+            "label": "Derecha"
+          },
+          {
+            "value": "left",
+            "label": "Izquierda"
+          }
+        ],
+        "default": "right"
+      },
+      {
+        "type": "range",
+        "id": "section_nav_offset",
+        "min": 1,
+        "max": 5,
+        "step": 0.5,
+        "unit": "rem",
+        "label": "Distancia del borde",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "section_nav_scroll_trigger",
+        "min": 100,
+        "max": 800,
+        "step": 50,
+        "unit": "px",
+        "label": "Aparecer después de scroll",
+        "default": 300,
+        "info": "Después de cuántos píxeles de scroll aparece la navegación"
+      },
+      {
+        "type": "header",
+        "content": "Colores y estilo"
+      },
+      {
+        "type": "color",
+        "id": "section_nav_bg_color",
+        "label": "Color de fondo",
+        "default": "#FFFFFF",
+        "info": "Color de fondo de la navegación"
+      },
+      {
+        "type": "range",
+        "id": "section_nav_bg_opacity",
+        "min": 0.1,
+        "max": 1,
+        "step": 0.1,
+        "label": "Opacidad del fondo",
+        "default": 0.9
+      },
+      {
+        "type": "color",
+        "id": "section_nav_text_color",
+        "label": "Color del texto",
+        "default": "#666666"
+      },
+      {
+        "type": "color",
+        "id": "section_nav_active_bg",
+        "label": "Color de fondo activo",
+        "default": "#667eea"
+      },
+      {
+        "type": "color",
+        "id": "section_nav_active_text",
+        "label": "Color de texto activo",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "range",
+        "id": "section_nav_border_radius",
+        "min": 0,
+        "max": 3,
+        "step": 0.5,
+        "unit": "rem",
+        "label": "Redondez de bordes",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "section_nav_blur",
+        "min": 0,
+        "max": 20,
+        "step": 2,
+        "unit": "px",
+        "label": "Efecto de difuminado",
+        "default": 10,
+        "info": "Efecto backdrop-filter blur"
+      },
+      {
+        "type": "header",
+        "content": "Comportamiento"
+      },
+      {
+        "type": "checkbox",
+        "id": "section_nav_auto_hide",
+        "label": "Ocultar automáticamente",
+        "default": false,
+        "info": "Oculta la navegación después de unos segundos sin interacción"
+      },
+      {
+        "type": "range",
+        "id": "section_nav_hide_delay",
+        "min": 2,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "label": "Tiempo antes de ocultar",
+        "default": 5,
+        "info": "Solo si 'Ocultar automáticamente' está habilitado"
+      }
+    ]
+  },
+  {
+    "name": "t:general.buttons",
+    "settings": [
+      {
+        "type": "color",
+        "id": "button_bg_color",
+        "label": "t:labels.button_bg_color",
+        "default": "#333333"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color",
+        "label": "t:labels.button_text_color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "range",
+        "id": "button_border_radius",
+        "min": 0,
+        "max": 16,
+        "step": 1,
+        "unit": "px",
+        "label": "t:labels.button_border_radius",
+        "default": 4
+      }
+    ]
+  },
+  {
+    "name": "t:general.images",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo_image",
+        "label": "t:labels.logo_image"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon_image",
+        "label": "t:labels.favicon_image"
+      }
+    ]
+  },
+  {
+    "name": "t:general.spacing",
+    "settings": [
+      {
+        "type": "range",
+        "id": "section_vertical_spacing",
+        "min": 0,
+        "max": 120,
+        "step": 4,
+        "unit": "px",
+        "label": "t:labels.section_vertical_spacing",
+        "default": 40
+      }
+    ]
   }
 ]
