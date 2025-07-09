@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
+    {% # Force Spanish locale if not already using it %}
+    {% if request.locale.iso_code != 'es' %}
+      <script>
+        // Only redirect if we're not already on the Spanish version and we're not in the theme editor
+        if (!window.Shopify || !window.Shopify.designMode) {
+          var currentUrl = window.location.href;
+          // Check if the URL already has a locale parameter
+          if (currentUrl.indexOf('/es/') === -1) {
+            // Redirect to Spanish version
+            window.location.href = currentUrl.replace(window.location.pathname, '/es' + window.location.pathname);
+          }
+        }
+      </script>
+    {% endif %}
+    
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 

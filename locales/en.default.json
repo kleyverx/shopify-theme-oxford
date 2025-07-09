@@ -145,9 +145,22 @@
     "header": "Header",
     "buttons": "Buttons",
     "images": "Images",
-    "spacing": "Spacing"
+    "spacing": "Spacing",
+    "typography": "Typography",
+    "fonts": "Fonts"
   },
   "labels": {
+    "button_bg_color": "Button background color",
+    "button_text_color": "Button text color",
+    "button_border_radius": "Button border radius (px)",
+    "logo_image": "Logo image",
+    "favicon_image": "Favicon image",
+    "section_vertical_spacing": "Section vertical spacing (px)",
+    "page_width": "Page width",
+    "page_margin": "Page margin",
+    "background": "Background",
+    "foreground": "Foreground",
+    "input_corner_radius": "Input corner radius",
     "menu": "Menu",
     "color": "Color",
     "bg_color": "Background color",
@@ -183,7 +196,6 @@
     "opacity": "Opacity",
     "color_change": "Color change",
     "scale": "Scale",
-    "background": "Background",
     "fade": "Fade",
     "slide": "Slide",
     "bounce": "Bounce"
