@@ -158,3 +158,22 @@ Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our pr
 ## License
 
 Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+
+# Oxford Theme
+
+Tema Shopify desarrollado por Kleyver Urbina
+
+- Autor: Kleyver Urbina
+- Email: kleyvercell2@gmail.com
+- GitHub: [kleyver.x](https://github.com/kleyverx)
+- Fecha de entrega: 10 de julio de 2025
+
+Este tema fue creado a medida para el cliente y contiene personalizaciones avanzadas de producto, banners, accesibilidad y opciones de edición desde el Theme Editor.
+
+**Instrucciones de instalación:**
+1. Comprime todo el contenido de esta carpeta en un archivo .zip.
+2. Sube el zip desde el panel de administración de Shopify en "Temas > Añadir tema > Subir archivo zip".
+3. Publica el tema o pruébalo en modo vista previa.
+
+**Soporte y contacto:**  
+Para soporte, mejoras o dudas, contacta a Kleyver Urbina en kleyvercell2@gmail.com.

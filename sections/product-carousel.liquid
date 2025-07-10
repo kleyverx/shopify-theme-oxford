@@ -5,19 +5,19 @@
 <section class="product-carousel-section" id="product-carousel-{{ section.id }}" style="background: {{ section.settings.background_color }};">
   <div class="product-carousel-wrapper">
     {% if section.settings.carousel_title != blank %}
-      <h2 class="product-carousel-title-main">{{ section.settings.carousel_title }}</h2>
+      <h2 class="product-carousel-title-main product-carousel-title-appear" style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.carousel_title_size }}px;">{{ section.settings.carousel_title }}</h2>
     {% endif %}
     <div class="product-carousel-track">
       {% assign collection_handle = section.settings.collection %}
       {% assign collection = collections[collection_handle] %}
-      {% if collection and collection.products_count > 0 %}
+      {% if collection and collection.products and collection.products.size > 0 %}
         {% for product in collection.products limit: section.settings.products_limit %}
           <div class="product-carousel-item">
             <a href="{{ product.url }}" class="product-carousel-link">
               <div class="product-carousel-image-wrapper">
                 <img src="{{ product.featured_image | image_url: width: 480 }}" alt="{{ product.title | escape }}" class="product-carousel-image" loading="lazy" width="480" height="480">
               </div>
-              <div class="product-carousel-title">{{ product.title }}</div>
+              <div class="product-carousel-title product-carousel-title-appear" style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.text_size }}px;">{{ product.title }}</div>
             </a>
           </div>
         {% endfor %}
@@ -117,12 +117,32 @@
 .product-carousel-item:hover .product-carousel-image {
   transform: translateX(-12px);
 }
+.product-carousel-title,
+.product-carousel-title-appear {
+  color: {{ section.settings.text_color }};
+}
 .product-carousel-title {
   font-size: 1.2rem;
   font-weight: 600; /* semibold */
   margin-bottom: 0;
   color: #222;
   text-decoration: none;
+}
+.product-carousel-title-appear {
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  animation: productTitleAppear 0.7s cubic-bezier(.77,0,.18,1) forwards;
+  animation-delay: 0.2s;
+}
+@keyframes productTitleAppear {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .product-carousel-link {
   text-decoration: none;
@@ -277,6 +297,30 @@
       "step": 1,
       "label": "Cantidad de productos a mostrar",
       "default": 8
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto del producto",
+      "default": "#222"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Tamaño del texto del producto",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "default": 19
+    },
+    {
+      "type": "range",
+      "id": "carousel_title_size",
+      "label": "Tamaño del título del carrusel",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "default": 28
     }
   ],
   "presets": [
