@@ -104,33 +104,54 @@
   document.addEventListener('DOMContentLoaded', function() {
     const sectionId = '{{ section_id }}';
     const trustItems = document.querySelectorAll(`#TrustPackery-${sectionId} .trust-packery__item`);
-    
-    // Solo aplicamos el efecto en dispositivos móviles
     const isMobile = window.innerWidth < 750;
-    
+    const showOnScroll = {{ section.settings.show_mobile_text | json }};
+
     if (isMobile) {
-      const observerOptions = {
-        root: null, // viewport
-        rootMargin: '0px',
-        threshold: 0.3 // 30% del elemento visible
-      };
-      
-      const observerCallback = (entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          } else {
-            // Si quieres que el efecto se repita cada vez que sale del viewport, descomenta la siguiente línea
-            // entry.target.classList.remove('is-visible');
-          }
+      if (showOnScroll) {
+        // Mostrar al hacer scroll (IntersectionObserver)
+        const observerOptions = {
+          root: null,
+          rootMargin: '0px',
+          threshold: 0.3
+        };
+        const observerCallback = (entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+            } else {
+              entry.target.classList.remove('is-visible');
+            }
+            entry.target.classList.remove('is-tapped'); // Asegura que no se mezclen
+          });
+        };
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        trustItems.forEach(item => {
+          observer.observe(item);
         });
-      };
-      
-      const observer = new IntersectionObserver(observerCallback, observerOptions);
-      
-      trustItems.forEach(item => {
-        observer.observe(item);
-      });
+      } else {
+        // Mostrar al tocar la imagen
+        trustItems.forEach(item => {
+          item.addEventListener('click', function(e) {
+            if (!item.classList.contains('is-tapped')) {
+              trustItems.forEach(i => i.classList.remove('is-tapped'));
+              item.classList.add('is-tapped');
+            } else {
+              item.classList.remove('is-tapped');
+            }
+            item.classList.remove('is-visible'); // Asegura que no se mezclen
+            e.stopPropagation();
+          });
+        });
+        // Cerrar al tocar fuera
+        document.addEventListener('click', function(e) {
+          trustItems.forEach(item => {
+            if (!item.contains(e.target)) {
+              item.classList.remove('is-tapped');
+            }
+          });
+        });
+      }
     }
   });
 </script>
@@ -273,14 +294,35 @@
     align-items: center;
     justify-content: center;
     transition: opacity 0.4s ease;
+    pointer-events: none;
   }
 
   .trust-packery__item:hover .trust-packery__overlay {
     opacity: 1;
+    pointer-events: auto;
   }
 
-  .trust-packery__item.is-visible .trust-packery__overlay {
-    opacity: 1;
+  @media (max-width: 749px) {
+    .trust-packery__item .trust-packery__overlay,
+    .trust-packery__item .trust-packery__content {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .trust-packery__item.is-visible .trust-packery__overlay,
+    .trust-packery__item.is-tapped .trust-packery__overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .trust-packery__item.is-visible .trust-packery__content,
+    .trust-packery__item.is-tapped .trust-packery__content {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .trust-packery__item .trust-packery__content {
+      transform: translateY(20px);
+    }
   }
 
   .trust-packery__content {
