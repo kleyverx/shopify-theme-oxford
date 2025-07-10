@@ -1,0 +1,286 @@
+{% comment %}
+  Carrusel de productos de una colección seleccionable.
+{% endcomment %}
+
+<section class="product-carousel-section" id="product-carousel-{{ section.id }}" style="background: {{ section.settings.background_color }};">
+  <div class="product-carousel-wrapper">
+    {% if section.settings.carousel_title != blank %}
+      <h2 class="product-carousel-title-main">{{ section.settings.carousel_title }}</h2>
+    {% endif %}
+    <div class="product-carousel-track">
+      {% assign collection_handle = section.settings.collection %}
+      {% assign collection = collections[collection_handle] %}
+      {% if collection and collection.products_count > 0 %}
+        {% for product in collection.products limit: section.settings.products_limit %}
+          <div class="product-carousel-item">
+            <a href="{{ product.url }}" class="product-carousel-link">
+              <div class="product-carousel-image-wrapper">
+                <img src="{{ product.featured_image | image_url: width: 480 }}" alt="{{ product.title | escape }}" class="product-carousel-image" loading="lazy" width="480" height="480">
+              </div>
+              <div class="product-carousel-title">{{ product.title }}</div>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="product-carousel-empty">No hay productos en esta colección.</div>
+      {% endif %}
+    </div>
+    <button class="product-carousel-arrow product-carousel-arrow--prev" aria-label="Anterior">&#8592;</button>
+    <button class="product-carousel-arrow product-carousel-arrow--next" aria-label="Siguiente">&#8594;</button>
+    <div class="product-carousel-fade product-carousel-fade--left"></div>
+    <div class="product-carousel-fade product-carousel-fade--right"></div>
+  </div>
+</section>
+
+<style>
+.product-carousel-section {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  padding: 32px 0;
+}
+.product-carousel-title-main {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+.product-carousel-wrapper {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.product-carousel-fade,
+.product-carousel-fade--left,
+.product-carousel-fade--right {
+  background: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  mix-blend-mode: normal !important;
+  border-radius: 0 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  display: none !important;
+}
+.product-carousel-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 8px 48px;
+  scrollbar-width: none; /* Firefox */
+}
+.product-carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+.product-carousel-item {
+  min-width: 320px;
+  max-width: 340px;
+  background: transparent;
+  border-radius: 16px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 16px 32px;
+  transition: box-shadow 0.2s;
+}
+.product-carousel-item:hover {
+  box-shadow: none;
+}
+.product-carousel-image-wrapper {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.product-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.3s cubic-bezier(.77,0,.18,1);
+}
+.product-carousel-item:hover .product-carousel-image {
+  transform: translateX(-12px);
+}
+.product-carousel-title {
+  font-size: 1.2rem;
+  font-weight: 600; /* semibold */
+  margin-bottom: 0;
+  color: #222;
+  text-decoration: none;
+}
+.product-carousel-link {
+  text-decoration: none;
+}
+.product-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: pointer;
+  z-index: 10;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.product-carousel-arrow--prev { left: 8px; }
+.product-carousel-arrow--next { right: 8px; }
+.product-carousel-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.product-carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #bbb;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+}
+.product-carousel-dot.active {
+  background: #222;
+}
+@media (max-width: 767px) {
+  .product-carousel-track { padding: 8px 8px; gap: 12px; }
+  .product-carousel-item { min-width: 220px; max-width: 240px; }
+  .product-carousel-arrow { width: 32px; height: 32px; font-size: 1.1rem; bottom: auto; }
+  .product-carousel-fade { width: 18px; border-radius: 0 18px 18px 0 / 0 100% 100% 0; }
+  .product-carousel-fade--left { border-radius: 0 18px 18px 0 / 0 100% 100% 0; }
+  .product-carousel-fade--right { border-radius: 18px 0 0 18px / 100% 0 0 100%; }
+}
+</style>
+
+<script>
+(function() {
+  const section = document.getElementById('product-carousel-{{ section.id }}');
+  if (!section) return;
+  const track = section.querySelector('.product-carousel-track');
+  const prevBtn = section.querySelector('.product-carousel-arrow--prev');
+  const nextBtn = section.querySelector('.product-carousel-arrow--next');
+  if (!track || !prevBtn || !nextBtn) return;
+
+  // Carousel logic
+  const items = track.querySelectorAll('.product-carousel-item');
+  const visibleCount = Math.floor(track.offsetWidth / items[0].offsetWidth) || 1;
+  const total = items.length;
+  let current = 0;
+  let autoScrollInterval;
+
+  // Pagination
+  const pagination = document.createElement('div');
+  pagination.className = 'product-carousel-pagination';
+  const pageCount = Math.max(1, total - visibleCount + 1);
+  for (let i = 0; i < pageCount; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'product-carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Ir a la página ' + (i+1));
+    dot.addEventListener('click', function() {
+      goTo(i);
+      resetAutoScroll();
+    });
+    pagination.appendChild(dot);
+  }
+  section.querySelector('.product-carousel-wrapper').appendChild(pagination);
+
+  function updatePagination(idx) {
+    const dots = pagination.querySelectorAll('.product-carousel-dot');
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === idx));
+  }
+
+  function goTo(idx) {
+    current = Math.max(0, Math.min(idx, pageCount-1));
+    track.scrollTo({ left: current * items[0].offsetWidth, behavior: 'smooth' });
+    updatePagination(current);
+  }
+
+  prevBtn.addEventListener('click', function() {
+    goTo(current - 1 < 0 ? pageCount - 1 : current - 1);
+    resetAutoScroll();
+  });
+  nextBtn.addEventListener('click', function() {
+    goTo((current + 1) % pageCount);
+    resetAutoScroll();
+  });
+
+  function autoScroll() {
+    autoScrollInterval = setInterval(function() {
+      goTo((current + 1) % pageCount);
+    }, 3500);
+  }
+  function resetAutoScroll() {
+    clearInterval(autoScrollInterval);
+    autoScroll();
+  }
+  autoScroll();
+
+  // Update on resize
+  window.addEventListener('resize', function() {
+    // Optionally, recalculate visibleCount and pageCount here for full responsiveness
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Carrusel de productos",
+  "settings": [
+    {
+      "type": "text",
+      "id": "carousel_title",
+      "label": "Título del carrusel",
+      "default": "Productos de la colección"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo del carrusel",
+      "default": "#fff"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Colección de productos"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": "Cantidad de productos a mostrar",
+      "default": 8
+    }
+  ],
+  "presets": [
+    { "name": "Carrusel de productos" }
+  ]
+}
+{% endschema %}

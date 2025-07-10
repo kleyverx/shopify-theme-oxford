@@ -1,0 +1,121 @@
+{%- comment -%}
+  Carrusel de productos mejorado con selección de colección, flechas, paginación
+{%- endcomment -%}
+
+{% assign collection_to_show = collections[collection_handle] | default: product.collections.first %}
+{% if collection_to_show and collection_to_show.products.size > 1 %}
+  <section class="product-carousel-section" id="product-carousel-related">
+    <div class="product-carousel-wrapper">
+      <h2 class="product-carousel-title-main">{{ carousel_title | default: 'Productos relacionados' }}</h2>
+      
+      <!-- Controles de navegación -->
+      <div class="product-carousel-controls">
+        <button class="product-carousel-arrow product-carousel-arrow-prev" aria-label="Anterior" disabled>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button class="product-carousel-arrow product-carousel-arrow-next" aria-label="Siguiente">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="product-carousel-container">
+        <div class="product-carousel-track" id="carousel-track">
+          {% for related_product in collection_to_show.products limit: 12 %}
+            {% if related_product.id != product.id %}
+              <div class="product-carousel-item">
+                <a href="{{ related_product.url }}" class="product-carousel-link">
+                  <div class="product-carousel-image-wrapper">
+                    <img src="{{ related_product.featured_image | image_url: width: 320 }}" alt="{{ related_product.title | escape }}" class="product-carousel-image" loading="lazy" width="320" height="320">
+                  </div>
+                  <div class="product-carousel-title">{{ related_product.title }}</div>
+                </a>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div class="product-carousel-pagination" id="carousel-pagination">
+        <!-- Los puntos se generan con JavaScript -->
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<style>
+.product-carousel-section {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  padding: 32px 0;
+}
+.product-carousel-title-main {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+.product-carousel-wrapper {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.product-carousel-track {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1rem;
+}
+.product-carousel-item {
+  flex: 0 0 auto;
+  width: 220px;
+  scroll-snap-align: start;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+.product-carousel-item:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+.product-carousel-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 1rem;
+}
+.product-carousel-image-wrapper {
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.product-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  background: #f3f4f6;
+}
+.product-carousel-title {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+</style>

@@ -149,6 +149,9 @@
     "typography": "Typography",
     "fonts": "Fonts"
   },
+  "newsletter": {
+    "success": "Thank you for subscribing!"
+  },
   "labels": {
     "button_bg_color": "Button background color",
     "button_text_color": "Button text color",

@@ -1,49 +1,488 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+  Página de producto mejorada: centrada, imágenes optimizadas, background full width
 {% endcomment %}
 
 <section class="product-section" style="background-color: {{ section.settings.background_color }};">
   <div class="product-container">
-    <div class="product-images">
-      {% for image in product.images %}
-        {% render 'image', class: 'product-image', image: image %}
-      {% endfor %}
-    </div>
+    <div class="product-card">
+      <div class="product-grid">
+        <!-- Columna izquierda: Imagen principal y secundarias -->
+        <div class="product-image-col">
+          {% assign main_image = product.images | first %}
+          {% if main_image %}
+            <div class="product-main-image">
+              {% render 'image', class: 'product-main-img', image: main_image %}
+            </div>
+          {% endif %}
+          
+          <!-- Imágenes secundarias en grid -->
+          {% assign secondary_images = product.images | slice: 1, product.images.size %}
+          {% if secondary_images.size > 0 %}
+            <div class="product-secondary-images">
+              {% for image in secondary_images %}
+                <div class="secondary-image-wrapper">
+                  {% render 'image', class: 'product-image-secondary', image: image %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
 
-    <div class="product-info">
-      <h1>{{ product.title }}</h1>
-      <p>{{ product.price | money }}</p>
-      <p>{{ product.description }}</p>
-    </div>
-
-    <div class="product-form">
-      {% form 'product', product %}
-        {% assign current_variant = product.selected_or_first_available_variant %}
-
-        <select name="id">
-          {% for variant in product.variants %}
-            <option
-              value="{{ variant.id }}"
-              {% if variant == current_variant %}
-                selected="selected"
+        <!-- Columna derecha: Contenido centrado -->
+        <div class="product-content-col">
+          <div class="product-content-wrapper">
+            <div class="product-main-content">
+              <h1 class="product-title">{{ section.settings.product_title | default: product.title }}</h1>
+              
+              {% if section.settings.product_subtitle != blank %}
+                <p class="product-subtitle">{{ section.settings.product_subtitle }}</p>
               {% endif %}
-            >
-              {{ variant.title }} - {{ variant.price | money }}
-            </option>
-          {% endfor %}
-        </select>
+              
+              {% if section.settings.show_description != false %}
+                <div class="product-description">
+                  {{ section.settings.product_description | default: product.description }}
+                </div>
+              {% endif %}
 
-        <input type="text" name="quantity" min="1" value="1">
+              <!-- Bloques custom HTML -->
+              {% for block in section.blocks %}
+                {% if block.type == 'custom_html' %}
+                  <div class="product-custom-html">{{ block.settings.html_content }}</div>
+                {% endif %}
+              {% endfor %}
 
-        <input type="submit" value="Add to cart">
-        {{ form | payment_button }}
-      {% endform %}
+              <!-- Bloque de suscripción -->
+              <div class="product-subscribe-wrapper" style="background: {{ section.settings.subscribe_bg | default: '#f9fafb' }}; padding: 10px; border-radius: 10px; max-width: 350px;">
+                <div class="product-subscribe-inner" style="background: {{ section.settings.subscribe_card_bg | default: '#fff' }}; padding: 10px; border-radius: 10px;">
+                  <h2 style="color: {{ section.settings.subscribe_title_color | default: '#2E4695' }};">
+                    {{ section.settings.subscribe_title | default: 'Suscríbete para novedades' }}
+                  </h2>
+                  {% if section.settings.subscribe_text != blank %}
+                    <p class="product-subscribe-text" style="color: {{ section.settings.subscribe_text_color | default: '#374151' }};">{{ section.settings.subscribe_text }}</p>
+                  {% endif %}
+                  {% form 'customer', id: 'product-subscribe-form' %}
+                    {% if form.posted_successfully? %}
+                      <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                          const modal = document.getElementById('subscribe-success-modal');
+                          if (modal) {
+                            modal.style.display = 'flex';
+                            modal.setAttribute('aria-modal', 'true');
+                            modal.focus();
+                          }
+                        });
+                      </script>
+                    {% endif %}
+                    {% if form.errors %}
+                      <div class="product-subscribe-error" style="color: red; margin-bottom: 1rem;">
+                        {% for field in form.errors %}
+                          {{ field | capitalize }}: {{ form.errors.messages[field] }}<br>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    <div class="product-subscribe-form">
+                      <input type="text" name="contact[first_name]" id="subscribe-first-name" placeholder="{{ section.settings.subscribe_name_placeholder | default: 'Nombre' }}">
+                      <input type="email" name="contact[email]" placeholder="{{ section.settings.subscribe_email_placeholder | default: 'Correo electrónico' }}" required>
+                      <input type="hidden" name="contact[tags]" value="newsletter">
+                      <input type="hidden" name="contact[accepts_marketing]" value="true">
+                      <button type="submit" style="background: {{ section.settings.subscribe_button_bg | default: '#2E4695' }}; color: {{ section.settings.subscribe_button_color | default: '#fff' }};">
+                        {{ section.settings.subscribe_button_text | default: 'Suscribirme' }}
+                      </button>
+                    </div>
+                  {% endform %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<div id="subscribe-success-modal" tabindex="-1" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:1rem; max-width:90vw; width:340px; padding:2.5rem 1.5rem 2rem 1.5rem; text-align:center; position:relative; box-shadow:0 2px 12px rgba(0,0,0,0.12);">
+    <span style="display:inline-block; margin-bottom:1.2rem;">
+      <svg id="subscribe-checkmark" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="26" stroke="#22c55e" stroke-width="4" fill="#e9fbe9"/>
+        <path d="M18 29.5L25 36.5L38 22.5" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-dasharray" from="0,40" to="40,0" dur="0.5s" fill="freeze" />
+        </path>
+      </svg>
+    </span>
+    <div id="subscribe-success-message" style="font-size:1.2rem; color:#22c55e; margin-bottom:1.2rem; font-weight:600;">
+      {{ 'newsletter.success' | t }}
+    </div>
+    <button id="subscribe-modal-close" style="margin-top:0.5rem; background:#2E4695; color:#fff; border:none; border-radius:0.5rem; padding:0.75rem 1.5rem; font-size:1rem; font-weight:600; cursor:pointer; transition:background 0.2s;">Seguir explorando</button>
+    <button onclick="document.getElementById('subscribe-success-modal').style.display='none'" aria-label="Cerrar" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; color:#888; cursor:pointer;">&times;</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    // Guardar nombre en memoria temporal (sin localStorage)
+    var subscribeName = '';
+    
+    var form = document.getElementById('product-subscribe-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        var nameInput = document.getElementById('subscribe-first-name');
+        if (nameInput && nameInput.value) {
+          subscribeName = nameInput.value;
+        }
+      });
+    }
+    
+    // Mostrar nombre en modal si existe
+    var closeBtn = document.getElementById('subscribe-modal-close');
+    if (closeBtn) {
+      closeBtn.onclick = function() {
+        document.getElementById('subscribe-success-modal').style.display = 'none';
+      };
+    }
+    
+    var modal = document.getElementById('subscribe-success-modal');
+    if (modal && modal.style.display === 'flex') {
+      if (subscribeName) {
+        var msg = document.getElementById('subscribe-success-message');
+        if (msg) msg.textContent = '¡Gracias por suscribirte, ' + subscribeName + '!';
+      }
+    }
+  });
+})();
+</script>
+
+{% stylesheet %}
+/* Background full width */
+.product-section {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 2rem 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .product-section {
+    padding: 3rem 0;
+  }
+}
+
+/* Container perfectamente centrado */
+.product-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .product-container {
+    padding: 0 2rem;
+  }
+}
+
+/* Card principal - sin apariencia de card */
+.product-card {
+  background: transparent;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .product-card {
+    padding: 3rem;
+  }
+}
+
+/* Grid responsivo perfectamente centrado */
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    gap: 4rem;
+  }
+}
+
+/* Columna de imágenes */
+.product-image-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Imagen principal con sombra sutil */
+.product-main-image {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.product-main-img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .product-main-img {
+    height: 450px;
+  }
+}
+
+/* Imágenes secundarias en grid */
+.product-secondary-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 300px;
+  justify-items: center;
+}
+
+@media (min-width: 768px) {
+  .product-secondary-images {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 1rem;
+  }
+}
+
+.secondary-image-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.secondary-image-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 768px) {
+  .secondary-image-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.product-image-secondary {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Columna de contenido */
+.product-content-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  width: 100%;
+  max-width: 500px;
+}
+
+.product-content-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.product-main-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Tipografía */
+.product-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+  text-align: left;
+  color: #1f2937;
+}
+
+@media (min-width: 768px) {
+  .product-title {
+    font-size: 2rem;
+  }
+}
+
+.product-subtitle {
+  font-size: 1rem;
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+  text-align: left;
+  font-weight: 500;
+}
+
+.product-description {
+  font-size: 0.95rem;
+  margin: 0 0 2rem 0;
+  text-align: left;
+  line-height: 1.6;
+  color: #374151;
+  max-width: 450px;
+}
+
+.product-custom-html {
+  margin: 1.5rem 0;
+  width: 100%;
+  text-align: left;
+  align-self: flex-start;
+}
+
+/* Sección de suscripción integrada */
+.product-subscribe-wrapper {
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.product-subscribe-inner {
+  padding: 2rem;
+  border-radius: 0.75rem;
+  text-align: left;
+  width: 100%;
+}
+
+.product-subscribe-wrapper h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.product-subscribe-text {
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.product-subscribe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.product-subscribe-form input {
+  padding: 0.875rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.product-subscribe-form input:focus {
+  outline: none;
+  border-color: #2E4695;
+  box-shadow: 0 0 0 3px rgba(46, 70, 149, 0.1);
+}
+
+.product-subscribe-form button {
+  background: #2E4695;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.product-subscribe-form button:hover {
+  background: #1d2a5c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(46, 70, 149, 0.3);
+}
+
+/* Estados de error */
+.product-subscribe-error {
+  color: #dc2626;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Responsive ajustes */
+@media (max-width: 767px) {
+  .product-section {
+    padding: 1.5rem 0;
+    min-height: auto;
+  }
+  
+  .product-card {
+    padding: 1.5rem;
+  }
+  
+  .product-grid {
+    gap: 1.5rem;
+  }
+  
+  .product-main-img {
+    height: 300px;
+  }
+  
+  .product-subscribe-wrapper {
+    padding: 1.5rem;
+  }
+  
+  .product-subscribe-inner {
+    padding: 1.5rem;
+  }
+}
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -51,13 +490,116 @@
   "settings": [
     {
       "type": "header",
-      "content": "Colores"
+      "content": "Contenido principal"
+    },
+    {
+      "type": "text",
+      "id": "product_title",
+      "label": "Título personalizado del producto"
+    },
+    {
+      "type": "text",
+      "id": "product_subtitle",
+      "label": "Subtítulo del producto"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Mostrar descripción del producto",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "product_description",
+      "label": "Descripción personalizada del producto"
+    },
+    {
+      "type": "header",
+      "content": "Suscripción"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_title",
+      "label": "Título del bloque de suscripción",
+      "default": "Suscríbete para novedades"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_text",
+      "label": "Texto descriptivo de suscripción"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_name_placeholder",
+      "label": "Placeholder para nombre",
+      "default": "Nombre"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_email_placeholder",
+      "label": "Placeholder para email",
+      "default": "Correo electrónico"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_button_text",
+      "label": "Texto del botón de suscripción",
+      "default": "Suscribirme"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_bg",
+      "label": "Color de fondo del bloque de suscripción",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_card_bg",
+      "label": "Color de fondo de la tarjeta de suscripción",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_title_color",
+      "label": "Color del título de suscripción",
+      "default": "#2E4695"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_text_color",
+      "label": "Color del texto de suscripción",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_button_bg",
+      "label": "Color de fondo del botón de suscripción",
+      "default": "#2E4695"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_button_color",
+      "label": "Color del texto del botón de suscripción",
+      "default": "#fff"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Color de fondo",
+      "label": "Color de fondo de la página",
       "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "custom_html",
+      "name": "Custom HTML",
+      "settings": [
+        {
+          "type": "html",
+          "id": "html_content",
+          "label": "Código HTML personalizado"
+        }
+      ]
     }
   ],
   "disabled_on": {
@@ -65,19 +607,3 @@
   }
 }
 {% endschema %}
-
-{% stylesheet %}
-.product-section {
-  width: 100%;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding: 2rem 0;
-}
-
-.product-container {
-  max-width: var(--page-width, 1200px);
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  width: 100%;
-}
-{% endstylesheet %}

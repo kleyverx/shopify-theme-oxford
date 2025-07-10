@@ -13,10 +13,13 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "link_hover_effect": "underline",
+        "animation_style": "fade"
+      }
     }
   },
   "order": [
     "header"
-  ],
+  ]
 }
