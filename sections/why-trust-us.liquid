@@ -3,27 +3,32 @@
   assign blocks_count = section.blocks.size
 %}
 
-<section class="trust-packery{% if section.settings.animate_on_scroll %} section-appear{% endif %}" data-section-type="why-trust-us" id="TrustPackery-{{ section_id }}" style="
-  --trust-cards-gap: {{ section.settings.gap }}px;
-  --trust-text-color: {{ section.settings.text_color }};
-  --trust-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
-  --trust-border-radius: {{ section.settings.border_radius }}px;
-  --trust-section-padding-top: {{ section.settings.padding_top }}px;
-  --trust-section-padding-bottom: {{ section.settings.padding_bottom }}px;
-  --trust-mobile-text: {{ section.settings.show_mobile_text }};
-  background-color: {{ section.settings.background_color }};
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding-top: var(--trust-section-padding-top);
-  padding-bottom: var(--trust-section-padding-bottom);
-  overflow: hidden;
-">
+<section
+  class="trust-packery{% if section.settings.animate_on_scroll %} section-appear{% endif %}"
+  data-section-type="why-trust-us"
+  id="TrustPackery-{{ section_id }}"
+  style="
+    --trust-cards-gap: {{ section.settings.gap }}px;
+    --trust-text-color: {{ section.settings.text_color }};
+    --trust-overlay-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
+    --trust-border-radius: {{ section.settings.border_radius }}px;
+    --trust-section-padding-top: {{ section.settings.padding_top }}px;
+    --trust-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --trust-mobile-text: {{ section.settings.show_mobile_text }};
+    background-color: {{ section.settings.background_color }};
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-top: var(--trust-section-padding-top);
+    padding-bottom: var(--trust-section-padding-bottom);
+    overflow: hidden;
+  "
+>
   <div class="trust-packery__container container">
     {% if section.settings.title != blank %}
       <h2 class="trust-packery__title">{{ section.settings.title }}</h2>
     {% endif %}
-    
+
     {% if section.settings.description != blank %}
       <div class="trust-packery__description">{{ section.settings.description }}</div>
     {% endif %}
@@ -38,40 +43,80 @@
               assign title = block.settings.title
               assign text = block.settings.text
               assign layout_style = block.settings.layout_style
+              assign link = block.settings.link
+              assign block_text_color = block.settings.text_color | default: section.settings.text_color
             %}
-            
-            <div class="trust-packery__item trust-packery__item--{{ layout_style }}" 
-                 id="TrustItem-{{ block_id }}" 
-                 {{ block.shopify_attributes }}>
-              <div class="trust-packery__item-inner">
-                {% if image != blank %}
-                  <div class="trust-packery__image-wrapper">
-                    {{ image | image_url: width: 800 | image_tag: 
-                      loading: 'lazy',
-                      class: 'trust-packery__image',
-                      widths: '360, 540, 720, 900, 1080',
-                      sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
-                    }}
+
+            {% if link != blank %}
+              <a href="{{ link }}" class="trust-packery__item trust-packery__item--{{ layout_style }}" id="TrustItem-{{ block_id }}" {{ block.shopify_attributes }} target="_blank" rel="noopener" style="--trust-block-text-color: {{ block_text_color }};">
+                <div class="trust-packery__item-inner">
+                  {% if image != blank %}
+                    <div class="trust-packery__image-wrapper">
+                      {{
+                        image
+                        | image_url: width: 800
+                        | image_tag:
+                          loading: 'lazy',
+                          class: 'trust-packery__image',
+                          widths: '360, 540, 720, 900, 1080',
+                          sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+                      }}
+                    </div>
+                  {% else %}
+                    <div class="trust-packery__placeholder">
+                      {{ 'image' | placeholder_svg_tag: 'trust-packery__placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                  <div class="trust-packery__overlay">
+                    <div class="trust-packery__content">
+                      {% if title != blank %}
+                        <h3 class="trust-packery__item-title">{{ title }}</h3>
+                      {% endif %}
+                      {% if text != blank %}
+                        <div class="trust-packery__item-text">{{ text }}</div>
+                      {% endif %}
+                    </div>
                   </div>
-                {% else %}
-                  <div class="trust-packery__placeholder">
-                    {{ 'image' | placeholder_svg_tag: 'trust-packery__placeholder-svg' }}
-                  </div>
-                {% endif %}
-                
-                <div class="trust-packery__overlay">
-                  <div class="trust-packery__content">
-                    {% if title != blank %}
-                      <h3 class="trust-packery__item-title">{{ title }}</h3>
-                    {% endif %}
-                    
-                    {% if text != blank %}
-                      <div class="trust-packery__item-text">{{ text }}</div>
-                    {% endif %}
+                </div>
+              </a>
+            {% else %}
+              <div
+                class="trust-packery__item trust-packery__item--{{ layout_style }}"
+                id="TrustItem-{{ block_id }}"
+                {{ block.shopify_attributes }}
+                style="--trust-block-text-color: {{ block_text_color }};"
+              >
+                <div class="trust-packery__item-inner">
+                  {% if image != blank %}
+                    <div class="trust-packery__image-wrapper">
+                      {{
+                        image
+                        | image_url: width: 800
+                        | image_tag:
+                          loading: 'lazy',
+                          class: 'trust-packery__image',
+                          widths: '360, 540, 720, 900, 1080',
+                          sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+                      }}
+                    </div>
+                  {% else %}
+                    <div class="trust-packery__placeholder">
+                      {{ 'image' | placeholder_svg_tag: 'trust-packery__placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                  <div class="trust-packery__overlay">
+                    <div class="trust-packery__content">
+                      {% if title != blank %}
+                        <h3 class="trust-packery__item-title">{{ title }}</h3>
+                      {% endif %}
+                      {% if text != blank %}
+                        <div class="trust-packery__item-text">{{ text }}</div>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {% endif %}
         {% endcase %}
       {% endfor %}
     </div>
@@ -175,6 +220,7 @@
     margin-bottom: 2rem;
     font-size: 2rem;
     font-weight: 700;
+    color: var(--trust-text-color);
   }
 
   .trust-packery__description {
@@ -183,36 +229,90 @@
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    color: var(--trust-text-color);
   }
 
   .trust-packery__grid {
     display: grid;
     gap: var(--trust-cards-gap);
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
   }
 
-  @media screen and (min-width: 750px) {
+  @media screen and (min-width: 600px) {
     .trust-packery__grid {
       grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 1fr;
     }
   }
 
-  @media screen and (min-width: 990px) {
-    .trust-packery__grid {
-      grid-template-columns: repeat(3, 1fr);
+  @media screen and (min-width: 800px) {
+    .trust-packery__container {
+      max-width: unset;
+      padding-left: 0;
+      padding-right: 0;
     }
-    
+    .trust-packery__grid {
+      grid-template-columns: repeat(3, 350px);
+      grid-auto-rows: 350px;
+      justify-content: center;
+      width: auto;
+      max-width: none;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .trust-packery__item,
+    .trust-packery__item--normal,
+    .trust-packery__item--large,
+    .trust-packery__item--wide,
+    .trust-packery__item--tall {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .trust-packery__item-inner {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: unset;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
     .trust-packery__item--large {
       grid-column: span 2;
       grid-row: span 2;
     }
-    
+    .trust-packery__item--wide {
+      grid-column: span 3;
+    }
     .trust-packery__item--tall {
       grid-row: span 2;
+      width: 100%;
+      height: 100%;
     }
-    
-    .trust-packery__item--wide {
-      grid-column: span 2;
+    /* --- AJUSTE: La imagen de la card grande (large) ocupa todo el 2x2 (700x700px) --- */
+    .trust-packery__item--large .trust-packery__image-wrapper {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .trust-packery__item--large .trust-packery__image {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
     }
   }
 
@@ -242,7 +342,7 @@
     aspect-ratio: 1/1;
   }
 
-  @media screen and (max-width: 989px) {
+  @media screen and (max-width: 900px) {
     .trust-packery__item--tall .trust-packery__item-inner,
     .trust-packery__item--wide .trust-packery__item-inner,
     .trust-packery__item--large .trust-packery__item-inner {
@@ -327,7 +427,7 @@
 
   .trust-packery__content {
     padding: 2rem;
-    color: var(--trust-text-color);
+    color: var(--trust-block-text-color, var(--trust-text-color));
     text-align: center;
     transform: translateY(20px);
     opacity: 0;
@@ -345,10 +445,18 @@
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: var(--trust-block-text-color, var(--trust-text-color));
   }
 
   .trust-packery__item-text {
     line-height: 1.5;
+    color: var(--trust-block-text-color, var(--trust-text_color));
+  }
+
+  .trust-packery__item[style] .trust-packery__content,
+  .trust-packery__item[style] .trust-packery__item-title,
+  .trust-packery__item[style] .trust-packery__item-text {
+    color: var(--trust-block-text-color) !important;
   }
 {% endstylesheet %}
 
@@ -501,6 +609,17 @@
             }
           ],
           "default": "normal"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace al hacer click"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Color del texto del bloque",
+          "default": "#FFFFFF"
         }
       ]
     }

@@ -1,44 +1,41 @@
 {% assign link_hover_effect = section.settings.link_hover_effect | default: 'underline' %}
 {% assign animation_style = section.settings.animation_style | default: 'fade' %}
-<header class="header header--{{ section.settings.logo_position | default: 'center' }} header--effect-{{ link_hover_effect }} header--animation-{{ animation_style }}" role="banner">
+{% assign header_style = section.settings.header_style | default: 'minimal' %}
+
+<header class="header header--{{ section.settings.logo_position | default: 'left' }} header--{{ header_style }} header--hover-{{ section.settings.hover_effect | default: 'underline' }}" role="banner">
   <div class="header__container">
+    <!-- Mobile Menu Button -->
     <button class="header__burger" 
             aria-expanded="false"
             aria-controls="mobile-menu"
             aria-label="{{ 'header.menu_open' | t }}">
-      <span class="header__burger-bar"></span>
-      <span class="header__burger-bar"></span>
-      <span class="header__burger-bar"></span>
+      <span class="header__burger-lines">
+        <span class="header__burger-line"></span>
+        <span class="header__burger-line"></span>
+        <span class="header__burger-line"></span>
+      </span>
     </button>
 
-    <nav class="header__nav header__nav--left" role="navigation">
-      {% assign left_links = section.settings.menu.links | slice: 0, 5 %}
-      {% for link in left_links %}
-        <a href="{{ link.url }}" class="header__nav-link{% if link.current %} header__nav-link--active{% endif %}">
-          {{ link.title }}
-        </a>
-      {% endfor %}
-    </nav>
-
+    <!-- Logo -->
     <div class="header__logo-wrapper">
       {% if settings.logo_image != blank %}
         <a href="{{ routes.root_url }}" class="header__logo-link">
-          {{ settings.logo_image | image_url: width: 160 | image_tag:
-              class: 'header__logo',
-              widths: '50, 100, 150, 200, 250, 300',
-              sizes: '(max-width: 749px) 50vw, 160px',
-              alt: shop.name,
-              preload: true
+          {{ settings.logo_image | image_url: width: 200 | image_tag:
+            class: 'header__logo',
+            widths: '50, 100, 150, 200, 250, 300',
+            sizes: '(max-width: 768px) 120px, 160px',
+            alt: shop.name,
+            preload: true
           }}
         </a>
       {% elsif section.settings.logo != blank %}
         <a href="{{ routes.root_url }}" class="header__logo-link">
-          {{ section.settings.logo | image_url: width: 160 | image_tag:
-              class: 'header__logo',
-              widths: '50, 100, 150, 200, 250, 300',
-              sizes: '(max-width: 749px) 50vw, 160px',
-              alt: shop.name,
-              preload: true
+          {{ section.settings.logo | image_url: width: 200 | image_tag:
+            class: 'header__logo',
+            widths: '50, 100, 150, 200, 250, 300',
+            sizes: '(max-width: 768px) 120px, 160px',
+            alt: shop.name,
+            preload: true
           }}
         </a>
       {% else %}
@@ -46,24 +43,99 @@
       {% endif %}
     </div>
 
-    <nav class="header__nav header__nav--right" role="navigation">
-      {% assign right_links = section.settings.menu.links | slice: 5, 5 %}
-      {% for link in right_links %}
-        <a href="{{ link.url }}" class="header__nav-link{% if link.current %} header__nav-link--active{% endif %}">
-          {{ link.title }}
-        </a>
-      {% endfor %}
-    </nav>
-    
-    <div id="mobile-menu" class="header__mobile-nav" aria-hidden="true">
-      <div class="header__mobile-nav-header">
-        <div class="header__mobile-title">{{ section.settings.mobile_menu_title | default: shop.name }}</div>
-      </div>
-      <nav class="header__mobile-nav-menu" role="navigation">
-        {% for link in section.settings.menu.links %}
-          <a href="{{ link.url }}" class="header__mobile-nav-link{% if link.current %} header__mobile-nav-link--active{% endif %}">
+    <!-- Desktop Navigation -->
+    <nav class="header__nav" role="navigation" aria-label="{{ 'header.navigation' | t }}">
+      {% for link in section.settings.menu.links %}
+        {% if link.links.size > 0 %}
+          <div class="header__nav-item header__nav-item--dropdown">
+            <button class="header__nav-link header__nav-link--dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false"
+                    data-dropdown-trigger>
+              {{ link.title }}
+              <svg class="header__dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="header__dropdown" role="menu">
+              <div class="header__dropdown-content">
+                {% for sublink in link.links %}
+                  <a href="{{ sublink.url }}" class="header__dropdown-link" role="menuitem">
+                    {{ sublink.title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ link.url }}" 
+             class="header__nav-link{% if link.current %} header__nav-link--active{% endif %}">
             {{ link.title }}
           </a>
+        {% endif %}
+      {% endfor %}
+    </nav>
+
+    <!-- Cart & Search Icons -->
+    <div class="header__actions">
+      {% if section.settings.show_search %}
+        <button class="header__action-btn" aria-label="{{ 'header.search' | t }}">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M17.5 17.5L13.875 13.875M15.8333 9.16667C15.8333 12.8486 12.8486 15.8333 9.16667 15.8333C5.48477 15.8333 2.5 12.8486 2.5 9.16667C2.5 5.48477 5.48477 2.5 9.16667 2.5C12.8486 2.5 15.8333 5.48477 15.8333 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      {% endif %}
+      
+      {% if section.settings.show_cart %}
+        <a href="{{ routes.cart_url }}" class="header__action-btn header__cart-link">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M2.5 3.33334H3.00526C3.85578 3.33334 4.56986 3.97376 4.6621 4.81926L5.3379 11.0141C5.43014 11.8596 6.14422 12.5 6.99474 12.5H14.205C14.9669 12.5 15.6317 11.9834 15.82 11.2452L16.9699 6.73593C17.2387 5.68213 16.4425 4.58334 15.355 4.58334H5.83333M8.33333 16.6667C8.33333 17.1269 7.96024 17.5 7.5 17.5C7.03976 17.5 6.66667 17.1269 6.66667 16.6667C6.66667 16.2064 7.03976 15.8333 7.5 15.8333C7.96024 15.8333 8.33333 16.2064 8.33333 16.6667ZM15 16.6667C15 17.1269 14.6269 17.5 14.1667 17.5C13.7064 17.5 13.3333 17.1269 13.3333 16.6667C13.3333 16.2064 13.7064 15.8333 14.1667 15.8333C14.6269 15.8333 15 16.2064 15 16.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="header__cart-count" id="cart-count">{{ cart.item_count }}</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div id="mobile-menu" class="header__mobile-nav" aria-hidden="true">
+    <div class="header__mobile-overlay"></div>
+    <div class="header__mobile-content">
+      <div class="header__mobile-header">
+        <div class="header__mobile-title">{{ section.settings.mobile_menu_title | default: 'Menu' }}</div>
+        <button class="header__mobile-close" type="button" aria-label="{{ 'header.close_menu' | t }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      <nav class="header__mobile-nav-menu" role="navigation">
+        {% for link in section.settings.menu.links %}
+          {% if link.links.size > 0 %}
+            <div class="header__mobile-nav-item header__mobile-nav-item--dropdown">
+              <button class="header__mobile-nav-link header__mobile-nav-link--dropdown" 
+                      aria-expanded="false"
+                      data-mobile-dropdown>
+                {{ link.title }}
+                <svg class="header__mobile-dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="header__mobile-dropdown">
+                {% for sublink in link.links %}
+                  <a href="{{ sublink.url }}" class="header__mobile-dropdown-link">
+                    {{ sublink.title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          {% else %}
+            <a href="{{ link.url }}" 
+               class="header__mobile-nav-link{% if link.current %} header__mobile-nav-link--active{% endif %}">
+              {{ link.title }}
+            </a>
+          {% endif %}
         {% endfor %}
       </nav>
     </div>
@@ -71,530 +143,1220 @@
 </header>
 
 {% stylesheet %}
+/* CSS Variables */
+:root {
+  --header-height: 72px;
+  --header-height-mobile: 64px;
+  --header-bg: #ffffff;
+  --header-color: #1a1a1a;
+  --header-border: rgba(0, 0, 0, 0.08);
+  --header-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --header-backdrop: rgba(255, 255, 255, 0.95);
+  
+  --nav-link-color: #4a4a4a;
+  --nav-link-hover: #000000;
+  --nav-link-active: #000000;
+  
+  --dropdown-bg: #ffffff;
+  --dropdown-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  --dropdown-border: rgba(0, 0, 0, 0.06);
+  
+  --mobile-overlay: rgba(0, 0, 0, 0.4);
+  --mobile-nav-bg: #ffffff;
+  
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s ease;
+  
+  --border-radius: 8px;
+  --border-radius-small: 6px;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Hover effect variables */
+  --underline-height: 2px;
+  --underline-offset: 4px;
+  --hover-scale: 1.05;
+  --hover-bg-opacity: 0.04;
+}
+
+/* Header Base */
 .header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  background: var(--header-bg, var(--color-bg, #ffffff));
-  color: var(--header-color, var(--color-text, #000000));
-  border-bottom: 1px solid rgba(var(--color-border), 0.08);
-  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--header-backdrop);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--header-border);
+  transition: all var(--transition-normal);
 }
 
-.header--hidden {
-  transform: translateY(-100%);
+.header--minimal {
   box-shadow: none;
+  border-bottom: 1px solid var(--header-border);
 }
 
-.header:not(.header--hidden) {
-  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+.header--elevated {
+  box-shadow: var(--header-shadow);
+  border-bottom: none;
 }
 
 .header__container {
-  max-width: var(--page-width, 1200px);
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--space-4, 2rem);
-  height: var(--header-height, 5rem);
+  padding: 0 var(--spacing-xl);
+  height: var(--header-height);
   display: flex;
   align-items: center;
-  gap: var(--space-4, 2rem);
-  position: relative;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
 }
 
+/* Logo */
+.header__logo-wrapper {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.header--center .header__logo-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header__logo-link {
+  display: block;
+  line-height: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.header__logo-link:hover {
+  opacity: 0.8;
+}
+
+.header__logo {
+  height: auto;
+  max-height: var(--logo-height, 40px);
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+.header__logo-text {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--header-color);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: color var(--transition-fast);
+}
+
+.header__logo-text:hover {
+  color: var(--nav-link-hover);
+}
+
+/* Desktop Navigation with Hover Effects */
 .header__nav {
   display: flex;
-  gap: var(--nav-gap, 2rem);
-  flex: 1;
   align-items: center;
+  gap: var(--spacing-lg);
+  flex: 1;
+  justify-content: center;
 }
 
-.header__nav--left {
-  justify-content: flex-end;
-}
-
-.header__nav--right {
+.header--left .header__nav {
   justify-content: flex-start;
+  margin-left: var(--spacing-xl);
+}
+
+.header--center .header__nav {
+  justify-content: center;
+}
+
+.header__nav-item {
+  position: relative;
 }
 
 .header__nav-link {
-  position: relative;
-  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--nav-link-color);
   text-decoration: none;
-  padding: 0.5rem;
-  font-size: var(--font-size-base, 1rem);
-  font-weight: var(--font-weight-medium, 500);
-  letter-spacing: 0.02em;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
+  border-radius: var(--border-radius-small);
+  transition: all var(--transition-fast);
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
   white-space: nowrap;
-  transition: color 0.3s ease;
-  display: inline-block;
 }
 
-/* Efecto underline simple */
-.header__nav-link::after {
+/* Hover Effect: Underline */
+.header--hover-underline .header__nav-link::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0.5rem;
-  right: 0.5rem;
-  height: 2px;
-  background: var(--hover-color, currentColor);
+  left: var(--spacing-md);
+  right: var(--spacing-md);
+  bottom: calc(var(--spacing-sm) - var(--underline-offset));
+  height: var(--underline-height);
+  background: var(--nav-link-hover);
   opacity: 0;
   transform: scaleX(0);
   transform-origin: center;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: all var(--transition-normal);
+  border-radius: 1px;
 }
 
-.header__nav-link:hover::after,
-.header__nav-link:focus::after,
-.header__nav-link--active::after {
+.header--hover-underline .header__nav-link:hover::after,
+.header--hover-underline .header__nav-link:focus::after,
+.header--hover-underline .header__nav-link--active::after {
   opacity: 1;
   transform: scaleX(1);
 }
 
-.header__logo-wrapper {
-  flex: 0 1 auto;
+.header--hover-underline .header__nav-link:hover,
+.header--hover-underline .header__nav-link:focus {
+  color: var(--nav-link-hover);
+}
+
+/* Hover Effect: Background */
+.header--hover-background .header__nav-link:hover,
+.header--hover-background .header__nav-link:focus {
+  color: var(--nav-link-hover);
+  background: rgba(0, 0, 0, var(--hover-bg-opacity));
+}
+
+/* Hover Effect: Scale */
+.header--hover-scale .header__nav-link {
+  transition: all var(--transition-fast), transform var(--transition-normal);
+}
+
+.header--hover-scale .header__nav-link:hover,
+.header--hover-scale .header__nav-link:focus {
+  color: var(--nav-link-hover);
+  transform: scale(var(--hover-scale));
+}
+
+/* Hover Effect: Slide */
+.header--hover-slide .header__nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, var(--hover-bg-opacity));
+  border-radius: var(--border-radius-small);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all var(--transition-normal);
+  z-index: -1;
+}
+
+.header--hover-slide .header__nav-link:hover::before,
+.header--hover-slide .header__nav-link:focus::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header--hover-slide .header__nav-link:hover,
+.header--hover-slide .header__nav-link:focus {
+  color: var(--nav-link-hover);
+}
+
+/* Hover Effect: Glow */
+.header--hover-glow .header__nav-link {
+  transition: all var(--transition-normal);
+}
+
+.header--hover-glow .header__nav-link:hover,
+.header--hover-glow .header__nav-link:focus {
+  color: var(--nav-link-hover);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Hover Effect: Border */
+.header--hover-border .header__nav-link {
+  border: 2px solid transparent;
+  transition: all var(--transition-normal);
+}
+
+.header--hover-border .header__nav-link:hover,
+.header--hover-border .header__nav-link:focus {
+  color: var(--nav-link-hover);
+  border-color: var(--nav-link-hover);
+}
+
+/* Active states for all hover effects */
+.header__nav-link--active {
+  color: var(--nav-link-active);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Dropdown */
+.header__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--dropdown-shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all var(--transition-normal);
+  z-index: 100;
+}
+
+.header__nav-item--dropdown:hover .header__dropdown,
+.header__nav-item--dropdown:focus-within .header__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.header__dropdown-content {
+  padding: var(--spacing-sm);
+}
+
+.header__dropdown-link {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--nav-link-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-normal);
+  border-radius: var(--border-radius-small);
+  transition: all var(--transition-fast);
+}
+
+.header__dropdown-link:hover,
+.header__dropdown-link:focus {
+  color: var(--nav-link-hover);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Actions */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 0 0 auto;
+}
+
+.header__action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  width: 44px;
+  height: 44px;
+  color: var(--nav-link-color);
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
 }
 
-.header__logo {
-  display: block;
-  width: auto;
-  height: var(--logo-height, 3rem);
-  max-width: 100%;
-  object-fit: contain;
-  /* ANIMACIONES DEL LOGO REMOVIDAS */
+.header__action-btn:hover,
+.header__action-btn:focus {
+  color: var(--nav-link-hover);
+  background: rgba(0, 0, 0, 0.04);
 }
 
-.header__logo-text {
-  color: inherit;
-  text-decoration: none;
-  font-size: var(--font-size-xl, 1.5rem);
-  font-weight: var(--font-weight-bold, 700);
-  letter-spacing: -0.02em;
+.header__cart-count {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-width: 18px;
+  height: 18px;
+  background: var(--nav-link-active);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 
+/* Mobile Menu Button */
 .header__burger {
   display: none;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-small);
+  transition: background var(--transition-fast);
 }
 
+.header__burger:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.header__burger-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 20px;
+}
+
+.header__burger-line {
+  height: 2px;
+  background: var(--header-color);
+  border-radius: 1px;
+  transition: all var(--transition-normal);
+  transform-origin: center;
+}
+
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(1) {
+  transform: rotate(45deg) translate(3px, 3px);
+}
+
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(3px, -3px);
+}
+
+/* Mobile Navigation */
 .header__mobile-nav {
-  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* Para mejor soporte en móviles */
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
 }
 
-@media screen and (max-width: 989px) {
-  .header {
-    position: sticky;
-    top: 0;
-  }
+.header__mobile-nav[aria-hidden="false"] {
+  opacity: 1;
+  visibility: visible;
+}
 
+.header__mobile-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--mobile-overlay);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  touch-action: none; /* Previene scroll en el fondo */
+}
+
+.header__mobile-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(400px, 85vw);
+  height: 100%;
+  background: var(--mobile-nav-bg);
+  transform: translateX(100%);
+  transition: transform var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+}
+
+.header__mobile-nav[aria-hidden="false"] .header__mobile-content {
+  transform: translateX(0);
+}
+
+.header__mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--header-border);
+  flex: 0 0 auto;
+}
+
+.header__mobile-title {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--header-color);
+}
+
+.header__mobile-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--border-radius-small);
+  color: var(--nav-link-color);
+  transition: all var(--transition-fast);
+}
+
+.header__mobile-close:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--nav-link-hover);
+}
+
+.header__mobile-nav-menu {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg) 0;
+}
+
+.header__mobile-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  color: var(--nav-link-color);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.header__mobile-nav-link:hover,
+.header__mobile-nav-link:focus,
+.header__mobile-nav-link--active {
+  color: var(--nav-link-hover);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.header__mobile-dropdown-icon {
+  transition: transform var(--transition-fast);
+  opacity: 0.6;
+}
+
+.header__mobile-nav-link--dropdown[aria-expanded="true"] .header__mobile-dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.header__mobile-dropdown {
+  max-height: 0;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.02);
+  transition: max-height var(--transition-normal);
+}
+
+.header__mobile-nav-item--dropdown.open .header__mobile-dropdown {
+  max-height: 400px;
+}
+
+.header__mobile-dropdown-link {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  padding-left: calc(var(--spacing-xl) + var(--spacing-lg));
+  color: var(--nav-link-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-normal);
+  transition: all var(--transition-fast);
+}
+
+.header__mobile-dropdown-link:hover,
+.header__mobile-dropdown-link:focus {
+  color: var(--nav-link-hover);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
   .header__container {
-    height: var(--header-height-mobile, 4rem);
-    padding: 0 var(--space-3, 1rem);
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
+    padding: 0 var(--spacing-lg);
   }
+  
+  .header__nav {
+    gap: var(--spacing-md);
+  }
+  
+  .header__nav-link {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.9rem;
+  }
+}
 
+@media (max-width: 768px) {
+  :root {
+    --header-height: var(--header-height-mobile);
+  }
+  
+  .header__container {
+    padding: 0 var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+  
+  .header__burger {
+    display: flex;
+    order: -1;
+  }
+  
   .header__nav {
     display: none;
   }
   
-  .header__logo-wrapper {
-    grid-column: 2;
-    justify-self: center;
-    margin: 0 auto;
-    max-width: 60%;
-  }
-
-  .header__burger {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 8px;
-    margin-left: -8px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 101;
-    position: relative;
-    grid-column: 1;
-    color: var(--header-color, currentColor);
-    transition: color 0.3s ease;
-  }
-  
-  .header__burger[aria-expanded="true"] {
-    color: var(--mobile-menu-color, var(--header-color, currentColor));
-  }
-
-  .header__burger-bar {
-    width: 24px;
-    height: 2px;
-    background: currentColor;
-    border-radius: 2px;
-    transition: transform 0.25s ease-in-out, opacity 0.15s ease;
-    position: absolute;
-    left: 8px;
-    right: 8px;
-  }
-
-  .header__burger-bar:nth-child(1) {
-    top: 14px;
-    transform-origin: left center;
-  }
-
-  .header__burger-bar:nth-child(2) {
-    top: 19px;
-    transform-origin: center;
-  }
-
-  .header__burger-bar:nth-child(3) {
-    top: 24px;
-    transform-origin: left center;
-  }
-
-  .header__burger[aria-expanded="true"] .header__burger-bar:nth-child(1) {
-    transform: translateY(4px) rotate(45deg);
-    width: 20px;
-  }
-
-  .header__burger[aria-expanded="true"] .header__burger-bar:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-
-  .header__burger[aria-expanded="true"] .header__burger-bar:nth-child(3) {
-    transform: translateY(-4px) rotate(-45deg);
-    width: 20px;
-  }
-
-  .header__mobile-nav {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    background: var(--mobile-menu-bg, var(--header-bg, var(--color-bg, #ffffff)));
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-1rem);
-    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-    padding: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    z-index: 100;
-  }
-
-  .header__mobile-nav[aria-hidden="false"] {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .header__mobile-nav-header {
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height-mobile, 4rem);
-    background: var(--mobile-menu-bg, var(--header-bg, var(--color-bg, #ffffff)));
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 2rem;
-    z-index: 2;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--mobile-menu-border-color, rgba(0, 0, 0, 0.08));
-  }
-  
-  .header__mobile-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--mobile-menu-title-color, var(--mobile-menu-color, var(--header-color, #000000)));
-  }
-  
-  .header__mobile-nav-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    text-align: left;
-    padding: 2rem;
-    padding-top: 1.5rem;
-  }
-
-  .header__mobile-nav-link {
-    color: var(--mobile-menu-color, inherit);
-    text-decoration: none;
-    font-size: 1.125rem;
-    font-weight: 500;
-    padding: 0.7rem 0;
-    display: block;
-    transition: color 0.3s ease;
-    opacity: 0.9;
-    position: relative;
-    letter-spacing: 0.02em;
-    border-bottom: 1px solid var(--mobile-menu-border-color, rgba(0, 0, 0, 0.08));
-  }
-
-  .header__mobile-nav-link:hover,
-  .header__mobile-nav-link:focus,
-  .header__mobile-nav-link--active {
-    color: var(--hover-color, currentColor);
-    opacity: 1;
-  }
-
   .header__logo {
-    height: var(--logo-height-mobile, 2rem);
-    max-height: var(--logo-height-mobile, 2rem);
+    max-height: var(--logo-height-mobile, 32px);
   }
-
-  .header__logo-text {
-    font-size: 1.125rem;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  
+  .header__actions {
+    gap: var(--spacing-xs);
   }
-}
-
-@media (hover: hover) {
-  .header__nav-link:hover {
-    color: var(--hover-color, currentColor);
+  
+  .header--center .header__logo-wrapper {
+    position: static;
+    transform: none;
   }
 }
 
+/* Accessibility & Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .header,
-  .header__logo,
-  .header__nav-link::after,
-  .header__mobile-nav,
-  .header__burger-bar {
-    transition: none;
+  * {
+    transition: none !important;
+    animation: none !important;
   }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --header-bg: #1a1a1a;
+    --header-color: #ffffff;
+    --header-border: rgba(255, 255, 255, 0.1);
+    --header-backdrop: rgba(26, 26, 26, 0.95);
+    --nav-link-color: #e5e5e5;
+    --nav-link-hover: #ffffff;
+    --dropdown-bg: #2a2a2a;
+    --dropdown-border: rgba(255, 255, 255, 0.1);
+    --mobile-nav-bg: #1a1a1a;
+  }
+}
+
+/* Focus Styles */
+.header__nav-link:focus-visible,
+.header__action-btn:focus-visible,
+.header__burger:focus-visible,
+.header__mobile-close:focus-visible {
+  outline: 2px solid var(--nav-link-active);
+  outline-offset: 2px;
+}
+
+body:has(.header__mobile-nav[aria-hidden="false"]) {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 {% endstylesheet %}
 
 <style>
-  :root {
-    --header-height: {{ section.settings.header_height | default: 80 }}px;
-    --header-height-mobile: {{ section.settings.header_height_mobile | default: 64 }}px;
-    --header-bg: {{ section.settings.bg_color | color_to_rgb }};
-    --header-color: {{ section.settings.color | color_to_rgb }};
-    --mobile-menu-bg: {{ section.settings.mobile_menu_bg_color | default: section.settings.bg_color | color_to_rgb }};
-    --mobile-menu-color: {{ section.settings.mobile_menu_text_color | default: '#000000' | color_to_rgb }};
-    --mobile-menu-title-color: {{ section.settings.mobile_menu_title_color | default: section.settings.mobile_menu_text_color | default: '#000000' | color_to_rgb }};
-    --mobile-menu-border-color: {{ section.settings.mobile_menu_border_color | default: 'rgba(0, 0, 0, 0.08)' }};
-    --logo-height: {{ section.settings.logo_max_height | default: 48 }}px;
-    --logo-height-mobile: {{ section.settings.logo_max_height_mobile | default: 32 }}px;
-    --nav-gap: {{ section.settings.nav_gap | default: 16 }}px;
-    --hover-color: {{ section.settings.hover_color | default: '#2E4695' }};
-  }
+:root {
+  --header-height: {{ section.settings.header_height | default: 72 }}px;
+  --header-height-mobile: {{ section.settings.header_height_mobile | default: 64 }}px;
+  --logo-height: {{ section.settings.logo_max_height | default: 40 }}px;
+  --logo-height-mobile: {{ section.settings.logo_max_height_mobile | default: 32 }}px;
+  
+  /* Hover effect variables */
+  --underline-height: {{ section.settings.underline_height | default: 2 }}px;
+  --underline-offset: {{ section.settings.underline_offset | default: 4 }}px;
+  --hover-scale: {{ section.settings.hover_scale | default: 1.05 }};
+  --hover-bg-opacity: {{ section.settings.hover_bg_opacity | default: 0.04 }};
+  
+  /* Typography variables */
+  --nav-font-size: {{ section.settings.nav_font_size | default: 15 }}px;
+  --nav-font-weight: {{ section.settings.nav_font_weight | default: 500 }};
+  --nav-letter-spacing: {{ section.settings.nav_letter_spacing | default: -0.1 }}px;
+  
+  /* Spacing variables */
+  --nav-gap: {{ section.settings.nav_gap | default: 24 }}px;
+  --nav-padding-horizontal: {{ section.settings.nav_padding_horizontal | default: 16 }}px;
+  --nav-padding-vertical: {{ section.settings.nav_padding_vertical | default: 12 }}px;
+  
+  /* Animation speed */
+  {% case section.settings.hover_animation_speed %}
+    {% when 'fast' %}
+      --transition-fast: 0.1s ease;
+      --transition-normal: 0.15s ease;
+    {% when 'slow' %}
+      --transition-fast: 0.25s ease;
+      --transition-normal: 0.35s ease;
+    {% else %}
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+  {% endcase %}
+  
+  {% if section.settings.header_bg_color != blank %}
+    --header-bg: {{ section.settings.header_bg_color }};
+    --header-backdrop: {{ section.settings.header_bg_color | color_modify: 'alpha', 0.95 }};
+  {% endif %}
+  
+  {% if section.settings.header_text_color != blank %}
+    --header-color: {{ section.settings.header_text_color }};
+    --nav-link-color: {{ section.settings.header_text_color | color_modify: 'alpha', 0.8 }};
+  {% endif %}
+  
+  {% if section.settings.header_accent_color != blank %}
+    --nav-link-active: {{ section.settings.header_accent_color }};
+  {% endif %}
+  
+  {% if section.settings.hover_color != blank %}
+    --nav-link-hover: {{ section.settings.hover_color }};
+  {% endif %}
+  
+  {% if section.settings.dropdown_bg_color != blank %}
+    --dropdown-bg: {{ section.settings.dropdown_bg_color }};
+  {% endif %}
+  {% if section.settings.mobile_menu_bg_color != blank %}
+    --mobile-nav-bg: {{ section.settings.mobile_menu_bg_color }};
+  {% endif %}
+  
+  {% if settings.type_font_family != blank %}
+    --theme-font-family: {{ settings.type_font_family }};
+  {% endif %}
+}
+
+/* Apply typography settings */
+.header__nav-link {
+  font-size: var(--nav-font-size);
+  font-weight: var(--nav-font-weight);
+  letter-spacing: var(--nav-letter-spacing);
+  padding: var(--nav-padding-vertical) var(--nav-padding-horizontal);
+}
+
+.header__nav {
+  gap: var(--nav-gap);
+}
+
+/* Mobile menu positioning */
+{% if section.settings.mobile_menu_position == 'left' %}
+.header__mobile-content {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+}
+.header__mobile-nav[aria-hidden="false"] .header__mobile-content {
+  transform: translateX(0);
+}
+{% elsif section.settings.mobile_menu_position == 'full' %}
+.header__mobile-content {
+  width: 100vw;
+  right: 0;
+  transform: translateY(-100%);
+}
+.header__mobile-nav[aria-hidden="false"] .header__mobile-content {
+  transform: translateY(0);
+}
+{% else %}
+.header__mobile-content {
+  width: min({{ section.settings.mobile_menu_width | default: 320 }}px, 85vw);
+}
+{% endif %}
+
+/* Sticky header control */
+{% unless section.settings.enable_sticky_header %}
+.header {
+  position: relative;
+}
+{% endunless %}
+
+.header,
+.header__nav,
+.header__nav-link,
+.header__dropdown,
+.header__dropdown-link,
+.header__mobile-nav,
+.header__mobile-nav-link,
+.header__mobile-dropdown-link,
+.header__mobile-title {
+  font-family: var(--theme-font-family, inherit);
+}
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const header = document.querySelector('.header');
-    const burgerButton = document.querySelector('.header__burger');
-    const mobileNav = document.querySelector('.header__mobile-nav');
+document.addEventListener('DOMContentLoaded', function() {
+  const header = document.querySelector('.header');
+  const burgerButton = document.querySelector('.header__burger');
+  const mobileNav = document.querySelector('.header__mobile-nav');
+  const mobileOverlay = document.querySelector('.header__mobile-overlay');
+  const mobileClose = document.querySelector('.header__mobile-close');
+  
+  if (!burgerButton || !mobileNav || !header) return;
+
+  // Toggle mobile menu
+  function toggleMobileMenu() {
+    const isOpen = burgerButton.getAttribute('aria-expanded') === 'true';
+    const newState = !isOpen;
     
-    if (!burgerButton || !mobileNav || !header) return;
+    burgerButton.setAttribute('aria-expanded', newState);
+    mobileNav.setAttribute('aria-hidden', !newState);
+    document.body.style.overflow = newState ? 'hidden' : '';
     
-    function toggleMenu() {
-      const isOpen = burgerButton.getAttribute('aria-expanded') === 'true';
-      const newState = !isOpen;
-      
-      burgerButton.setAttribute('aria-expanded', newState);
-      mobileNav.setAttribute('aria-hidden', !newState);
-      
-      const labelKey = newState ? 'Cerrar menú' : 'Abrir menú';
-      burgerButton.setAttribute('aria-label', labelKey);
-      
-      document.body.style.overflow = newState ? 'hidden' : '';
+    // Update aria-label
+    const labelKey = newState ? 'Cerrar menú' : 'Abrir menú';
+    burgerButton.setAttribute('aria-label', labelKey);
+  }
+
+  // Event listeners
+  burgerButton.addEventListener('click', toggleMobileMenu);
+  mobileClose?.addEventListener('click', toggleMobileMenu);
+  mobileOverlay?.addEventListener('click', toggleMobileMenu);
+
+  // Close menu on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && burgerButton.getAttribute('aria-expanded') === 'true') {
+      toggleMobileMenu();
     }
-    
-    burgerButton.addEventListener('click', toggleMenu);
-    
-    // Cerrar menú con Escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && burgerButton.getAttribute('aria-expanded') === 'true') {
-        toggleMenu();
-      }
-    });
-    
-    // Cerrar menú al hacer click en un enlace (móvil)
-    const mobileLinks = mobileNav.querySelectorAll('.header__mobile-nav-link');
-    mobileLinks.forEach(link => {
-      link.addEventListener('click', function() {
-        if (window.innerWidth <= 989) {
-          toggleMenu();
-        }
+  });
+
+  // Close menu on window resize
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768 && burgerButton.getAttribute('aria-expanded') === 'true') {
+      toggleMobileMenu();
+    }
+  });
+
+  // Mobile dropdown functionality
+  const mobileDropdownTriggers = document.querySelectorAll('[data-mobile-dropdown]');
+  mobileDropdownTriggers.forEach(trigger => {
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      const parent = this.closest('.header__mobile-nav-item--dropdown');
+      const isOpen = parent.classList.contains('open');
+      
+      // Close all other dropdowns
+      document.querySelectorAll('.header__mobile-nav-item--dropdown').forEach(item => {
+        item.classList.remove('open');
+        item.querySelector('[data-mobile-dropdown]').setAttribute('aria-expanded', 'false');
       });
-    });
-    
-    // Manejar cambios de tamaño de ventana
-    window.addEventListener('resize', function() {
-      if (window.innerWidth > 989 && burgerButton.getAttribute('aria-expanded') === 'true') {
-        toggleMenu();
-      }
-    });
-    
-    // Scroll para ocultar/mostrar header
-    let lastScrollTop = 0;
-    const scrollThreshold = 10;
-    
-    window.addEventListener('scroll', function() {
-      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
       
-      if (window.innerWidth <= 989 && burgerButton.getAttribute('aria-expanded') === 'true') {
-        return;
-      }
-      
-      if (currentScroll > lastScrollTop + scrollThreshold) {
-        header.classList.add('header--hidden');
-        lastScrollTop = currentScroll;
-      } else if (currentScroll < lastScrollTop - scrollThreshold) {
-        header.classList.remove('header--hidden');
-        lastScrollTop = currentScroll;
+      // Toggle current dropdown
+      if (!isOpen) {
+        parent.classList.add('open');
+        this.setAttribute('aria-expanded', 'true');
       }
     });
   });
+
+  // Desktop dropdown functionality
+  const desktopDropdownTriggers = document.querySelectorAll('[data-dropdown-trigger]');
+  desktopDropdownTriggers.forEach(trigger => {
+    const parent = trigger.closest('.header__nav-item--dropdown');
+    
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isOpen = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', !isOpen);
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!parent.contains(e.target)) {
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  // Smooth scroll behavior for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        
+        // Close mobile menu if open
+        if (burgerButton.getAttribute('aria-expanded') === 'true') {
+          toggleMobileMenu();
+        }
+      }
+    });
+  });
+
+  // Header scroll behavior (optional)
+  let lastScrollTop = 0;
+  const scrollThreshold = 10;
+  
+  if (window.innerWidth > 768) {
+    window.addEventListener('scroll', function() {
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      
+      if (currentScroll > lastScrollTop + scrollThreshold && currentScroll > 100) {
+        header.style.transform = 'translateY(-100%)';
+      } else if (currentScroll < lastScrollTop - scrollThreshold) {
+        header.style.transform = 'translateY(0)';
+      }
+      
+      lastScrollTop = currentScroll;
+    });
+  }
+});
 </script>
+
 
 {% schema %}
 {
-  "name": "t:general.header",
+  "name": "Header",
   "settings": [
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "Menu",
+      "default": "main-menu"
     },
     {
-      "type": "color",
-      "id": "color",
-      "label": "t:labels.color"
+      "type": "text",
+      "id": "mobile_menu_title",
+      "label": "Mobile menu title",
+      "default": "Menu"
     },
     {
-      "type": "color",
-      "id": "bg_color",
-      "label": "t:labels.bg_color"
+      "type": "header",
+      "content": "Logo"
     },
     {
       "type": "image_picker",
       "id": "logo",
-      "label": "t:labels.logo"
+      "label": "Logo image"
     },
     {
       "type": "select",
       "id": "logo_position",
-      "label": "t:labels.logo_position",
-      "options": [
-        { "value": "left", "label": "t:labels.left" },
-        { "value": "center", "label": "t:labels.center" },
-        { "value": "right", "label": "t:labels.right" }
-      ],
-      "default": "center"
+      "label": "Logo position",
+      "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_height",
+      "label": "Logo height (desktop)",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "logo_max_height_mobile",
+      "label": "Logo height (mobile)",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "header_style",
+      "label": "Header style",
+      "options": [{ "value": "minimal", "label": "Minimal" }, { "value": "elevated", "label": "Elevated" }],
+      "default": "minimal"
     },
     {
       "type": "range",
       "id": "header_height",
-      "label": "t:labels.header_height",
+      "label": "Header height (desktop)",
       "min": 60,
       "max": 120,
       "step": 4,
       "unit": "px",
-      "default": 80
+      "default": 72
     },
     {
       "type": "range",
       "id": "header_height_mobile",
-      "label": "t:labels.header_height_mobile",
-      "min": 48,
-      "max": 100,
+      "label": "Header height (mobile)",
+      "min": 56,
+      "max": 80,
       "step": 4,
       "unit": "px",
       "default": 64
     },
     {
-      "type": "range",
-      "id": "logo_max_height",
-      "label": "t:labels.logo_max_height",
-      "min": 16,
-      "max": 96,
-      "step": 1,
-      "unit": "px",
-      "default": 48
+      "type": "header",
+      "content": "Hover Effects"
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Link hover effect",
+      "options": [
+        { "value": "underline", "label": "Underline (Interlineado)" },
+        { "value": "background", "label": "Background" },
+        { "value": "scale", "label": "Scale" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "glow", "label": "Glow" },
+        { "value": "border", "label": "Border" }
+      ],
+      "default": "underline"
     },
     {
       "type": "range",
-      "id": "logo_max_height_mobile",
-      "label": "t:labels.logo_max_height_mobile",
-      "min": 16,
-      "max": 64,
+      "id": "underline_height",
+      "label": "Underline thickness",
+      "min": 1,
+      "max": 6,
       "step": 1,
       "unit": "px",
-      "default": 32
+      "default": 2,
+      "info": "Only applies to underline effect"
     },
     {
       "type": "range",
-      "id": "nav_gap",
-      "label": "t:labels.nav_gap",
-      "min": 0,
-      "max": 64,
+      "id": "underline_offset",
+      "label": "Underline distance",
+      "min": 2,
+      "max": 10,
       "step": 1,
       "unit": "px",
-      "default": 16
+      "default": 4,
+      "info": "Distance from text to underline"
+    },
+    {
+      "type": "range",
+      "id": "hover_scale",
+      "label": "Scale amount",
+      "min": 1.0,
+      "max": 1.2,
+      "step": 0.1,
+      "default": 1.1,
+      "info": "Only applies to scale effect"
+    },
+    {
+      "type": "select",
+      "id": "hover_animation_speed",
+      "label": "Animation speed",
+      "options": [
+        { "value": "fast", "label": "Fast (0.15s)" },
+        { "value": "normal", "label": "Normal (0.25s)" },
+        { "value": "slow", "label": "Slow (0.35s)" }
+      ],
+      "default": "normal"
     },
     {
       "type": "header",
-      "content": "t:labels.mobile_menu"
-    },
-    {
-      "type": "text",
-      "id": "mobile_menu_title",
-      "label": "t:labels.mobile_menu_title",
-      "default": "Menú"
+      "content": "Colors"
     },
     {
       "type": "color",
-      "id": "mobile_menu_bg_color",
-      "label": "t:labels.mobile_menu_bg_color"
+      "id": "header_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
     },
     {
       "type": "color",
-      "id": "mobile_menu_text_color",
-      "label": "t:labels.mobile_menu_text_color",
+      "id": "header_text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "header_accent_color",
+      "label": "Accent color",
       "default": "#000000"
     },
     {
       "type": "color",
-      "id": "mobile_menu_title_color",
-      "label": "t:labels.mobile_menu_title_color"
-    },
-    {
-      "type": "color",
-      "id": "mobile_menu_border_color",
-      "label": "t:labels.mobile_menu_border_color",
-      "default": "rgba(0, 0, 0, 0.08)"
-    },
-    {
-      "type": "color",
       "id": "hover_color",
-      "label": "t:labels.hover_color",
-      "default": "#2E4695"
+      "label": "Hover color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "hover_bg_opacity",
+      "label": "Hover background opacity",
+      "min": 0.1,
+      "max": 0.3,
+      "step": 0.1,
+      "default": 0.1,
+      "info": "For background and slide effects"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg_color",
+      "label": "Dropdown background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_bg_color",
+      "label": "Mobile menu background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "nav_font_size",
+      "label": "Navigation font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "nav_font_weight",
+      "label": "Navigation font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "nav_letter_spacing",
+      "label": "Letter spacing",
+      "min": -2,
+      "max": 2,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.1
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "nav_gap",
+      "label": "Navigation gap",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "nav_padding_horizontal",
+      "label": "Link horizontal padding",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "nav_padding_vertical",
+      "label": "Link vertical padding",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show cart icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_header",
+      "label": "Enable sticky header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll_hide",
+      "label": "Hide header on scroll down",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_position",
+      "label": "Mobile menu position",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" },
+        { "value": "full", "label": "Full Screen" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "mobile_menu_width",
+      "label": "Mobile menu width",
+      "min": 280,
+      "max": 400,
+      "step": 20,
+      "unit": "px",
+      "default": 320,
+      "info": "Only applies to left/right position"
     }
   ]
 }
+
 {% endschema %}

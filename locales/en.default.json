@@ -29,7 +29,8 @@
     }
   },
   "collections": {
-    "title": "Collections"
+    "title": "Collections",
+    "empty": "No products found in this collection."
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -131,7 +132,9 @@
   },
   "header": {
     "menu_open": "Open menu",
-    "menu_close": "Close menu"
+    "menu_close": "Close menu",
+    "navigation": "Navigation",
+    "mobile_navigation": "Mobile navigation"
   },
   "general": {
     "navigation": {

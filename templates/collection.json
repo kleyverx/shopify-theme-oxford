@@ -11,7 +11,45 @@
   "sections": {
     "main": {
       "type": "collection",
-      "settings": {}
+      "settings": {
+        "container_width": 1200,
+        "spacing": 16,
+        "border_radius": 8,
+        "transition_duration": 250,
+        "primary_color": "#000000",
+        "secondary_color": "#666666",
+        "text_color": "#333333",
+        "background_color": "#ffffff",
+        "border_color": "#e5e5e5",
+        "show_title": true,
+        "show_description": true,
+        "header_alignment": "center",
+        "title_size": 2.5,
+        "title_weight": "600",
+        "description_size": 1.1,
+        "show_filters": true,
+        "filter_button_text": "Aplicar Filtros",
+        "clear_button_text": "Limpiar",
+        "products_per_page": 16,
+        "grid_columns": 3,
+        "grid_gap": 24,
+        "show_sort": false,
+        "card_shadow": "0 4px 16px rgba(0,0,0,0.1)",
+        "image_width": 400,
+        "image_ratio": "1/1",
+        "show_hover_image": true,
+        "show_vendor": true,
+        "show_rating": false,
+        "show_quick_add": false,
+        "quick_add_text": "Compra Rápida",
+        "show_badges": false,
+        "sale_badge_text": "Oferta",
+        "sold_badge_text": "Agotado",
+        "prev_text": "Anterior",
+        "next_text": "Siguiente",
+        "empty_title": "No hay productos",
+        "empty_description": "No se encontraron productos que coincidan con los filtros seleccionados."
+      }
     }
   },
   "order": [

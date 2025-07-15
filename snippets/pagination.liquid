@@ -1,0 +1,54 @@
+{% comment %} Snippet de paginación minimalista reutilizable {% endcomment %}
+{% if paginate.pages > 1 %}
+  <nav class="pagination-pro" role="navigation" aria-label="Paginación">
+    <ul class="pagination-list-pro">
+      {% if paginate.previous %}
+        <li><a href="{{ paginate.previous.url }}" class="pagination-link-pro" aria-label="Anterior">&laquo;</a></li>
+      {% endif %}
+      {% for part in paginate.parts %}
+        {% if part.is_link %}
+          <li><a href="{{ part.url }}" class="pagination-link-pro">{{ part.title }}</a></li>
+        {% else %}
+          <li><span class="pagination-link-pro pagination-link--active-pro">{{ part.title }}</span></li>
+        {% endif %}
+      {% endfor %}
+      {% if paginate.next %}
+        <li><a href="{{ paginate.next.url }}" class="pagination-link-pro" aria-label="Siguiente">&raquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}
+
+{% stylesheet %}
+.pagination-pro {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 0 0;
+}
+.pagination-list-pro {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pagination-link-pro {
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: #f2f2f2;
+  color: #222;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.pagination-link-pro:hover {
+  background: #0055ff;
+  color: #fff;
+}
+.pagination-link--active-pro {
+  background: #0055ff;
+  color: #fff;
+  font-weight: 700;
+}
+{% endstylesheet %}
