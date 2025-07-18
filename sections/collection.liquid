@@ -10,10 +10,26 @@
     <!-- Header -->
     <header class="collection-header">
       {% if section.settings.show_title %}
-        <h1 class="collection-title">{{ collection.title }}</h1>
+        <h1 class="collection-title collection-title--underline collection-title--appear" style="line-height: {{ section.settings.title_line_height | default: 1.2 }}; --underline-color: {{ section.settings.title_underline_color | default: section.settings.primary_color }};">
+          {{ collection.title }}
+        </h1>
       {% endif %}
       {% if section.settings.show_description and collection.description %}
         <div class="collection-description">{{ collection.description }}</div>
+      {% endif %}
+      {% assign cta_url = collection.metafields.custom.linkpage.url | default: collection.metafields.custom.linkpage %}
+      {% if cta_url and cta_url != '' and collection.metafields.custom.cta_text %}
+        <a href="{{ cta_url }}" class="btn collection-cta-btn" style="
+          margin-top: 1.5rem;
+          display: inline-block;
+          background: {{ section.settings.cta_bg_color | default: section.settings.primary_color }};
+          color: {{ section.settings.cta_text_color | default: '#fff' }};
+          border: 2px solid {{ section.settings.cta_border_color | default: section.settings.primary_color }};
+          font-size: {{ section.settings.cta_font_size | default: 1.1 }}rem;
+          border-radius: {{ section.settings.cta_border_radius | default: section.settings.border_radius }}px;
+        ">
+          {{ collection.metafields.custom.cta_text }}
+        </a>
       {% endif %}
     </header>
 
@@ -213,6 +229,7 @@
   {% endif %}
 }
 
+
 /* Header */
 .collection-header {
   grid-area: header;
@@ -220,11 +237,48 @@
   margin-bottom: var(--spacing);
 }
 
+
 .collection-title {
   font-size: {{ section.settings.title_size }}rem;
   font-weight: {{ section.settings.title_weight }};
   margin: 0 0 calc(var(--spacing) / 2) 0;
   color: var(--text-color);
+  line-height: {{ section.settings.title_line_height | default: 1.2 }};
+}
+
+/* Efecto appear */
+.collection-title--appear {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: appearTitle 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;
+}
+@keyframes appearTitle {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Efecto subrayado animado */
+.collection-title--underline {
+  position: relative;
+  display: inline-block;
+}
+.collection-title--underline::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 3px;
+  background: var(--underline-color, var(--primary-color));
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.collection-title--underline:hover::after {
+  transform: scaleX(1);
 }
 
 .collection-description {
@@ -297,14 +351,26 @@
   text-align: center;
 }
 
+
 .btn-primary {
   background: var(--primary-color);
-  color: white;
+  color: var(--btn-text-color, white);
+  border: 2px solid var(--btn-border-color, var(--primary-color));
+  font-size: var(--btn-font-size, 1rem);
 }
 
 .btn-primary:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.collection-cta-btn {
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.collection-cta-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 8px rgba(46,70,149,0.12);
 }
 
 .btn-secondary, .btn-outline {
@@ -372,20 +438,39 @@
   }
 }
 @media (max-width: 480px) {
+  .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding: 0 !important;
+  }
   .products-grid {
-    grid-template-columns: 1fr !important;
+    display: grid;
+    grid-auto-flow: unset;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
+    overflow-x: unset;
+    width: 100%;
+    padding-bottom: 0;
+    scroll-snap-type: none;
   }
   .product-card {
-    border-radius: 8px;
-    font-size: 0.93rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    padding: 0 0 10px 0;
+  }
+  .product-image {
+    aspect-ratio: 1/1.1;
+    min-height: 120px;
   }
   .product-title a {
-    font-size: 0.98rem;
+    font-size: 1.08rem;
   }
   .product-info {
-    padding: 8px;
-    gap: 6px;
+    padding: 12px 8px 0 8px;
+    gap: 8px;
   }
 }
 
@@ -550,20 +635,39 @@
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding: 0 !important;
+  }
   .products-grid {
-    grid-template-columns: 1fr !important;
+    display: grid;
+    grid-auto-flow: unset;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
+    overflow-x: unset;
+    width: 100%;
+    padding-bottom: 0;
+    scroll-snap-type: none;
   }
   .product-card {
-    border-radius: 8px;
-    font-size: 0.93rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    padding: 0 0 10px 0;
+  }
+  .product-image {
+    aspect-ratio: 1/1.1;
+    min-height: 120px;
   }
   .product-title a {
-    font-size: 0.98rem;
+    font-size: 1.08rem;
   }
   .product-info {
-    padding: 8px;
-    gap: 6px;
+    padding: 12px 8px 0 8px;
+    gap: 8px;
   }
 }
 </style>
@@ -605,6 +709,63 @@ document.addEventListener('DOMContentLoaded', function() {
   "settings": [
     {
       "type": "header",
+      "content": "Botón CTA"
+    },
+    {
+      "type": "color",
+      "id": "cta_bg_color",
+      "label": "Color de fondo del botón CTA",
+      "default": "#2E4695"
+    },
+    {
+      "type": "color",
+      "id": "cta_border_color",
+      "label": "Color de borde del botón CTA",
+      "default": "#2E4695"
+    },
+    {
+      "type": "color",
+      "id": "cta_text_color",
+      "label": "Color de texto del botón CTA",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "cta_font_size",
+      "label": "Tamaño de letra del botón CTA",
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 1.1,
+      "unit": "rem"
+    },
+    {
+      "type": "range",
+      "id": "cta_border_radius",
+      "label": "Radio de borde del botón CTA",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_line_height",
+      "label": "Interlineado del título",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "color",
+      "id": "title_underline_color",
+      "label": "Color del subrayado del título",
+      "default": "#2E4695"
+    },
+    {
+      "type": "header",
       "content": "Configuración General"
     },
     {
@@ -632,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "id": "border_radius",
       "label": "Radio de bordes",
       "min": 0,
-      "max": 20,
+      "max": 20, 
       "step": 2,
       "default": 8,
       "unit": "px"
@@ -937,4 +1098,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   ]
 }
-{% endschema %} 
+{% endschema %}

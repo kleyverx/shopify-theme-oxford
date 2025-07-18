@@ -40,7 +40,9 @@
   <div class="collections-container">
     {% if section.settings.show_title and section.settings.custom_title != blank %}
       <header class="collections-header">
-        <h2 class="collections-title">{{ section.settings.custom_title }}</h2>
+        <h2 class="collections-title collections-title--underline collections-title--appear" style="--underline-color: {{ section.settings.title_underline_color | default: section.settings.title_color }};">
+          {{ section.settings.custom_title }}
+        </h2>
         {% if section.settings.show_subtitle and section.settings.subtitle != blank %}
           <p class="collections-subtitle">{{ section.settings.subtitle }}</p>
         {% endif %}
@@ -112,7 +114,7 @@
               
               {% if section.settings.show_view_all %}
                 <span class="collection-card__cta">
-                  Ver colección
+                  {{ section.settings.card_cta_text }}
                   <svg class="collection-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
@@ -237,7 +239,6 @@
 .collections-header {
   text-align: center;
   margin-bottom: var(--title-spacing, 3rem);
-  animation: fadeInUp var(--transition-slow) ease-out;
 }
 
 .collections-title {
@@ -247,6 +248,39 @@
   line-height: 1.2;
   letter-spacing: -0.025em;
   margin: 0;
+  position: relative;
+  display: inline-block;
+}
+
+/* Efecto appear */
+.collections-title--appear {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: appearTitle 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;
+}
+@keyframes appearTitle {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Efecto subrayado animado */
+.collections-title--underline::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 3px;
+  background: var(--underline-color, var(--title-color));
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.collections-title--underline:hover::after {
+  transform: scaleX(1);
 }
 
 .collections-subtitle {
@@ -540,23 +574,28 @@
     padding-top: var(--spacing-xl);
     padding-bottom: var(--spacing-xl);
   }
-  
   .collections-header {
     margin-bottom: var(--spacing-xl);
   }
-  
   .collections-title {
     font-size: 1.5rem;
   }
-  
   .collection-card__content {
     padding: var(--spacing-md);
   }
-  
   .collection-card__badge {
     top: var(--spacing-sm);
     right: var(--spacing-sm);
     font-size: 0.75rem;
+  }
+  .collections-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .collections-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding: 0 !important;
   }
 }
 
@@ -693,6 +732,12 @@
       "type": "color",
       "id": "title_color",
       "label": "Color del título",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "title_underline_color",
+      "label": "Color del subrayado del título",
       "default": "#000000"
     },
     {
@@ -936,6 +981,12 @@
       "id": "show_view_all",
       "label": "Mostrar enlace 'Ver colección'",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "card_cta_text",
+      "label": "Texto del botón/ver colección",
+      "default": "Ver colección"
     },
     {
       "type": "header",

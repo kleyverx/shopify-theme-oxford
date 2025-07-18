@@ -12,7 +12,7 @@
 >
   {% if section.settings.section_title != blank %}
     <div class="section-header">
-      <h2 class="slider-title">{{ section.settings.section_title }}</h2>
+      <h2 class="slider-title" style="color: {{ section.settings.title_color }};">{{ section.settings.section_title }}</h2>
     </div>
   {% endif %}
 
@@ -20,6 +20,8 @@
     <div class="swiper-wrapper">
       {% for block in section.blocks %}
         {% assign slide_bg = block.settings.background_color | default: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' %}
+        {% assign slide_title_color = block.settings.title_color %}
+        {% assign slide_text_color = block.settings.text_color %}
         <div class="swiper-slide" 
           {{ block.shopify_attributes }} 
           data-background="{{ slide_bg }}"
@@ -48,10 +50,10 @@
               </div>
               <div class="slide-content">
                 {% if block.settings.title != blank %}
-                  <h3 class="slide-title animate-text">{{ block.settings.title }}</h3>
+                  <h3 class="slide-title animate-text" style="color: {{ slide_title_color }}">{{ block.settings.title }}</h3>
                 {% endif %}
                 {% if block.settings.text != blank %}
-                  <div class="slide-text animate-text">{{ block.settings.text }}</div>
+                  <div class="slide-text animate-text" style="color: {{ slide_text_color }}">{{ block.settings.text }}</div>
                 {% endif %}
                 {% if block.settings.button_url != blank and block.settings.button_text != blank %}
                   <div class="slide-button animate-text">
@@ -112,6 +114,13 @@
     margin-bottom: 3rem;
     color: {{ section.settings.title_color }};
     padding: 60px 0 0;
+  }
+
+  .slider-description {
+    text-align: center;
+    font-size: 1.15rem;
+    margin: 0 auto 2.5rem;
+    max-width: 700px;
   }
 
   .slider-{{ section.id }} {
@@ -236,13 +245,13 @@
     font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
     margin-bottom: 1rem;
-    color: {{ section.settings.heading_color }};
+    /* color: {{ section.settings.heading_color }}; */
   }
 
   .slide-text {
     font-size: clamp(1rem, 2vw, 1.1rem);
     line-height: 1.6;
-    color: {{ section.settings.text_color }};
+    /* color: {{ section.settings.text_color }}; */
     margin-bottom: 1.5rem;
   }
 
@@ -433,6 +442,11 @@
   // Inicializar el slider cuando se cargue el script
   function initSwiper() {
     const sliderSection = document.getElementById('slider-{{ section.id }}');
+    if (!sliderSection) return;
+    const swiperEl = sliderSection.querySelector('.slider-{{ section.id }}');
+    const paginationEl = sliderSection.querySelector('.pagination-{{ section.id }}');
+    const nextEl = sliderSection.querySelector('.nav-next-{{ section.id }}');
+    const prevEl = sliderSection.querySelector('.nav-prev-{{ section.id }}');
     const slides = sliderSection.querySelectorAll('.swiper-slide');
     
     // Establecer el fondo inicial de la sección con el primer slide
@@ -441,13 +455,13 @@
       sliderSection.style.background = initialBg;
     }
     
-    const swiper = new Swiper('.slider-{{ section.id }}', {
+    const swiper = new Swiper(swiperEl, {
       loop: {{ section.settings.loop }},
       speed: {{ section.settings.animation_speed }},
       spaceBetween: 0,
       slidesPerView: 1,
-      width: null, // Asegura que el ancho se ajuste al 100%
-      centeredSlides: false, // Importante para que ocupe todo el ancho
+      width: null,
+      centeredSlides: false,
       allowTouchMove: true,
       grabCursor: true,
       resistance: true,
@@ -466,14 +480,14 @@
       {% endif %}
       {% if section.settings.show_pagination %}
       pagination: {
-        el: '.pagination-{{ section.id }}',
+        el: paginationEl,
         clickable: true,
       },
       {% endif %}
       {% if section.settings.show_navigation %}
       navigation: {
-        nextEl: '.nav-next-{{ section.id }}',
-        prevEl: '.nav-prev-{{ section.id }}',
+        nextEl: nextEl,
+        prevEl: prevEl,
       },
       {% endif %}
       effect: 'slide',
@@ -491,25 +505,18 @@
       },
       on: {
         init: function() {
-          // Activar animaciones del primer slide
           initSlideAnimations(this);
-          // Establecer el fondo inicial si está en un loop
           updateSectionBackground(this);
-          // Asegurar que los slides ocupen todo el ancho
           ensureFullWidth(this);
         },
         slideChangeTransitionStart: function() {
-          // Resetear animaciones
           resetSlideAnimations(this);
-          // Actualizar el fondo de la sección cuando cambia el slide
           updateSectionBackground(this);
         },
         slideChangeTransitionEnd: function() {
-          // Animar slide activo
           animateActiveSlide(this);
         },
         resize: function() {
-          // Ajustar ancho al cambiar el tamaño de la ventana
           ensureFullWidth(this);
         }
       }
@@ -761,24 +768,6 @@
     },
     {
       "type": "color",
-      "id": "title_color",
-      "label": "Color del título principal",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "heading_color",
-      "label": "Color de los títulos de slides",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Color del texto",
-      "default": "#333333"
-    },
-    {
-      "type": "color",
       "id": "button_background",
       "label": "Color de fondo del botón",
       "default": "#4F46E5"
@@ -788,6 +777,12 @@
       "id": "button_text_color",
       "label": "Color de texto del botón",
       "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título de la sección",
+      "default": "#000000"
     },
     {
       "type": "header",
@@ -898,6 +893,18 @@
             { "value": "right", "label": "Derecha" }
           ],
           "default": "right"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Color del título principal",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Color del texto",
+          "default": "#333333"
         },
         {
           "type": "text",
