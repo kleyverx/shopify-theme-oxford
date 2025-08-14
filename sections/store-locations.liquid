@@ -1,0 +1,468 @@
+{% comment %} Incluir lookbook.css si existe, sino usar estilos inline {% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign se_stts = section.settings
+  assign stt_layout = se_stts.layout
+  if stt_layout == 't4s-se-container'
+    assign html_layout = '<div class="t4s-container">__</div></div>' | split: '__'
+  elsif stt_layout == 't4s-container-wrap'
+    assign html_layout = '<div class="t4s-container">__</div>' | split: '__'
+  else
+    assign html_layout = '__' | split: '__'
+  endif
+-%}
+
+<style>
+/* Estilos base de los pines (basados en lookbook.css) */
+.t4s-lookbook-pin {
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    position: absolute;
+    top: var(--ps-top);
+    transform: translate(calc(-1*var(--ps-left)), calc(-1*var(--ps-top)));
+    left: var(--ps-left);
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
+    cursor: pointer;
+}
+.t4s-lookbook-pin .t4s-pin-tt {
+    color: var(--cl-pin);
+    background-color: var(--bg-pin);
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.t4s-lookbook-pin:hover {
+    opacity: 0.8;
+    color: var(--cl-pin);
+}
+.t4s-nav-link-icon {
+    width: 20px;
+    height: 24px;
+    display: block;
+    flex: 0 0 auto;
+    color: inherit;
+}
+/* SVG del marcador de ubicación */
+.t4s-nav-link-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.t4s-nav-link-icon svg path {
+    fill: currentColor;
+}
+.t4s-lookbook-pin .t4s-zoompin {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    bottom: -8px;
+    left: -8px;
+    display: block;
+    animation: zoompin 2s ease infinite;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,.5);
+    pointer-events: none;
+}
+@keyframes zoompin {
+    0% { opacity: 0; transform: scale(.2) }
+    50% { opacity: .8 }
+    100% { opacity: 0; transform: scale(1) }
+}
+/* Tamaños base de los pines */
+.pin__size--small { width: 24px; height: 24px; font-size: 10px; }
+.pin__size--medium { width: 32px; height: 32px; font-size: 12px; }
+.pin__size--exmedium { width: 40px; height: 40px; font-size: 13px; }
+.pin__size--large { width: 48px; height: 48px; font-size: 15px; }
+
+/* Ajustes de tamaño de marcador SVG para diferentes tamaños de pin */
+.pin__size--small .t4s-nav-link-icon { width: 16px; height: 19px; }
+.pin__size--medium .t4s-nav-link-icon { width: 18px; height: 21px; }
+.pin__size--exmedium .t4s-nav-link-icon { width: 20px; height: 24px; }
+.pin__size--large .t4s-nav-link-icon { width: 24px; height: 28px; }
+
+/* Estilos para las tarjetas de tienda */
+.t4s-store-locations { position: relative; }
+.t4s-store-pin { z-index: 3; }
+.t4s-store-card { position: absolute; z-index: 4; display: none; }
+.t4s-store-card.is-active { display: block; }
+.t4s-store-card { top: var(--ps-top); left: var(--ps-left); transform: translate(-50%, calc(-100% - 12px)); max-width: 280px; }
+.t4s-store-card__inner { 
+    background: var(--card-bg, #fff); 
+    color: var(--card-text, #111); 
+    border-radius: 8px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,.15); 
+    padding: 14px 14px 12px; 
+    line-height: 1.45; 
+    border: 1px solid var(--card-border, rgba(0,0,0,.08));
+}
+.t4s-store-card__title { 
+    margin: 0 24px 6px 0; 
+    font-size: 16px; 
+    font-weight: 600; 
+    color: var(--card-title, inherit);
+}
+.t4s-store-card__address, .t4s-store-card__schedule, .t4s-store-card__phone { 
+    margin: 0 0 6px; 
+    font-size: 13px; 
+    color: var(--card-content, inherit);
+}
+.t4s-store-card__phone a {
+    color: var(--card-phone, var(--card-content, inherit));
+    text-decoration: none;
+}
+.t4s-store-card__phone a:hover {
+    text-decoration: underline;
+}
+.t4s-store-card__actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.t4s-btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 6px; font-size: 13px; text-decoration: none; border: 1px solid rgba(0,0,0,.08); }
+.t4s-btn--map { 
+    background: var(--btn-map-bg, #f6f6f6); 
+    color: var(--btn-map-text, #111); 
+    border-color: var(--btn-map-border, rgba(0,0,0,.08));
+}
+.t4s-btn--map:hover {
+    background: var(--btn-map-hover-bg, #e6e6e6);
+    color: var(--btn-map-hover-text, #111);
+}
+.t4s-btn--wa { 
+    background: var(--btn-wa-bg, #25D366); 
+    color: var(--btn-wa-text, #fff); 
+    border-color: var(--btn-wa-border, #25D366); 
+}
+.t4s-btn--wa:hover {
+    background: var(--btn-wa-hover-bg, #20b558);
+    color: var(--btn-wa-hover-text, #fff);
+}
+.t4s-store-card__close { 
+    position: absolute; 
+    top: 6px; 
+    right: 6px; 
+    background: transparent; 
+    border: 0; 
+    font-size: 18px; 
+    line-height: 1; 
+    cursor: pointer; 
+    color: var(--card-close, #666); 
+}
+.t4s-store-card__close:hover {
+    color: var(--card-close-hover, #333);
+}
+/* Flecha/puntero */
+.t4s-store-card.is-active::after { 
+    content: ""; 
+    position: absolute; 
+    left: 50%; 
+    bottom: -8px; 
+    transform: translateX(-50%); 
+    border: 8px solid transparent; 
+    border-top-color: var(--card-bg, #fff); 
+    filter: drop-shadow(0 -2px 2px rgba(0,0,0,.06)); 
+}
+
+/* Estilos base para lookbook */
+.t4s-lookbook-img { position: relative; }
+.t4s-pr { position: relative; }
+.t4s-oh { overflow: hidden; }
+.t4s_position_8 { position: relative; }
+.t4s_cover { object-fit: cover; }
+.t4s_ratioadapt .t4s_ratio { position: relative; padding-bottom: calc(100% / var(--aspect-ratioapt)); height: 0; }
+.t4s_ratio img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Ocultar pines en móvil */
+@media (max-width: 767px) {
+  .t4s-store-pin.hide-mobile { display: none !important; }
+  .t4s-store-card { transform: translate(-50%, calc(-100% - 10px)); max-width: 90vw; }
+  .pin__size--small { width: 20px; height: 20px; font-size: 10px; }
+  .pin__size--medium { width: 26px; height: 26px; font-size: 12px; }
+  .pin__size--exmedium { width: 32px; height: 32px; font-size: 13px; }
+  .pin__size--large { width: 36px; height: 36px; font-size: 15px; }
+  
+  /* Ajustes del marcador SVG en móvil */
+  .pin__size--small .t4s-nav-link-icon { width: 14px; height: 17px; }
+  .pin__size--medium .t4s-nav-link-icon { width: 16px; height: 19px; }
+  .pin__size--exmedium .t4s-nav-link-icon { width: 18px; height: 21px; }
+  .pin__size--large .t4s-nav-link-icon { width: 20px; height: 24px; }
+}
+</style>
+
+<div
+  class="t4s-section-inner t4s_nt_se_{{ sid }} t4s_se_{{ sid }} {{ stt_layout }}"
+  style="{% if se_stts.mg %}margin: {{ se_stts.mg | replace: ',', ' ' }};{% endif %}{% if se_stts.pd %}padding: {{ se_stts.pd | replace: ',', ' ' }};{% endif %}"
+>
+  {{- html_layout[0] -}}
+  {%- if stt_layout == 't4s-se-container' -%}<div class="t4s-container-inner">{%- endif -%}
+
+  <div class="t4s-store-locations">
+    <div class="t4s-lookbook-img t4s-pr t4s-oh t4s_position_8 t4s_cover t4s_ratioadapt">
+      {%- if se_stts.image -%}
+        {%- assign ratio = se_stts.image.aspect_ratio -%}
+        <div class="t4s-lookbook-img-wrap t4s_ratio" style="--aspect-ratioapt:{{ ratio | default: 1.7777 }};">
+          <img
+            class="store-bg"
+            src="{{ se_stts.image | image_url: width: 800 }}"
+            srcset="{{ se_stts.image | image_url: width: 800 }} 800w, {{ se_stts.image | image_url: width: 1200 }} 1200w, {{ se_stts.image | image_url: width: 1600 }} 1600w"
+            sizes="100vw"
+            width="{{ se_stts.image.width | default: 1600 }}"
+            height="{{ se_stts.image.height | default: 900 }}"
+            alt="{{ se_stts.image.alt | escape }}"
+            loading="lazy"
+          >
+          <span style="background: url({{ se_stts.image | image_url: width: 1 }})"></span>
+        </div>
+      {%- else -%}
+        {%- capture current -%}{% cycle 1, 2 %}{%- endcapture -%}
+        {{ 'lifestyle-' | append: current | placeholder_svg_tag: 't4s-placeholder-svg t4s-svg-bg1' }}
+      {%- endif -%}
+    </div>
+
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'location' -%}
+        {%- assign b = block.settings -%}
+        {%- assign hide_mobile = false -%}
+        {%- if se_stts.hide_pins_on_mobile or b.hide_on_mobile -%}
+          {%- assign hide_mobile = true -%}
+        {%- endif -%}
+        <div id="store-pin-{{ block.id }}"
+             class="t4s-lookbook-pin t4s-store-pin pin__size--{{ b.pos_size }} {% if hide_mobile %}hide-mobile{% endif %}"
+             style="--ps-top: {{ b.pos_t }}%; --ps-left: {{ b.pos_l }}%; --bg-pin: {{ b.bg_cl }}; --cl-pin: {{ b.cl_text }};"
+             {{ block.shopify_attributes }}>
+          <span class="t4s-pin-tt">
+            <svg class="t4s-nav-link-icon" viewBox="0 0 336.643 336.643" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="M157.618,327.478c5.908,12.226,15.501,12.22,21.397-0.012c25.299-52.481,86.896-180.42,88.812-185.743l0.324-0.886 c3.837-10.959,6.028-22.689,6.028-34.969C274.18,47.411,226.79,0,168.331,0C109.859,0,62.463,47.402,62.463,105.868 c0,8.656,1.156,17.021,3.113,25.076l0.108,0.447C68.393,142.269,131.86,274.167,157.618,327.478z M168.336,46.162 c32.969,0,59.691,26.751,59.691,59.712c0,32.981-26.728,59.705-59.691,59.705c-32.984,0-59.711-26.73-59.711-59.705 C108.631,72.913,135.352,46.162,168.336,46.162z"/>
+            </svg>
+          </span>
+          <span class="t4s-zoompin"></span>
+        </div>
+
+        <div class="t4s-lb__wrapper t4s-store-card"
+             data-for="store-pin-{{ block.id }}"
+             style="--ps-top: {{ b.pos_t }}%; --ps-left: {{ b.pos_l }}%; --card-bg: {{ b.card_bg_color | default: '#fff' }}; --card-text: {{ b.card_text_color | default: '#111' }}; --card-border: {{ b.card_border_color | default: 'rgba(0,0,0,.08)' }}; --card-title: {{ b.card_title_color | default: 'inherit' }}; --card-content: {{ b.card_content_color | default: 'inherit' }}; --card-phone: {{ b.card_phone_color | default: 'inherit' }}; --card-close: {{ b.card_close_color | default: '#666' }}; --card-close-hover: {{ b.card_close_hover_color | default: '#333' }}; --btn-map-bg: {{ b.btn_map_bg | default: '#f6f6f6' }}; --btn-map-text: {{ b.btn_map_text | default: '#111' }}; --btn-map-border: {{ b.btn_map_border | default: 'rgba(0,0,0,.08)' }}; --btn-map-hover-bg: {{ b.btn_map_hover_bg | default: '#e6e6e6' }}; --btn-map-hover-text: {{ b.btn_map_hover_text | default: '#111' }}; --btn-wa-bg: {{ b.btn_wa_bg | default: '#25D366' }}; --btn-wa-text: {{ b.btn_wa_text | default: '#fff' }}; --btn-wa-border: {{ b.btn_wa_border | default: '#25D366' }}; --btn-wa-hover-bg: {{ b.btn_wa_hover_bg | default: '#20b558' }}; --btn-wa-hover-text: {{ b.btn_wa_hover_text | default: '#fff' }};"
+             aria-hidden="true">
+          <div class="t4s-store-card__inner">
+            <button class="t4s-store-card__close" type="button" aria-label="Cerrar" data-pin-close>&times;</button>
+            {%- if b.title != blank -%}
+              <h3 class="t4s-store-card__title">{{ b.title | escape }}</h3>
+            {%- endif -%}
+            {%- if b.address != blank -%}
+              <p class="t4s-store-card__address">{{ b.address }}</p>
+            {%- endif -%}
+            {%- if b.schedule != blank -%}
+              <p class="t4s-store-card__schedule">{{ b.schedule }}</p>
+            {%- endif -%}
+            {%- if b.phone != blank -%}
+              <p class="t4s-store-card__phone"><a href="tel:{{ b.phone | replace: ' ', '' }}">{{ b.phone }}</a></p>
+            {%- endif -%}
+            <div class="t4s-store-card__actions">
+              {%- if b.maps_url != blank -%}
+                <a class="t4s-btn t4s-btn--map" href="{{ b.maps_url }}" target="_blank" rel="noopener">Ver en Maps</a>
+              {%- endif -%}
+              {%- if se_stts.enable_whatsapp_button and b.whatsapp_phone != blank -%}
+                {%- assign wa_phone = b.whatsapp_phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '+' -%}
+                {%- assign wa_text = b.whatsapp_message | default: 'Hola, quiero información sobre ' | append: b.title -%}
+                <a class="t4s-btn t4s-btn--wa" href="https://wa.me/{{ wa_phone }}?text={{ wa_text | url_encode }}" target="_blank" rel="noopener">
+                  {{ b.whatsapp_button_text | default: 'WhatsApp' }}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  {%- if stt_layout == 't4s-se-container' -%}</div>{%- endif -%}
+  {{- html_layout[1] -}}
+</div>
+
+<script>
+// Interacción: hover o click (configurable). En móvil/táctil, siempre click.
+(function(){
+  var hoverMode = {{ se_stts.interaction_mode | json }} === 'hover';
+  var mqTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  if (mqTouch) { hoverMode = false; }
+
+  function getCardForPin(pin){
+    var id = pin.getAttribute('id');
+    return document.querySelector('.t4s-store-card[data-for="'+id+'"]');
+  }
+
+  function hideAll(){
+    document.querySelectorAll('.t4s-store-card.is-active').forEach(function(el){
+      el.classList.remove('is-active');
+      el.setAttribute('aria-hidden', 'true');
+    });
+  }
+
+  function showCard(card){
+    if (!card) return;
+    hideAll();
+    card.classList.add('is-active');
+    card.setAttribute('aria-hidden', 'false');
+  }
+
+  function toggleCard(card){
+    if (!card) return;
+    var isActive = card.classList.contains('is-active');
+    if (isActive) { hideAll(); } else { showCard(card); }
+  }
+
+  document.addEventListener('click', function(e){
+    var pin = e.target.closest('.t4s-store-pin');
+    var card = e.target.closest('.t4s-store-card');
+    if (pin){
+      e.preventDefault();
+      toggleCard(getCardForPin(pin));
+      return;
+    }
+    if (card){
+      if (e.target.matches('[data-pin-close]')){ hideAll(); }
+      return;
+    }
+    // click fuera
+    hideAll();
+  });
+
+  if (hoverMode){
+    var pins = document.querySelectorAll('.t4s-store-pin');
+    pins.forEach(function(pin){
+      var card = getCardForPin(pin);
+      if (!card) return;
+      var to;
+      pin.addEventListener('mouseenter', function(){ clearTimeout(to); showCard(card); });
+      pin.addEventListener('mouseleave', function(){ to = setTimeout(function(){ card.matches(':hover') || hideAll(); }, 120); });
+      card.addEventListener('mouseleave', function(){ hideAll(); });
+      card.addEventListener('mouseenter', function(){ clearTimeout(to); });
+    });
+  }
+})();
+</script>
+
+{%- schema -%}
+{
+  "name": "Ubicaciones de tiendas",
+  "class": "t4s-section t4s-section-all t4s_tp_lb",
+  "settings": [
+    { "type": "header", "content": "General" },
+    { "type": "image_picker", "id": "image", "label": "Imagen de fondo" },
+    {
+      "type": "select",
+      "id": "interaction_mode",
+      "label": "Mostrar información al",
+      "default": "click",
+      "options": [
+        { "value": "click", "label": "Hacer clic" },
+        { "value": "hover", "label": "Pasar el mouse (desktop)" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_whatsapp_button",
+      "label": "Mostrar botón de WhatsApp (si hay número)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_pins_on_mobile",
+      "label": "Ocultar todos los pines en móvil",
+      "default": false
+    },
+    { "type": "header", "content": "Diseño" },
+    {
+      "type": "select",
+      "id": "layout",
+      "default": "t4s-se-container",
+      "label": "Disposición de sección",
+      "options": [
+        { "value": "t4s-se-container", "label": "Contenedor"},
+        { "value": "t4s-container-wrap", "label": "Contenedor envuelto"},
+        { "value": "t4s-container-fluid", "label": "Ancho completo"}
+      ]
+    },
+    { "type": "text", "id": "mg", "label": "Margen", "default": ",,40px,", "placeholder": ",,40px," },
+    { "type": "text", "id": "pd", "label": "Padding", "placeholder": "40px,,40px," },
+    { "type": "text", "id": "mg_tb", "label": "Margen (tablet)", "placeholder": ",,40px," },
+    { "type": "text", "id": "pd_tb", "label": "Padding (tablet)", "placeholder": ",,40px," },
+    { "type": "text", "id": "mg_mb", "label": "Margen (móvil)", "default": ",,30px,", "placeholder": ",,30px," },
+    { "type": "text", "id": "pd_mb", "label": "Padding (móvil)", "placeholder": ",,30px," }
+  ],
+  "blocks": [
+    {
+      "type": "location",
+      "name": "Ubicación",
+      "settings": [
+        { "type": "header", "content": "+ Posición y estilo del pin" },
+        { "type": "range", "id": "pos_t", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "Posición top", "default": 50 },
+        { "type": "range", "id": "pos_l", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "Posición left", "default": 50 },
+        {
+          "type": "select", "id": "pos_size", "label": "Tamaño del pin", "default": "medium",
+          "options": [
+            { "value": "small", "label": "Pequeño" },
+            { "value": "medium", "label": "Mediano" },
+            { "value": "exmedium", "label": "Grande" },
+            { "value": "large", "label": "Extra grande" }
+          ]
+        },
+        { "type": "color", "id": "bg_cl", "label": "Color de fondo", "default": "#65affa" },
+        { "type": "color", "id": "cl_text", "label": "Color del ícono/texto", "default": "#fff" },
+        { "type": "checkbox", "id": "hide_on_mobile", "label": "Ocultar este pin en móvil", "default": false },
+
+        { "type": "header", "content": "+ Información de la tienda" },
+        { "type": "text", "id": "title", "label": "Nombre de la tienda", "default": "Oxford - Tienda Centro" },
+        { "type": "textarea", "id": "address", "label": "Dirección", "default": "Calle Falsa 123, Ciudad" },
+        { "type": "text", "id": "schedule", "label": "Horario", "default": "Lun - Sáb: 9am - 6pm" },
+        { "type": "text", "id": "phone", "label": "Teléfono", "default": "+58 000-0000000" },
+        { "type": "url", "id": "maps_url", "label": "Enlace Google Maps" },
+
+        { "type": "header", "content": "+ WhatsApp" },
+        { "type": "text", "id": "whatsapp_phone", "label": "Número de WhatsApp (con código de país)", "default": "+58 000-0000000" },
+        { "type": "text", "id": "whatsapp_button_text", "label": "Texto del botón", "default": "WhatsApp" },
+        { "type": "text", "id": "whatsapp_message", "label": "Mensaje predefinido", "default": "Hola, quiero información sobre la tienda" },
+
+        { "type": "header", "content": "+ Personalización de la tarjeta" },
+        { "type": "color", "id": "card_bg_color", "label": "Color de fondo de la tarjeta", "default": "#ffffff" },
+        { "type": "color", "id": "card_text_color", "label": "Color de texto principal", "default": "#111111" },
+        { "type": "color", "id": "card_border_color", "label": "Color del borde", "default": "#e0e0e0" },
+        { "type": "color", "id": "card_title_color", "label": "Color del título" },
+        { "type": "color", "id": "card_content_color", "label": "Color del contenido" },
+        { "type": "color", "id": "card_phone_color", "label": "Color del teléfono" },
+        { "type": "color", "id": "card_close_color", "label": "Color del botón cerrar", "default": "#666666" },
+        { "type": "color", "id": "card_close_hover_color", "label": "Color del botón cerrar al hover", "default": "#333333" },
+
+        { "type": "header", "content": "+ Botones de la tarjeta" },
+        { "type": "color", "id": "btn_map_bg", "label": "Fondo botón Maps", "default": "#f6f6f6" },
+        { "type": "color", "id": "btn_map_text", "label": "Texto botón Maps", "default": "#111111" },
+        { "type": "color", "id": "btn_map_border", "label": "Borde botón Maps", "default": "#e0e0e0" },
+        { "type": "color", "id": "btn_map_hover_bg", "label": "Fondo botón Maps (hover)", "default": "#e6e6e6" },
+        { "type": "color", "id": "btn_map_hover_text", "label": "Texto botón Maps (hover)", "default": "#111111" },
+        { "type": "color", "id": "btn_wa_bg", "label": "Fondo botón WhatsApp", "default": "#25D366" },
+        { "type": "color", "id": "btn_wa_text", "label": "Texto botón WhatsApp", "default": "#ffffff" },
+        { "type": "color", "id": "btn_wa_border", "label": "Borde botón WhatsApp", "default": "#25D366" },
+        { "type": "color", "id": "btn_wa_hover_bg", "label": "Fondo botón WhatsApp (hover)", "default": "#20b558" },
+        { "type": "color", "id": "btn_wa_hover_text", "label": "Texto botón WhatsApp (hover)", "default": "#ffffff" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ubicaciones de tiendas",
+      "category": "VIII. Lookbook",
+      "blocks": [ { "type": "location" } ]
+    }
+  ]
+}
+{%- endschema -%}

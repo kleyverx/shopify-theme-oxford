@@ -134,6 +134,9 @@
     "menu_close": "Cerrar menú"
   },
   "general": {
+    "breadcrumbs": {
+      "home": "Inicio"
+    },
     "navigation": {
       "menu_open": "Abrir menú",
       "menu_close": "Cerrar menú"

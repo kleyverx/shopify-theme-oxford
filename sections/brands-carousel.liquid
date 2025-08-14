@@ -32,7 +32,7 @@
           <div class="brands-carousel__item" {{ block.shopify_attributes }}>
             {% liquid
               assign alt_text = block.settings.alt | default: block.settings.logo.alt | default: 'Logo de marca' | escape
-              assign circle_bg = section.settings.circle_bg_color | default: '#fff'
+              assign circle_bg = block.settings.circle_bg_color | default: '#fff'
             %}
             
             {% if block.settings.link != blank %}
@@ -667,12 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Color del subtítulo",
       "default": "#666666"
     },
-    {
-      "type": "color",
-      "id": "circle_bg_color",
-      "label": "Color de fondo de los logos",
-      "default": "#ffffff"
-    },
+
     {
       "type": "text",
       "id": "hover_text",
@@ -762,6 +757,12 @@ document.addEventListener('DOMContentLoaded', function() {
       "name": "Marca",
       "type": "brand",
       "settings": [
+        {
+          "type": "color",
+          "id": "circle_bg_color",
+          "label": "Color de fondo del logo",
+          "default": "#ffffff"
+        },
         {
           "type": "image_picker",
           "id": "logo",

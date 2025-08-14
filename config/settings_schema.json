@@ -215,6 +215,159 @@
     ]
   },
   {
+    "name": "Redes sociales flotantes",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración general"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_nav_enable",
+        "label": "Habilitar barra de redes sociales",
+        "default": false,
+        "info": "Muestra una barra flotante de redes sociales en el lado izquierdo en desktop"
+      },
+      {
+        "type": "range",
+        "id": "social_nav_offset",
+        "min": 1,
+        "max": 5,
+        "step": 0.5,
+        "unit": "rem",
+        "label": "Distancia del borde",
+        "default": 2,
+        "info": "Distancia desde el borde izquierdo"
+      },
+      {
+        "type": "range",
+        "id": "social_nav_scroll_trigger",
+        "min": 100,
+        "max": 1000,
+        "step": 50,
+        "unit": "px",
+        "label": "Activar al hacer scroll",
+        "default": 300,
+        "info": "Píxeles de scroll necesarios para mostrar la barra"
+      },
+      {
+        "type": "header",
+        "content": "Apariencia"
+      },
+      {
+        "type": "color",
+        "id": "social_nav_bg_color",
+        "label": "Color de fondo",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "range",
+        "id": "social_nav_bg_opacity",
+        "min": 0.1,
+        "max": 1,
+        "step": 0.1,
+        "label": "Opacidad del fondo",
+        "default": 0.9
+      },
+      {
+        "type": "color",
+        "id": "social_nav_icon_color",
+        "label": "Color de los íconos",
+        "default": "#666666"
+      },
+      {
+        "type": "color",
+        "id": "social_nav_hover_bg",
+        "label": "Color de fondo al pasar el mouse",
+        "default": "#667eea"
+      },
+      {
+        "type": "color",
+        "id": "social_nav_hover_icon",
+        "label": "Color de ícono al pasar el mouse",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "range",
+        "id": "social_nav_border_radius",
+        "min": 0.5,
+        "max": 3,
+        "step": 0.5,
+        "unit": "rem",
+        "label": "Radio de borde",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "social_nav_blur",
+        "min": 0,
+        "max": 20,
+        "step": 2,
+        "unit": "px",
+        "label": "Desenfoque del fondo",
+        "default": 10
+      },
+      {
+        "type": "header",
+        "content": "Enlaces de redes sociales"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook_url",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram_url",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "url",
+        "id": "social_twitter_url",
+        "label": "Twitter/X URL"
+      },
+      {
+        "type": "url",
+        "id": "social_linkedin_url",
+        "label": "LinkedIn URL"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube_url",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok_url",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "url",
+        "id": "social_whatsapp_url",
+        "label": "WhatsApp URL",
+        "info": "Ejemplo: https://wa.me/1234567890"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_nav_auto_hide",
+        "label": "Ocultar automáticamente",
+        "default": false,
+        "info": "Oculta la barra después de unos segundos sin interacción"
+      },
+      {
+        "type": "range",
+        "id": "social_nav_hide_delay",
+        "min": 2,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "label": "Tiempo antes de ocultar",
+        "default": 5,
+        "info": "Solo si 'Ocultar automáticamente' está habilitado"
+      }
+    ]
+  },
+  {
     "name": "Buttons",
     "settings": [
       {

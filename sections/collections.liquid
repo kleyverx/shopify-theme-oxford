@@ -50,14 +50,9 @@
     {% endif %}
 
     <div class="collections-grid collections-grid--{{ section.settings.layout_style }}">
-      {% assign collections_limit = section.settings.collections_limit %}
-      {% assign collections_to_show = collections %}
-      {% if collections_limit < collections.size %}
-        {% assign collections_to_show = collections | slice: 0, collections_limit %}
-      {% endif %}
-      
-      {% for collection in collections_to_show %}
-        {% assign card_index = forloop.index %}
+      {% for collection in collections %}
+        {% unless collection.handle == 'frontpage' %}
+          {% assign card_index = forloop.index %}
         <article class="collection-card" 
           data-collection-id="{{ collection.id }}"
           data-animation-delay="{{ card_index | times: 100 }}ms"
@@ -123,6 +118,7 @@
             </div>
           </a>
         </article>
+        {% endunless %}
       {% endfor %}
     </div>
 
@@ -777,11 +773,12 @@
     {
       "type": "range",
       "id": "collections_limit",
-      "label": "Número de colecciones a mostrar",
-      "min": 1,
-      "max": 20,
+      "label": "Número de colecciones a mostrar (0 = todas)",
+      "min": 0,
+      "max": 50,
       "step": 1,
-      "default": 6
+      "default": 0,
+      "info": "Deja en 0 para mostrar todas las colecciones"
     },
     {
       "type": "range",

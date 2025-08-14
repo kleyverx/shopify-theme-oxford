@@ -137,6 +137,9 @@
     "mobile_navigation": "Mobile navigation"
   },
   "general": {
+    "breadcrumbs": {
+      "home": "Home"
+    },
     "navigation": {
       "menu_open": "Open menu",
       "menu_close": "Close menu"

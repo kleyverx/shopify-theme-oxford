@@ -1,0 +1,292 @@
+{% schema %}
+{
+  "name": "Fuentes Personalizadas",
+  "tag": "section",
+  "class": "custom-fonts-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configuración de Fuentes"
+    },
+    {
+      "type": "select",
+      "id": "font_source",
+      "label": "Fuente de origen",
+      "options": [
+        {
+          "value": "shopify",
+          "label": "Fuentes de Shopify"
+        },
+        {
+          "value": "google",
+          "label": "Google Fonts"
+        }
+      ],
+      "default": "shopify"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Fuente para títulos (Shopify)",
+      "default": "work_sans_n4"
+    },
+    {
+      "type": "font_picker",
+      "id": "paragraph_font",
+      "label": "Fuente para párrafos (Shopify)",
+      "default": "work_sans_n4"
+    },
+    {
+      "type": "header",
+      "content": "Google Fonts"
+    },
+    {
+      "type": "paragraph",
+      "content": "Para usar Google Fonts, agregue el nombre de la fuente. <a href='https://fonts.google.com' target='_blank'>Más información</a>"
+    },
+    {
+      "type": "text",
+      "id": "google_title_font",
+      "label": "Nombre de la fuente de Google para títulos",
+      "placeholder": "Ejemplo: Montserrat, Roboto, Open Sans",
+      "info": "Escriba el nombre exacto de la fuente de Google Fonts"
+    },
+    {
+      "type": "text",
+      "id": "google_paragraph_font",
+      "label": "Nombre de la fuente de Google para párrafos",
+      "placeholder": "Ejemplo: Lato, Source Sans Pro, Nunito",
+      "info": "Escriba el nombre exacto de la fuente de Google Fonts"
+    },
+    {
+      "type": "text",
+      "id": "google_font_weights",
+      "label": "Pesos de fuente",
+      "default": "300;400;500;600;700",
+      "info": "Separados por punto y coma. Ejemplo: 300;400;500;700"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_preview",
+      "label": "Mostrar vista previa",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fuentes Personalizadas"
+    }
+  ]
+}
+{% endschema %}
+
+{% comment %} Cargar fuentes según la fuente seleccionada {% endcomment %}
+{% assign google_fonts = '' %}
+{% if section.settings.font_source == 'shopify' %}
+  {% comment %} Cargar fuentes de Shopify {% endcomment %}
+  {% if section.settings.title_font %}
+    {{ section.settings.title_font | font_face }}
+  {% endif %}
+  {% if section.settings.paragraph_font %}
+    {{ section.settings.paragraph_font | font_face }}
+  {% endif %}
+{% elsif section.settings.font_source == 'google' %}
+  {% comment %} Cargar fuentes de Google Fonts {% endcomment %}
+  {% if section.settings.google_title_font != blank %}
+    {% assign title_font_name = section.settings.google_title_font | replace: ' ', '+' %}
+    {% assign google_fonts = google_fonts | append: title_font_name %}
+    {% if section.settings.google_font_weights != blank %}
+      {% assign formatted_weights = section.settings.google_font_weights | replace: ',', ';' %}
+      {% assign google_fonts = google_fonts | append: ':wght@' | append: formatted_weights %}
+    {% endif %}
+  {% endif %}
+  
+  {% if section.settings.google_paragraph_font != blank %}
+    {% assign paragraph_font_name = section.settings.google_paragraph_font | replace: ' ', '+' %}
+    {% if google_fonts != blank %}
+      {% assign google_fonts = google_fonts | append: '&family=' %}
+    {% endif %}
+    {% assign google_fonts = google_fonts | append: paragraph_font_name %}
+    {% if section.settings.google_font_weights != blank %}
+      {% assign formatted_weights = section.settings.google_font_weights | replace: ',', ';' %}
+      {% assign google_fonts = google_fonts | append: ':wght@' | append: formatted_weights %}
+    {% endif %}
+  {% endif %}
+  
+  {% if google_fonts != blank %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family={{ google_fonts }}&display=swap" rel="stylesheet">
+    
+    <style>
+      /* Forzar aplicación de fuentes de Google con máxima especificidad */
+      {% if section.settings.google_title_font != blank %}
+        * h1, * h2, * h3, * h4, * h5, * h6,
+        .custom-fonts-title,
+        .collections-title,
+        .collection-card__title,
+        .product-title,
+        .section-title,
+        .page-title,
+        body h1, body h2, body h3, body h4, body h5, body h6 {
+          font-family: '{{ section.settings.google_title_font }}' !important;
+        }
+      {% endif %}
+      
+      {% if section.settings.google_paragraph_font != blank %}
+        * p, * span, * div, * a, * li, * td, * th,
+        .custom-fonts-paragraph,
+        .collection-card__description,
+        .collections-subtitle,
+        .product-description,
+        .page-content,
+        body, body p, body span, body div, body a, body li {
+          font-family: '{{ section.settings.google_paragraph_font }}' !important;
+        }
+      {% endif %}
+    </style>
+  {% endif %}
+{% endif %}
+
+<style>
+  /* Variables CSS para las fuentes */
+  :root {
+    {% if section.settings.font_source == 'shopify' %}
+      --font-heading: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }};
+      --font-body: {{ section.settings.paragraph_font.family }}, {{ section.settings.paragraph_font.fallback_families }};
+    {% elsif section.settings.font_source == 'google' %}
+      --font-heading: '{{ section.settings.google_title_font }}', Arial, sans-serif;
+      --font-body: '{{ section.settings.google_paragraph_font }}', Arial, sans-serif;
+    {% endif %}
+  }
+  
+  {% if section.settings.font_source == 'shopify' %}
+    /* Aplicar fuentes de Shopify */
+    h1, h2, h3, h4, h5, h6,
+    .custom-fonts-title,
+    .collections-title,
+    .collection-card__title,
+    .product-title,
+    .section-title,
+    .page-title {
+      font-family: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }} !important;
+      font-weight: {{ section.settings.title_font.weight }};
+      font-style: {{ section.settings.title_font.style }};
+    }
+
+    p, span, div, 
+    .custom-fonts-paragraph,
+    .collection-card__description,
+    .collections-subtitle,
+    .product-description,
+    .page-content,
+    body,
+    .main-content {
+      font-family: {{ section.settings.paragraph_font.family }}, {{ section.settings.paragraph_font.fallback_families }} !important;
+      font-weight: {{ section.settings.paragraph_font.weight }};
+      font-style: {{ section.settings.paragraph_font.style }};
+    }
+  {% endif %}
+  
+  /* Estilos para la vista previa */
+  .custom-fonts-preview {
+    background: #f8f8f8;
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 1rem 0;
+  }
+  
+  .font-info {
+    background: #e8f4fd;
+    border-left: 4px solid #2196F3;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+  }
+</style>
+
+<div class="custom-fonts">
+  {% if section.settings.show_preview %}
+    <div class="custom-fonts-preview" style="max-width: 1200px; margin: 0 auto; text-align: center;">
+      {% if section.settings.font_source == 'google' %}
+        {% comment %} Test visual directo con estilos inline {% endcomment %}
+        <h1 style="font-family: '{{ section.settings.google_title_font }}' !important; margin: 0 0 1rem 0; color: #333;">
+          Título con {{ section.settings.google_title_font }}
+        </h1>
+        <h2 style="font-family: '{{ section.settings.google_title_font }}' !important; margin: 0 0 1rem 0; color: #555;">
+          Subtítulo con {{ section.settings.google_title_font }}
+        </h2>
+        <p style="font-family: '{{ section.settings.google_paragraph_font }}' !important; margin: 0 0 1rem 0; font-size: 1.125rem; color: #666;">
+          Este párrafo usa {{ section.settings.google_paragraph_font }} directamente aplicada con estilo inline.
+        </p>
+        <p style="font-family: '{{ section.settings.google_paragraph_font }}' !important; margin: 0 0 1rem 0; color: #777;">
+          Si ves este texto con una fuente diferente a la normal, las fuentes de Google están funcionando.
+        </p>
+      {% else %}
+        <h1 class="custom-fonts-title" style="margin: 0 0 1rem 0;">Título Principal</h1>
+        <h2 class="custom-fonts-title" style="margin: 0 0 1rem 0;">Subtítulo Secundario</h2>
+        <h3 class="custom-fonts-title" style="margin: 0 0 1.5rem 0;">Título de Sección</h3>
+        
+        <p class="custom-fonts-paragraph" style="margin: 0 0 1rem 0; font-size: 1.125rem;">
+          Este es un párrafo de ejemplo que muestra cómo se verá el texto principal con la fuente seleccionada.
+        </p>
+        
+        <p class="custom-fonts-paragraph" style="margin: 0 0 1rem 0;">
+          Las fuentes de Shopify se cargarán automáticamente desde la CDN optimizada.
+        </p>
+      {% endif %}
+      
+      <div class="font-info">
+        <h4 style="margin: 0 0 0.5rem 0; color: #1976D2;">Información de Fuentes</h4>
+        
+        {% comment %} Debug de configuración {% endcomment %}
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; margin: 1rem 0; border-radius: 4px; font-size: 0.875rem;">
+          <strong>🔧 Debug:</strong><br>
+          <strong>Fuente de origen:</strong> {{ section.settings.font_source }}<br>
+          {% if section.settings.font_source == 'google' %}
+            <strong>Google título:</strong> "{{ section.settings.google_title_font }}"<br>
+            <strong>Google párrafo:</strong> "{{ section.settings.google_paragraph_font }}"<br>
+            <strong>Pesos:</strong> {{ section.settings.google_font_weights }}<br>
+            <strong>URL generada:</strong> 
+            {% if section.settings.google_title_font != blank or section.settings.google_paragraph_font != blank %}
+              https://fonts.googleapis.com/css2?family={{ google_fonts }}&display=swap
+            {% else %}
+              No se generó URL (fuentes vacías)
+            {% endif %}
+          {% endif %}
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+          {% if section.settings.font_source == 'shopify' %}
+            <div style="font-size: 0.875rem; color: #666;">
+              <strong>Fuente de títulos:</strong> {{ section.settings.title_font.family }}
+            </div>
+            <div style="font-size: 0.875rem; color: #666;">
+              <strong>Fuente de párrafos:</strong> {{ section.settings.paragraph_font.family }}
+            </div>
+          {% elsif section.settings.font_source == 'google' %}
+            <div style="font-size: 0.875rem; color: #666;">
+              <strong>Fuente de títulos:</strong> 
+              {% if section.settings.google_title_font != blank %}
+                {{ section.settings.google_title_font }}
+              {% else %}
+                No seleccionada
+              {% endif %}
+            </div>
+            <div style="font-size: 0.875rem; color: #666;">
+              <strong>Fuente de párrafos:</strong> 
+              {% if section.settings.google_paragraph_font != blank %}
+                {{ section.settings.google_paragraph_font }}
+              {% else %}
+                No seleccionada
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+        <div style="font-size: 0.875rem; color: #999; margin-top: 0.5rem;">
+          Fuente de origen: {{ section.settings.font_source | capitalize }}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>

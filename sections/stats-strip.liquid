@@ -1,0 +1,249 @@
+{% comment %}
+  Section: stats-strip (con micro‑interacciones)
+  - Contador animado al entrar en viewport (si el número contiene 90, +80, 54k, etc.).
+  - Aparición con fade+slide al hacer scroll.
+  - Hover suave (elevación + tinte de icono).
+  - Focus accesible para navegación con teclado.
+  - Respeta "prefers-reduced-motion" y se puede desactivar por settings.
+{% endcomment %}
+
+<section
+  class="stats-strip"
+  style="--bg: {{ section.settings.bg | default: '#e8eef7' }}; --text: {{ section.settings.text | default: '#0c2a57' }}; --muted: {{ section.settings.muted | default: '#3f5a8c' }}; --accent: {{ section.settings.accent | default: '#083a8d' }}; --divider: {{ section.settings.divider | default: '#9db2d6' }}; --elev: 8px;"
+  data-animate="{{ section.settings.enable_reveal }}"
+  data-countup="{{ section.settings.enable_countup }}"
+  data-hoverfx="{{ section.settings.enable_hover }}"
+  data-reduced-motion="{{ section.settings.force_reduced_motion }}"
+>
+  <div class="stats-strip__container">
+    {% if section.settings.heading != blank %}
+      <h2 class="stats-strip__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="stats-strip__grid" role="list">
+      {% for block in section.blocks %}
+        {%- assign big_text = block.settings.big | strip -%}
+        <div class="stats-strip__item will-reveal" role="listitem" tabindex="0" {{ block.shopify_attributes }}>
+          <div class="stats-strip__icon" aria-hidden="true">
+            {% if block.settings.icon != blank %}
+              {{ block.settings.icon | image_url: width: 160 | image_tag: widths: '80,120,160', alt: block.settings.icon_alt, loading: 'lazy', class: 'stats-strip__icon-img' }}
+            {% elsif block.settings.svg_icon != blank %}
+              <div class="stats-strip__icon-svg">{{ block.settings.svg_icon }}</div>
+            {% else %}
+              <svg class="stats-strip__icon-fallback" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+            {% endif %}
+          </div>
+
+          <div class="stats-strip__content">
+            {% if block.settings.eyebrow != blank %}
+              <div class="stats-strip__eyebrow">{{ block.settings.eyebrow }}</div>
+            {% endif %}
+
+            {% if block.settings.kicker != blank %}
+              <div class="stats-strip__kicker">{{ block.settings.kicker }}</div>
+            {% endif %}
+
+            {% if big_text != blank %}
+              <div class="stats-strip__big js-count" data-count-target="{{ big_text }}">{{ big_text }}</div>
+            {% endif %}
+
+            {% if block.settings.sub != blank %}
+              <div class="stats-strip__sub">{{ block.settings.sub }}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    .stats-strip { 
+      background: var(--bg); 
+      color: var(--text); 
+      width: 100vw; 
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+    }
+    .stats-strip__container { padding: 20px 0; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+    .stats-strip__heading { margin: 0 0 16px; font-size: 1.375rem; font-weight: 700; color: var(--text); }
+
+    .stats-strip__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; align-items: stretch; border-radius: 8px; overflow: hidden; }
+
+    .stats-strip__item { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 20px 24px; position: relative; background: var(--bg); outline: none; transition: transform .3s ease, box-shadow .3s ease; }
+    .stats-strip[data-hoverfx="true"] .stats-strip__item:hover,
+    .stats-strip[data-hoverfx="true"] .stats-strip__item:focus-visible { transform: translateY(-2px); box-shadow: 0 var(--elev) 20px rgba(0,0,0,.08); }
+    .stats-strip__item:focus-visible { box-shadow: 0 0 0 3px rgba(8,58,141,.25); border-radius: 8px; }
+
+    .stats-strip__item + .stats-strip__item { box-shadow: inset 1px 0 0 0 var(--divider); }
+
+    .stats-strip__icon { display: flex; align-items: center; justify-content: center; color: var(--accent); transition: color .25s ease, opacity .25s ease; }
+    .stats-strip[data-hoverfx="true"] .stats-strip__item:hover .stats-strip__icon { opacity: .95; }
+
+    .stats-strip__icon-img { width: 56px; height: auto; }
+    .stats-strip__icon-svg { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+    .stats-strip__icon-svg svg { width: 100%; height: 100%; max-width: 56px; max-height: 56px; }
+    .stats-strip__icon-fallback { width: 56px; height: 56px; }
+
+    .stats-strip__content { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .stats-strip__eyebrow { font-size: .75rem; line-height: 1.1; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
+    .stats-strip__kicker { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+    .stats-strip__big { color: var(--accent); font-weight: 800; font-size: 2rem; line-height: 1.1; margin-top: 2px; }
+    .stats-strip__sub { font-size: .85rem; color: var(--text); opacity: .9; margin-top: 2px; }
+
+    /* Reveal on scroll */
+    .stats-strip[data-animate="true"] .will-reveal { opacity: 0; transform: translateY(10px); }
+    .stats-strip[data-animate="true"] .will-reveal.is-visible { opacity: 1; transform: translateY(0); transition: opacity .5s ease, transform .5s ease; }
+
+    /* Responsive */
+    @media (max-width: 1100px) { 
+      .stats-strip__grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-strip__item:nth-child(odd) { box-shadow: none; }
+      .stats-strip__item:nth-child(2n+1) { box-shadow: inset 0 -1px 0 0 var(--divider); }
+      .stats-strip__item:nth-child(2n) { box-shadow: inset 1px 0 0 0 var(--divider), inset 0 -1px 0 0 var(--divider); }
+    }
+
+    @media (max-width: 640px) {
+      .stats-strip__container { padding-left: 15px; padding-right: 15px; }
+      .stats-strip__grid { grid-template-columns: 1fr; }
+      .stats-strip__item { grid-template-columns: 56px 1fr; padding: 16px 18px; }
+      .stats-strip__item { box-shadow: inset 0 -1px 0 0 var(--divider); }
+      .stats-strip__big { font-size: 1.6rem; }
+      .stats-strip__heading { font-size: 1.125rem; }
+    }
+
+    /* Respetar reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .stats-strip .will-reveal { opacity: 1 !important; transform: none !important; }
+      .stats-strip .stats-strip__item { transition: none !important; }
+    }
+  </style>
+
+  <script>
+    (function() {
+      const root = document.currentScript.closest('.stats-strip');
+      if (!root) return;
+
+      const forceReduced = root.getAttribute('data-reduced-motion') === 'true';
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const doMotion = !(forceReduced || prefersReduced);
+
+      // Reveal on scroll
+      if (root.getAttribute('data-animate') === 'true' && doMotion && 'IntersectionObserver' in window) {
+        const items = root.querySelectorAll('.will-reveal');
+        const io = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.25 });
+        items.forEach(el => io.observe(el));
+      } else {
+        // Si no hay motion, mostrar todo
+        root.querySelectorAll('.will-reveal').forEach(el => el.classList.add('is-visible'));
+      }
+
+      // CountUp
+      function parseTarget(text) {
+        // Convierte "+54k" → 54000, "90" → 90, "1.2M" → 1200000, "Millones" → NaN
+        const t = String(text).trim();
+        const match = t.match(/([+-]?\d*[\.,]?\d+)(\s*[kKmMbB])?/);
+        if (!match) return NaN;
+        let num = parseFloat(match[1].replace(',', '.'));
+        const suf = (match[2] || '').trim().toLowerCase();
+        if (suf === 'k') num *= 1000;
+        if (suf === 'm' || suf === 'b') num *= (suf === 'm' ? 1000000 : 1000000000);
+        return Math.round(num);
+      }
+
+      function animateCount(el, target, duration = 1200) {
+        if (!doMotion) return; // no animar
+        const start = 0; const startTime = performance.now();
+        function step(now) {
+          const p = Math.min(1, (now - startTime) / duration);
+          const val = Math.floor(start + (target - start) * p);
+          // Mantén el formato original (prefijo/sufijo simples)
+          const original = el.getAttribute('data-count-target');
+          const before = original.split(/([0-9][0-9\.,]*)/)[0] || '';
+          const after = original.slice(before.length).replace(/[0-9][0-9\.,]*/, '');
+          el.textContent = before + val.toLocaleString() + after;
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      if (root.getAttribute('data-countup') === 'true') {
+        const counters = root.querySelectorAll('.js-count');
+        const trigger = (el) => {
+          const tgt = parseTarget(el.getAttribute('data-count-target'));
+          if (!isNaN(tgt)) animateCount(el, tgt);
+        };
+        if (doMotion && 'IntersectionObserver' in window) {
+          const io2 = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                trigger(entry.target); obs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.5 });
+          counters.forEach(el => io2.observe(el));
+        } else {
+          counters.forEach(trigger);
+        }
+      }
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Stats strip",
+  "tag": "section",
+  "class": "section stats-strip-section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Título opcional", "default": "Nuestra presencia en números" },
+    { "type": "color", "id": "bg", "label": "Color de fondo", "default": "#e8eef7" },
+    { "type": "color", "id": "text", "label": "Color de texto", "default": "#102a56" },
+    { "type": "color", "id": "muted", "label": "Color texto secundario", "default": "#5c739b" },
+    { "type": "color", "id": "accent", "label": "Color de números/acentos", "default": "#083a8d" },
+    { "type": "color", "id": "divider", "label": "Color divisores", "default": "#9db2d6" },
+
+    { "type": "checkbox", "id": "enable_reveal", "label": "Aparición al hacer scroll", "default": true },
+    { "type": "checkbox", "id": "enable_countup", "label": "Contador animado en números", "default": true },
+    { "type": "checkbox", "id": "enable_hover", "label": "Efecto hover/focus", "default": true },
+    { "type": "checkbox", "id": "force_reduced_motion", "label": "Forzar ‘reduced motion’ (sin animaciones)", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Bloque de estadística",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icono (PNG/SVG)" },
+        { "type": "html", "id": "svg_icon", "label": "SVG inline (alternativo)", "info": "Pega aquí el código SVG completo. Se usa si no hay imagen seleccionada arriba." },
+        { "type": "text", "id": "icon_alt", "label": "Alt del icono", "default": "Icono" },
+        { "type": "text", "id": "eyebrow", "label": "Texto pequeño superior", "default": "Nuestros productos están en más de" },
+        { "type": "text", "id": "big", "label": "Número grande (se acepta +, k, M)", "default": "90 países" },
+        { "type": "text", "id": "kicker", "label": "Texto lateral pequeño (opcional)" },
+        { "type": "text", "id": "sub", "label": "Subtítulo" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Stats strip (4)",
+      "category": "Secciones personalizadas",
+      "blocks": [
+        { "type": "stat", "settings": { "eyebrow": "Nuestros productos están en más de", "big": "90 países" } },
+        { "type": "stat", "settings": { "eyebrow": "+", "big": "+80", "sub": "productos", "kicker": "+35 marcas" } },
+        { "type": "stat", "settings": { "eyebrow": "Más de", "big": "+54k", "sub": "trabajadores a nivel mundial" } },
+        { "type": "stat", "settings": { "big": "Millones", "sub": "de personas impactadas positivamente" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
