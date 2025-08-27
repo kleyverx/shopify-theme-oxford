@@ -1,0 +1,1062 @@
+{% comment %}
+  Sección de Reseñas Circulares
+  Muestra reseñas alrededor de una imagen central con rotación automática
+  En móvil se convierte en carrusel horizontal
+{% endcomment %}
+
+<section class="reviews-section reviews-{{ section.id }}" style="
+  background-color: {{ section.settings.background_color }};
+  padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0;
+">
+  <div class="reviews-container">
+    {% if section.settings.title != blank %}
+      <h2 class="reviews-title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    {% if section.settings.subtitle != blank %}
+      <p class="reviews-subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+
+    <!-- Layout para Desktop: Imagen central con reseñas alrededor -->
+    <div class="reviews-desktop-layout">
+      <div class="reviews-circle-container">
+        <!-- Imagen central -->
+        <div class="central-image">
+          {% if section.settings.central_image != blank %}
+            <img src="{{ section.settings.central_image | image_url: width: 1920, height: 1920 }}" 
+                 alt="{{ section.settings.central_image_alt | default: 'Imagen central' | escape }}" 
+                 loading="lazy">
+          {% else %}
+            <div class="central-image-placeholder">
+              <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="100" r="90" fill="#f0f0f0" stroke="#ddd" stroke-width="2"/>
+                <circle cx="100" cy="80" r="25" fill="#ddd"/>
+                <path d="M70 130 Q100 115 130 130 L130 160 Q100 145 70 160 Z" fill="#ddd"/>
+                <text x="100" y="185" text-anchor="middle" fill="#999" font-size="10">Imagen</text>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+        
+        <!-- Reseñas posicionadas alrededor -->
+        <div class="reviews-circle">
+          {% for block in section.blocks %}
+            <div class="review-item review-{{ forloop.index }}" 
+                 data-review="{{ forloop.index0 }}"
+                 style="--review-index: {{ forloop.index0 }}; --total-reviews: {{ section.blocks.size }};"
+                 {{ block.shopify_attributes }}>
+              <div class="review-content">
+                <div class="review-stars">
+                  {% for i in (1..5) %}
+                    {% if i <= block.settings.rating %}
+                      <span class="star filled">★</span>
+                    {% else %}
+                      <span class="star">☆</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                
+                {% if block.settings.review_text != blank %}
+                  <p class="review-text">"{{ block.settings.review_text }}"</p>
+                {% endif %}
+                
+                <div class="review-author">
+                  {% if block.settings.author_image != blank %}
+                    <img src="{{ block.settings.author_image | image_url: width: 60 }}" 
+                         alt="{{ block.settings.author_name | escape }}" 
+                         class="author-avatar">
+                  {% endif %}
+                  
+                  <div class="author-info">
+                    {% if block.settings.author_name != blank %}
+                      <span class="author-name">{{ block.settings.author_name }}</span>
+                    {% endif %}
+                    {% if block.settings.author_title != blank %}
+                      <span class="author-title">{{ block.settings.author_title }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout para Mobile: Carrusel horizontal -->
+    <div class="reviews-mobile-layout">
+      <!-- Imagen central para móvil -->
+      <div class="mobile-central-image">
+        {% if section.settings.central_image != blank %}
+          <img src="{{ section.settings.central_image | image_url: width: 1920, height: 1920 }}" 
+               alt="{{ section.settings.central_image_alt | default: 'Imagen central' | escape }}" 
+               loading="lazy">
+        {% else %}
+          <div class="mobile-central-image-placeholder">
+            <svg width="150" height="150" viewBox="0 0 150 150" fill="none">
+              <circle cx="75" cy="75" r="65" fill="#f0f0f0" stroke="#ddd" stroke-width="2"/>
+              <circle cx="75" cy="60" r="18" fill="#ddd"/>
+              <path d="M52 97 Q75 86 98 97 L98 120 Q75 109 52 120 Z" fill="#ddd"/>
+              <text x="75" y="140" text-anchor="middle" fill="#999" font-size="8">Imagen</text>
+            </svg>
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="reviews-carousel" id="reviews-carousel-{{ section.id }}">
+        <div class="carousel-track" id="reviews-track-{{ section.id }}">
+          {% for block in section.blocks %}
+            <div class="review-slide" {{ block.shopify_attributes }}>
+              <div class="review-content">
+                <div class="review-stars">
+                  {% for i in (1..5) %}
+                    {% if i <= block.settings.rating %}
+                      <span class="star filled">★</span>
+                    {% else %}
+                      <span class="star">☆</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                
+                {% if block.settings.review_text != blank %}
+                  <p class="review-text">"{{ block.settings.review_text }}"</p>
+                {% endif %}
+                
+                <div class="review-author">
+                  {% if block.settings.author_image != blank %}
+                    <img src="{{ block.settings.author_image | image_url: width: 60 }}" 
+                         alt="{{ block.settings.author_name | escape }}" 
+                         class="author-avatar">
+                  {% endif %}
+                  
+                  <div class="author-info">
+                    {% if block.settings.author_name != blank %}
+                      <span class="author-name">{{ block.settings.author_name }}</span>
+                    {% endif %}
+                    {% if block.settings.author_title != blank %}
+                      <span class="author-title">{{ block.settings.author_title }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Navegación del carrusel móvil -->
+      {% if section.settings.show_mobile_navigation and section.blocks.size > 1 %}
+        <div class="mobile-carousel-navigation">
+          <button class="carousel-btn carousel-btn-prev" id="mobile-prev-{{ section.id }}" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <button class="carousel-btn carousel-btn-next" id="mobile-next-{{ section.id }}" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      {% endif %}
+      
+      <!-- Indicadores para móvil -->
+      {% if section.settings.show_mobile_dots and section.blocks.size > 1 %}
+        <div class="mobile-carousel-dots" id="mobile-dots-{{ section.id }}">
+          {% for i in (1..section.blocks.size) %}
+            <button class="carousel-dot {% if forloop.first %}active{% endif %}" 
+                    data-slide="{{ forloop.index0 }}">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Reviews Styles -->
+<style>
+  .reviews-section.reviews-{{ section.id }} {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 60px;
+  }
+  
+  .reviews-{{ section.id }} .reviews-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .reviews-{{ section.id }} .reviews-title {
+    text-align: center;
+    font-size: {{ section.settings.title_font_size }}px;
+    font-weight: 700;
+    color: {{ section.settings.title_color }};
+    margin-bottom: 15px;
+  }
+  
+  .reviews-{{ section.id }} .reviews-subtitle {
+    text-align: center;
+    font-size: {{ section.settings.subtitle_font_size }}px;
+    color: {{ section.settings.subtitle_color }};
+    margin-bottom: 80px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Layout Desktop */
+  .reviews-{{ section.id }} .reviews-desktop-layout {
+    display: block;
+  }
+  
+  .reviews-{{ section.id }} .reviews-mobile-layout {
+    display: none;
+  }
+  
+  .reviews-{{ section.id }} .reviews-circle-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    aspect-ratio: 1;
+    min-height: 650px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  
+  /* Imagen central */
+  .reviews-{{ section.id }} .central-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    z-index: 10;
+  }
+  
+  .reviews-{{ section.id }} .central-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .reviews-{{ section.id }} .central-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+  
+  /* Reseñas en círculo */
+  .reviews-{{ section.id }} .reviews-circle {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .reviews-{{ section.id }} .review-item {
+    position: absolute;
+    width: 280px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1;
+  }
+  
+  .reviews-{{ section.id }} .review-item.active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 5;
+  }
+  
+  /* Posicionamiento circular de las reseñas */
+  .reviews-{{ section.id }} .review-item {
+    --angle: calc(360deg / var(--total-reviews) * var(--review-index));
+    --radius: 300px;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    transform: 
+      translate(-50%, -50%) 
+      rotate(var(--angle)) 
+      translateY(calc(-1 * var(--radius))) 
+      rotate(calc(-1 * var(--angle)))
+      scale(0.8);
+  }
+  
+  .reviews-{{ section.id }} .review-item.active {
+    transform: 
+      translate(-50%, -50%) 
+      rotate(var(--angle)) 
+      translateY(calc(-1 * var(--radius))) 
+      rotate(calc(-1 * var(--angle)))
+      scale(1);
+  }
+  
+  /* Estilos de las reseñas */
+  .reviews-{{ section.id }} .review-content {
+    background: white;
+    padding: 25px;
+    border-radius: {{ section.settings.review_border_radius }}px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .reviews-{{ section.id }} .review-item.active .review-content {
+    transform: translateY(-5px);
+  }
+  
+  .reviews-{{ section.id }} .review-stars {
+    margin-bottom: 15px;
+  }
+  
+  .reviews-{{ section.id }} .star {
+    color: #ddd;
+    font-size: 18px;
+    margin: 0 2px;
+  }
+  
+  .reviews-{{ section.id }} .star.filled {
+    color: {{ section.settings.star_color }};
+  }
+  
+  .reviews-{{ section.id }} .review-text {
+    font-size: {{ section.settings.review_font_size }}px;
+    color: {{ section.settings.review_text_color }};
+    line-height: 1.5;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  
+  .reviews-{{ section.id }} .review-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .reviews-{{ section.id }} .author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .reviews-{{ section.id }} .author-info {
+    text-align: left;
+  }
+  
+  .reviews-{{ section.id }} .author-name {
+    display: block;
+    font-weight: 600;
+    color: {{ section.settings.author_name_color }};
+    font-size: 14px;
+  }
+  
+  .reviews-{{ section.id }} .author-title {
+    display: block;
+    font-size: 12px;
+    color: {{ section.settings.author_title_color }};
+    margin-top: 2px;
+  }
+  
+  /* Layout Mobile */
+  @media (max-width: 768px) {
+    .reviews-{{ section.id }} .reviews-desktop-layout {
+      display: none;
+    }
+    
+    .reviews-{{ section.id }} .reviews-mobile-layout {
+      display: block;
+    }
+    
+    /* Imagen central móvil */
+    .reviews-{{ section.id }} .mobile-central-image {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    
+    .reviews-{{ section.id }} .mobile-central-image img {
+      width: 400px;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+    
+    .reviews-{{ section.id }} .mobile-central-image-placeholder {
+      width: 400px;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border-radius: 20px;
+    }
+    
+    .reviews-{{ section.id }} .reviews-carousel {
+      position: relative;
+      overflow: hidden;
+      padding: 20px 0;
+      margin: 0 -20px;
+    }
+    
+    .reviews-{{ section.id }} .carousel-track {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      gap: 15px;
+      padding: 0 20px;
+      will-change: transform;
+    }
+    
+    .reviews-{{ section.id }} .review-slide {
+      flex: 0 0 auto;
+      width: calc(100vw - 80px);
+      max-width: 320px;
+      min-width: 280px;
+    }
+    
+    .reviews-{{ section.id }} .review-slide .review-content {
+      margin: 0;
+      transform: translateY(0);
+      transition: all 0.3s ease;
+    }
+    
+    .reviews-{{ section.id }} .review-slide.active .review-content {
+      transform: translateY(-3px);
+    }
+    
+    /* Navegación móvil */
+    .reviews-{{ section.id }} .mobile-carousel-navigation {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 25px;
+      padding: 0 20px;
+    }
+    
+    .reviews-{{ section.id }} .carousel-btn {
+      width: 44px;
+      height: 44px;
+      border: 2px solid {{ section.settings.button_color }};
+      border-radius: 50%;
+      background: white;
+      color: {{ section.settings.button_color }};
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .reviews-{{ section.id }} .carousel-btn:hover,
+    .reviews-{{ section.id }} .carousel-btn:active {
+      background: {{ section.settings.button_color }};
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    .reviews-{{ section.id }} .carousel-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: scale(1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .reviews-{{ section.id }} .carousel-btn svg {
+      transition: transform 0.2s ease;
+    }
+    
+    .reviews-{{ section.id }} .carousel-btn:hover:not(:disabled) svg {
+      transform: scale(1.1);
+    }
+    
+    /* Indicadores móvil */
+    .reviews-{{ section.id }} .mobile-carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 25px;
+      padding: 10px 20px;
+    }
+    
+    .reviews-{{ section.id }} .carousel-dot {
+      width: 12px;
+      height: 12px;
+      border: none;
+      background: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      border-radius: 50%;
+    }
+    
+    .reviews-{{ section.id }} .carousel-dot.active {
+      background: {{ section.settings.button_color }};
+      transform: scale(1.2);
+    }
+    
+    .reviews-{{ section.id }} .carousel-dot:hover:not(.active) {
+      background: rgba(0, 0, 0, 0.5);
+      transform: scale(1.1);
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .reviews-{{ section.id }} .review-slide {
+      width: calc(100vw - 60px);
+      max-width: 280px;
+      min-width: 250px;
+    }
+    
+    .reviews-{{ section.id }} .review-content {
+      padding: 18px;
+    }
+    
+    .reviews-{{ section.id }} .review-text {
+      font-size: {{ section.settings.review_font_size | minus: 2 }}px;
+      line-height: 1.4;
+    }
+    
+    .reviews-{{ section.id }} .mobile-central-image img {
+      width: 320px;
+      height: 320px;
+    }
+    
+    .reviews-{{ section.id }} .mobile-central-image-placeholder {
+      width: 320px;
+      height: 320px;
+    }
+    
+    .reviews-{{ section.id }} .carousel-btn {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .reviews-{{ section.id }} .carousel-dot {
+      width: 10px;
+      height: 10px;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .reviews-{{ section.id }} .review-slide {
+      width: calc(100vw - 40px);
+      min-width: 240px;
+    }
+    
+    .reviews-{{ section.id }} .review-content {
+      padding: 16px;
+    }
+    
+    .reviews-{{ section.id }} .mobile-carousel-navigation {
+      gap: 20px;
+    }
+    
+    .reviews-{{ section.id }} .mobile-carousel-dots {
+      gap: 8px;
+    }
+  }
+</style>
+
+<!-- JavaScript para funcionalidad -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('.reviews-{{ section.id }}');
+    if (!section) return;
+    
+    // Funcionalidad para desktop (rotación automática)
+    const desktopLayout = section.querySelector('.reviews-desktop-layout');
+    if (desktopLayout) {
+      const reviewItems = section.querySelectorAll('.review-item');
+      let currentIndex = 0;
+      
+      function showReview(index) {
+        reviewItems.forEach((item, i) => {
+          item.classList.toggle('active', i === index);
+        });
+      }
+      
+      function nextReview() {
+        currentIndex = (currentIndex + 1) % reviewItems.length;
+        showReview(currentIndex);
+      }
+      
+      // Mostrar primera reseña
+      if (reviewItems.length > 0) {
+        showReview(0);
+        
+        // Auto-rotación cada {{ section.settings.autoplay_speed | default: 4000 }}ms
+        {% if section.settings.enable_autoplay %}
+        setInterval(nextReview, {{ section.settings.autoplay_speed | default: 4000 }});
+        {% endif %}
+      }
+    }
+    
+    // Funcionalidad para mobile (carrusel)
+    const mobileLayout = section.querySelector('.reviews-mobile-layout');
+    if (mobileLayout) {
+      const track = section.querySelector('#reviews-track-{{ section.id }}');
+      const slides = section.querySelectorAll('.review-slide');
+      const prevBtn = section.querySelector('#mobile-prev-{{ section.id }}');
+      const nextBtn = section.querySelector('#mobile-next-{{ section.id }}');
+      const dots = section.querySelectorAll('#mobile-dots-{{ section.id }} .carousel-dot');
+      
+      let currentSlide = 0;
+      let slideWidth = 0;
+      let isTransitioning = false;
+      
+      function calculateSlideWidth() {
+        if (slides.length > 0) {
+          const slide = slides[0];
+          const slideRect = slide.getBoundingClientRect();
+          const gap = 15; // gap entre slides
+          slideWidth = slideRect.width + gap;
+        }
+      }
+      
+      function updateCarousel(animate = true) {
+        if (track && slideWidth > 0) {
+          if (!animate) {
+            track.style.transition = 'none';
+          } else {
+            track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          }
+          
+          track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+          
+          if (!animate) {
+            // Forzar reflow
+            track.offsetHeight;
+            track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          }
+        }
+        
+        // Actualizar botones
+        if (prevBtn) prevBtn.disabled = currentSlide === 0;
+        if (nextBtn) nextBtn.disabled = currentSlide >= slides.length - 1;
+        
+        // Actualizar slides activos
+        slides.forEach((slide, index) => {
+          slide.classList.toggle('active', index === currentSlide);
+        });
+        
+        // Actualizar dots
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentSlide);
+        });
+      }
+      
+      function goToSlide(index, animate = true) {
+        if (isTransitioning) return;
+        
+        const newSlide = Math.max(0, Math.min(index, slides.length - 1));
+        if (newSlide === currentSlide) return;
+        
+        isTransitioning = true;
+        currentSlide = newSlide;
+        updateCarousel(animate);
+        
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 400);
+      }
+      
+      // Event listeners
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          goToSlide(currentSlide - 1);
+        });
+      }
+      
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          goToSlide(currentSlide + 1);
+        });
+      }
+      
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          goToSlide(index);
+        });
+      });
+      
+      // Touch/swipe support mejorado
+      let startX = 0;
+      let startY = 0;
+      let currentX = 0;
+      let isDragging = false;
+      let startTime = 0;
+      
+      function handleTouchStart(e) {
+        if (isTransitioning) return;
+        
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        currentX = startX;
+        isDragging = true;
+        startTime = Date.now();
+        
+        track.style.transition = 'none';
+      }
+      
+      function handleTouchMove(e) {
+        if (!isDragging || isTransitioning) return;
+        
+        currentX = e.touches[0].clientX;
+        const diffX = Math.abs(currentX - startX);
+        const diffY = Math.abs(e.touches[0].clientY - startY);
+        
+        // Solo prevenir scroll si el movimiento es más horizontal que vertical
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
+          
+          const deltaX = currentX - startX;
+          const currentTransform = -currentSlide * slideWidth;
+          const newTransform = currentTransform + deltaX;
+          
+          track.style.transform = `translateX(${newTransform}px)`;
+        }
+      }
+      
+      function handleTouchEnd(e) {
+        if (!isDragging || isTransitioning) return;
+        isDragging = false;
+        
+        const endX = e.changedTouches[0].clientX;
+        const diff = startX - endX;
+        const timeDiff = Date.now() - startTime;
+        const velocity = Math.abs(diff) / timeDiff;
+        
+        // Determinar si cambiar de slide basado en distancia y velocidad
+        const threshold = slideWidth * 0.3;
+        const shouldChange = Math.abs(diff) > threshold || (Math.abs(diff) > 50 && velocity > 0.3);
+        
+        if (shouldChange) {
+          if (diff > 0 && currentSlide < slides.length - 1) {
+            goToSlide(currentSlide + 1);
+          } else if (diff < 0 && currentSlide > 0) {
+            goToSlide(currentSlide - 1);
+          } else {
+            updateCarousel();
+          }
+        } else {
+          updateCarousel();
+        }
+      }
+      
+      // Event listeners para touch
+      track.addEventListener('touchstart', handleTouchStart, { passive: false });
+      track.addEventListener('touchmove', handleTouchMove, { passive: false });
+      track.addEventListener('touchend', handleTouchEnd, { passive: true });
+      
+      // Recalcular dimensiones en resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          calculateSlideWidth();
+          updateCarousel(false);
+        }, 150);
+      });
+      
+      // Inicializar
+      calculateSlideWidth();
+      updateCarousel(false);
+      
+      // Recalcular después de que las imágenes se carguen
+      setTimeout(() => {
+        calculateSlideWidth();
+        updateCarousel(false);
+      }, 100);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Reseñas Circulares",
+  "tag": "section",
+  "class": "reviews-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configuración General"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Lo que dicen nuestros clientes"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtítulo",
+      "default": "Testimonios reales de personas que han probado nuestros productos"
+    },
+    {
+      "type": "image_picker",
+      "id": "central_image",
+      "label": "Imagen central",
+      "info": "Recomendado: 400x400px o mayor, formato cuadrado"
+    },
+    {
+      "type": "text",
+      "id": "central_image_alt",
+      "label": "Texto alternativo de la imagen central",
+      "default": "Imagen central"
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Rotación"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Activar rotación automática",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidad de rotación (ms)",
+      "min": 2000,
+      "max": 8000,
+      "step": 500,
+      "default": 4000,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Configuración Móvil"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_navigation",
+      "label": "Mostrar navegación en móvil",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_dots",
+      "label": "Mostrar indicadores en móvil",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Estilos de Texto"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Tamaño del título",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#2c3e50"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "label": "Tamaño del subtítulo",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Color del subtítulo",
+      "default": "#7f8c8d"
+    },
+    {
+      "type": "range",
+      "id": "review_font_size",
+      "label": "Tamaño del texto de reseña",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "review_text_color",
+      "label": "Color del texto de reseña",
+      "default": "#34495e"
+    },
+    {
+      "type": "header",
+      "content": "Estilos de Autor"
+    },
+    {
+      "type": "color",
+      "id": "author_name_color",
+      "label": "Color del nombre del autor",
+      "default": "#2c3e50"
+    },
+    {
+      "type": "color",
+      "id": "author_title_color",
+      "label": "Color del título del autor",
+      "default": "#95a5a6"
+    },
+    {
+      "type": "header",
+      "content": "Colores y Estilos"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Color de las estrellas",
+      "default": "#f39c12"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Color de botones y navegación",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "range",
+      "id": "review_border_radius",
+      "label": "Radio de borde de las reseñas",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Reseña",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Calificación (estrellas)",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Texto de la reseña",
+          "default": "Excelente producto, superó mis expectativas. La calidad es increíble y el servicio al cliente es excepcional."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Nombre del autor",
+          "default": "María García"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "Título o empresa del autor",
+          "default": "Cliente verificado"
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Foto del autor",
+          "info": "Recomendado: 100x100px o mayor, formato cuadrado"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reseñas Circulares",
+      "category": "Testimonios",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_text": "Excelente producto, superó mis expectativas. La calidad es increíble y el servicio al cliente es excepcional.",
+            "author_name": "María García",
+            "author_title": "Cliente verificado"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_text": "Muy recomendado. El producto llegó rápido y en perfectas condiciones. Definitivamente volveré a comprar.",
+            "author_name": "Carlos Rodríguez",
+            "author_title": "Comprador frecuente"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 4,
+            "review_text": "Gran calidad y excelente atención. El producto cumple con todas mis expectativas y más.",
+            "author_name": "Ana López",
+            "author_title": "Cliente satisfecha"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

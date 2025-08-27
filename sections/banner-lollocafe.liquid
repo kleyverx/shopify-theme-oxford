@@ -1,0 +1,1182 @@
+{% comment %}
+  Banner Lollocafe - Carrusel responsive con contenido centrado
+  Funcionalidades:
+  - Carrusel con slides perfectamente centrados
+  - Indicadores de puntos (dots)
+  - Funcionalidad de arrastre/swipe
+  - Imágenes de fondo responsive (1920x600 desktop, móvil específico)
+  - Posicionamiento flexible del texto en desktop
+  - Texto centrado automático en móviles
+{% endcomment %}
+
+<section class="banner-lollocafe-carousel-{{ section.id }}" data-autoplay="{{ section.settings.autoplay }}" data-autoplay-speed="{{ section.settings.autoplay_speed }}">
+  <div class="banner-lollocafe-carousel__container">
+    <div class="banner-lollocafe-carousel__track" id="carousel-track">
+      {% for block in section.blocks %}
+        <div class="banner-lollocafe-carousel__slide{% if forloop.first %} active{% endif %}" data-slide-index="{{ forloop.index0 }}">
+          <div class="banner-lollocafe__background"
+               {% if block.settings.background_color and block.settings.desktop_image == blank and block.settings.mobile_image == blank %}
+                 style="background-color: {{ block.settings.background_color }};"
+               {% endif %}
+               {% if block.settings.mobile_click_url %}
+                 data-mobile-url="{{ block.settings.mobile_click_url }}"
+               {% endif %}>
+            
+            {% if block.settings.desktop_image or block.settings.mobile_image %}
+              <div class="banner-lollocafe__img-container">
+                <picture>
+                  {% if block.settings.mobile_image != blank %}
+                    <source srcset="{{ block.settings.mobile_image | image_url: width: 900 }}" media="(max-width: 900px)">
+                  {% endif %}
+                  {% if block.settings.desktop_image != blank %}
+                    <img src="{{ block.settings.desktop_image | image_url: width: 1920 }}" alt="{{ block.settings.title | default: 'Banner' | escape }}" class="banner-lollocafe__img" loading="lazy" width="1920" height="600">
+                  {% else %}
+                    <div class="banner-lollocafe__img-placeholder">
+                      <span>Imagen 1920x600</span>
+                    </div>
+                  {% endif %}
+                </picture>
+              </div>
+            {% endif %}
+            
+            {% if block.settings.overlay_opacity > 0 %}
+              <div class="banner-lollocafe__overlay" style="opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }}; background-color: {{ block.settings.overlay_color | default: '#000000' }};"></div>
+            {% endif %}
+            
+            {% if section.settings.show_text %}
+            <div class="banner-lollocafe__content-wrapper{% if section.settings.hide_text_mobile %} hide-text-mobile{% endif %}"
+                 data-text-position-desktop="{{ block.settings.text_position_desktop | default: 'center-center' }}"
+                 data-text-position-mobile="center-center"
+                 data-text-alignment="{{ block.settings.text_alignment | default: 'center' }}">
+              <div class="banner-lollocafe__content">
+                {% if block.settings.title %}
+                  <h2 class="banner-lollocafe__title"
+                      style="{% if block.settings.title_color %}color: {{ block.settings.title_color }};{% endif %}{% if block.settings.title_size %}font-size: {{ block.settings.title_size }}px;{% endif %}">
+                    {{ block.settings.title }}
+                  </h2>
+                {% endif %}
+                
+                {% if block.settings.subtitle %}
+                  <p class="banner-lollocafe__subtitle"
+                     style="{% if block.settings.subtitle_color %}color: {{ block.settings.subtitle_color }};{% endif %}{% if block.settings.subtitle_size %}font-size: {{ block.settings.subtitle_size }}px;{% endif %}">
+                    {{ block.settings.subtitle }}
+                  </p>
+                {% endif %}
+                
+                {% if block.settings.button_text and block.settings.button_url %}
+                  <a href="{{ block.settings.button_url }}" class="banner-lollocafe__button"
+                     style="{% if block.settings.button_bg_color %}background-color: {{ block.settings.button_bg_color }};{% endif %}{% if block.settings.button_text_color %}color: {{ block.settings.button_text_color }};{% endif %}{% if block.settings.button_size %}font-size: {{ block.settings.button_size }}px;{% endif %}{% if block.settings.button_padding_horizontal and block.settings.button_padding_vertical %}padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;{% endif %}{% if block.settings.button_border_radius %}border-radius: {{ block.settings.button_border_radius }}px;{% endif %}">
+                    {{ block.settings.button_text }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      
+      {% comment %} Placeholder cuando no hay slides {% endcomment %}
+      {% if section.blocks.size == 0 %}
+        <div class="banner-lollocafe-carousel__slide active">
+          <div class="banner-lollocafe__background banner-lollocafe__placeholder">
+            <div class="banner-lollocafe__content-wrapper" data-text-position-desktop="center-center">
+              <div class="banner-lollocafe__content">
+                <div class="banner-lollocafe__placeholder-icon">
+                  <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 18C7 16.8954 7.89543 16 9 16H15C16.1046 16 17 16.8954 17 18V19C17 20.1046 16.1046 21 15 21H9C7.89543 21 7 20.1046 7 19V18Z" fill="#8B4513"/>
+                    <path d="M9 16V14C9 11.7909 10.7909 10 13 10H11C8.79086 10 7 11.7909 7 14V16H9Z" fill="#D2691E"/>
+                    <path d="M12 3C12.5523 3 13 3.44772 13 4V8C13 8.55228 12.5523 9 12 9C11.4477 9 11 8.55228 11 8V4C11 3.44772 11.4477 3 12 3Z" fill="#E6E6FA"/>
+                    <path d="M9.5 5C9.5 4.44772 9.94772 4 10.5 4C11.0523 4 11.5 4.44772 11.5 5V7C11.5 7.55228 11.0523 8 10.5 8C9.94772 8 9.5 7.55228 9.5 7V5Z" fill="#E6E6FA"/>
+                    <path d="M14.5 5C14.5 4.44772 14.9477 4 15.5 4C16.0523 4 16.5 4.44772 16.5 5V7C16.5 7.55228 16.0523 8 15.5 8C14.9477 8 14.5 7.55228 14.5 7V5Z" fill="#E6E6FA"/>
+                  </svg>
+                </div>
+                <h3 class="banner-lollocafe__placeholder-title">Banner Lollocafe</h3>
+                <p class="banner-lollocafe__placeholder-text">Agrega bloques para crear tu carrusel de banner</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    
+    {% comment %} Indicadores de puntos {% endcomment %}
+    {% if section.blocks.size > 1 %}
+      <div class="banner-lollocafe-carousel__dots">
+        {% for block in section.blocks %}
+          <button class="banner-lollocafe-carousel__dot{% if forloop.first %} active{% endif %}" 
+                  data-slide="{{ forloop.index0 }}" 
+                  aria-label="Ir al slide {{ forloop.index }}">
+            <svg viewBox="0 0 470.064 470.064" xmlns="http://www.w3.org/2000/svg">
+              <g>
+                <path d="m464.898,250.841c-0.875-4.048-4.868-6.618-8.917-5.745-4.048,0.876-6.62,4.868-5.745,8.917 11.548,53.379 2.47,99.831-25.547,131.791l-340.391-340.387c65.463-57.279 189.309-31.575 280.638,59.75 35.77,35.77 62.537,77.505 77.408,120.695 1.349,3.917 5.618,5.998 9.533,4.649 3.917-1.349 5.998-5.617 4.649-9.533-15.609-45.332-43.613-89.046-80.984-126.417-47.989-47.988-106.097-80.248-163.62-90.837-58.542-10.777-109.58,2.083-143.71,36.213-1.407,1.406-2.197,3.314-2.197,5.303s0.79,3.897 2.197,5.303l351.348,351.344c1.464,1.464 3.384,2.197 5.303,2.197s3.839-0.732 5.303-2.197c18.093-18.093 30.219-40.883 36.039-67.737 5.551-25.61 5.111-53.64-1.307-83.309z"></path>
+                <path d="m50.534,68.221c-2.929-2.929-7.678-2.929-10.606,0-34.13,34.13-46.991,85.167-36.214,143.708 10.59,57.522 42.851,115.63 90.84,163.618 59.176,59.177 134.881,94.507 202.51,94.507 42.481,0 78.727-13.792 104.818-39.883 2.929-2.929 2.929-7.678 0-10.606l-351.348-351.344zm246.53,386.833c-63.738,0-135.478-33.687-191.903-90.113-45.861-45.86-76.65-101.165-86.695-155.728-9.285-50.433 0.281-94.445 26.941-124.907l340.388,340.384c-22.745,19.895-53.248,30.364-88.731,30.364z"></path>
+                <circle cx="307.875" cy="408.035" r="7.5"></circle>
+                <circle cx="265.448" cy="408.035" r="7.5"></circle>
+                <circle cx="204.647" cy="62.072" r="7.5"></circle>
+              </g>
+            </svg>
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    {% comment %} Controles de navegación {% endcomment %}
+    {% if section.blocks.size > 1 and section.settings.show_arrows %}
+      <button class="banner-lollocafe-carousel__nav banner-lollocafe-carousel__nav--prev" aria-label="Slide anterior">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="banner-lollocafe-carousel__nav banner-lollocafe-carousel__nav--next" aria-label="Siguiente slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    {% endif %}
+    
+
+  </div>
+</section>
+
+<style>
+/* Banner Lollocafe Carousel - Estilos principales */
+.banner-lollocafe-carousel-{{ section.id }} {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  overflow: hidden;
+  background: #f5f5f5;
+  margin-top: {{ section.settings.padding_top }}px;
+  margin-bottom: {{ section.settings.padding_bottom }}px;
+}
+
+/* Altura dinámica para desktop */
+@media (min-width: 901px) {
+  .banner-lollocafe-carousel-{{ section.id }} {
+    height: calc(100vw * 600 / 1920);
+    min-height: 300px;
+    max-height: 600px;
+  }
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__slide {
+    height: calc(100vw * 600 / 1920);
+    min-height: 300px;
+    max-height: 600px;
+  }
+}
+
+@media (max-width: 900px) {
+  .banner-lollocafe-carousel-{{ section.id }} {
+    height: 100vw !important;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: 1/1;
+  }
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__slide {
+    height: 100vw !important;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: 1/1;
+  }
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Background y overlay */
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__background {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__img-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+
+
+/* Optimización para diferentes proporciones de pantalla */
+@media (min-width: 901px) {
+  /* Para pantallas panorámicas */
+  @media (aspect-ratio > 16/9) {
+    .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__background {
+      background-size: auto 100%;
+      background-position: center center;
+    }
+  }
+  
+  /* Para pantallas más cuadradas */
+  @media (aspect-ratio < 4/3) {
+    .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__background {
+      background-size: 100% auto;
+      background-position: center center;
+    }
+  }
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Content wrapper con posicionamiento flexible */
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__content-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* Ajustar padding para evitar superposición con botones de navegación */
+@media (min-width: 769px) {
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__content-wrapper[data-text-position-desktop*="left"] {
+    padding-left: 8rem; /* 4rem del botón + 4rem de espacio adicional */
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__content-wrapper[data-text-position-desktop*="right"] {
+    padding-right: 8rem; /* 4rem del botón + 4rem de espacio adicional */
+  }
+}
+
+/* Posicionamiento flexible para desktop */
+.banner-lollocafe__content-wrapper[data-text-position-desktop="top-left"] {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="top-center"] {
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="top-right"] {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="center-left"] {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="center-center"] {
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="center-right"] {
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="bottom-left"] {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="bottom-center"] {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.banner-lollocafe__content-wrapper[data-text-position-desktop="bottom-right"] {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/* Content */
+.banner-lollocafe__content {
+  max-width: 800px;
+  color: white;
+  padding: 2rem;
+  transform: translateX(-50px);
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Activar animación cuando el slide está activo */
+.banner-lollocafe-carousel__slide.active .banner-lollocafe__content {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Animaciones de entrada */
+@keyframes pulse {
+  0% { box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4); }
+  50% { box-shadow: 0 8px 35px rgba(139, 69, 19, 0.6); }
+  100% { box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4); }
+}
+
+@keyframes steam {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Text alignment based on data-text-alignment */
+.banner-lollocafe__content-wrapper[data-text-alignment="left"] .banner-lollocafe__content,
+.banner-lollocafe__content-wrapper[data-text-alignment="left"] .banner-lollocafe__title,
+.banner-lollocafe__content-wrapper[data-text-alignment="left"] .banner-lollocafe__subtitle {
+  text-align: left;
+}
+
+.banner-lollocafe__content-wrapper[data-text-alignment="center"] .banner-lollocafe__content,
+.banner-lollocafe__content-wrapper[data-text-alignment="center"] .banner-lollocafe__title,
+.banner-lollocafe__content-wrapper[data-text-alignment="center"] .banner-lollocafe__subtitle {
+  text-align: center;
+}
+
+.banner-lollocafe__content-wrapper[data-text-alignment="right"] .banner-lollocafe__content,
+.banner-lollocafe__content-wrapper[data-text-alignment="right"] .banner-lollocafe__title,
+.banner-lollocafe__content-wrapper[data-text-alignment="right"] .banner-lollocafe__subtitle {
+  text-align: right;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transform: translateX(-30px);
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__subtitle {
+  font-size: 1.25rem;
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
+  opacity: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transform: translateX(-30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: #8B4513;
+  color: white;
+  text-decoration: none;
+
+  font-weight: 600;
+  border: 2px solid #8B4513;
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+  transform: translateX(-30px);
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Efecto de llenado hover dinámico */
+.banner-lollocafe__button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  z-index: -1;
+}
+
+.banner-lollocafe__button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.banner-lollocafe__button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #A0522D;
+}
+
+/* Activar animaciones cuando el slide está activo */
+.banner-lollocafe-carousel__slide.active .banner-lollocafe__title {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.banner-lollocafe-carousel__slide.active .banner-lollocafe__subtitle {
+  transform: translateX(0);
+  opacity: 0.9;
+}
+
+.banner-lollocafe-carousel__slide.active .banner-lollocafe__button {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.banner-lollocafe__button:active {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+}
+
+/* Indicadores de puntos */
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__dots {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 3;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__dot {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__dot svg {
+  width: 100%;
+  height: 100%;
+  fill: rgba(255, 255, 255, 0.5);
+  transition: fill 0.3s ease;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__dot:hover svg,
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__dot.active svg {
+  fill: white;
+}
+
+/* Controles de navegación */
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav:hover {
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav--prev {
+  left: 4rem;
+}
+
+.banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav--next {
+  right: 4rem;
+}
+
+/* Responsive spacing for navigation buttons */
+@media (max-width: 900px) {
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav--prev {
+    left: 1rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav--next {
+    right: 1rem;
+  }
+}
+
+/* Click en imagen para móvil */
+@media (max-width: 900px) {
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__background {
+    cursor: pointer;
+  }
+}
+
+/* Placeholder */
+.banner-lollocafe__placeholder {
+  background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+  position: relative;
+}
+
+.banner-lollocafe__placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="coffee-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23FFFFFF" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23coffee-pattern)"/></svg>');
+  opacity: 0.3;
+}
+
+.banner-lollocafe__placeholder-icon {
+  margin-bottom: 1rem;
+  animation: steam 2s ease-in-out infinite;
+}
+
+.banner-lollocafe__placeholder-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+  color: white;
+}
+
+.banner-lollocafe__placeholder-text {
+  font-size: 1rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@keyframes steam {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__background {
+    background-size: cover;
+    background-position: center center;
+    /* Altura fija para móviles - 900x600 proporción */
+    height: 400px !important;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+  }
+  
+  /* Forzar centrado en móviles */
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__content-wrapper {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__content {
+    max-width: 100%;
+    text-align: center !important;
+    padding: 1.5rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__title {
+    font-size: 2.5rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav--prev {
+    left: 1rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__nav--next {
+    right: 1rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe-carousel__dots {
+    bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-lollocafe-carousel-{{ section.id }} {
+    height: 300px;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__title {
+    font-size: 1.5rem;
+  }
+  
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Ocultar texto en móvil cuando esté configurado */
+@media (max-width: 900px) {
+  .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__content-wrapper.hide-text-mobile {
+    display: none !important;
+  }
+}
+</style>
+
+<script>
+class BannerLollocafeCarousel {
+  constructor(element) {
+    this.carousel = element;
+    this.track = this.carousel.querySelector('.banner-lollocafe-carousel__track');
+    this.slides = this.carousel.querySelectorAll('.banner-lollocafe-carousel__slide');
+    this.dots = this.carousel.querySelectorAll('.banner-lollocafe-carousel__dot');
+    this.prevBtn = this.carousel.querySelector('.banner-lollocafe-carousel__nav--prev');
+    this.nextBtn = this.carousel.querySelector('.banner-lollocafe-carousel__nav--next');
+    
+    this.currentSlide = 0;
+    this.totalSlides = this.slides.length;
+    this.autoplay = this.carousel.dataset.autoplay === 'true';
+    this.autoplaySpeed = parseInt(this.carousel.dataset.autoplaySpeed) || 5000;
+    this.autoplayTimer = null;
+    
+    // Touch/Swipe variables
+    this.startX = 0;
+    this.startY = 0;
+    this.distX = 0;
+    this.distY = 0;
+    this.threshold = 50;
+    this.restraint = 100;
+    this.allowedTime = 300;
+    this.startTime = 0;
+    
+    if (this.totalSlides > 0) {
+      this.init();
+    }
+  }
+  
+  init() {
+    // Event listeners para navegación
+    if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prevSlide());
+    if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.nextSlide());
+    
+    // Event listeners para dots
+    this.dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => this.goToSlide(index));
+    });
+    
+    // Touch/Swipe events
+    this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+    this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: true });
+    this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
+    
+    // Mouse events para drag en desktop
+    this.track.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+    this.track.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+    this.track.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+    this.track.addEventListener('mouseleave', (e) => this.handleMouseUp(e));
+    
+    // Autoplay
+    if (this.autoplay && this.totalSlides > 1) {
+      this.startAutoplay();
+      
+      // Pausar autoplay en hover
+      this.carousel.addEventListener('mouseenter', () => this.stopAutoplay());
+      this.carousel.addEventListener('mouseleave', () => this.startAutoplay());
+    }
+    
+
+    
+    // Inicializar primer slide
+    this.updateSlides();
+  }
+  
+
+  
+  goToSlide(index) {
+    if (index < 0 || index >= this.totalSlides) return;
+    
+    this.currentSlide = index;
+    this.updateSlides();
+    
+    if (this.autoplay) {
+      this.resetAutoplay();
+    }
+  }
+  
+  nextSlide() {
+    this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+    this.updateSlides();
+  }
+  
+  prevSlide() {
+    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+    this.updateSlides();
+  }
+  
+  updateSlides() {
+    // Remover clase active de todos los slides primero
+    this.slides.forEach((slide) => {
+      slide.classList.remove('active');
+    });
+    
+    // Pequeño delay para permitir que las animaciones se reinicien
+    setTimeout(() => {
+      // Actualizar slides
+      this.slides.forEach((slide, index) => {
+        if (index === this.currentSlide) {
+          slide.classList.add('active');
+        }
+      });
+    }, 50);
+    
+    // Actualizar dots
+    this.dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === this.currentSlide);
+    });
+    
+
+  }
+  
+  // Touch/Swipe handlers
+  handleTouchStart(e) {
+    this.startX = e.touches[0].clientX;
+    this.startY = e.touches[0].clientY;
+    this.startTime = new Date().getTime();
+  }
+  
+  handleTouchMove(e) {
+    if (!this.startX || !this.startY) return;
+    
+    this.distX = e.touches[0].clientX - this.startX;
+    this.distY = e.touches[0].clientY - this.startY;
+  }
+  
+  handleTouchEnd(e) {
+    const elapsedTime = new Date().getTime() - this.startTime;
+    
+    if (elapsedTime <= this.allowedTime) {
+      if (Math.abs(this.distX) >= this.threshold && Math.abs(this.distY) <= this.restraint) {
+        if (this.distX > 0) {
+          this.prevSlide();
+        } else {
+          this.nextSlide();
+        }
+      }
+    }
+    
+    this.startX = 0;
+    this.startY = 0;
+    this.distX = 0;
+    this.distY = 0;
+  }
+  
+  // Mouse drag handlers
+  handleMouseDown(e) {
+    this.startX = e.clientX;
+    this.startY = e.clientY;
+    this.startTime = new Date().getTime();
+    this.track.style.cursor = 'grabbing';
+  }
+  
+  handleMouseMove(e) {
+    if (!this.startX || !this.startY) return;
+    
+    this.distX = e.clientX - this.startX;
+    this.distY = e.clientY - this.startY;
+  }
+  
+  handleMouseUp(e) {
+    if (!this.startX) return;
+    
+    const elapsedTime = new Date().getTime() - this.startTime;
+    
+    if (elapsedTime <= this.allowedTime) {
+      if (Math.abs(this.distX) >= this.threshold && Math.abs(this.distY) <= this.restraint) {
+        if (this.distX > 0) {
+          this.prevSlide();
+        } else {
+          this.nextSlide();
+        }
+      }
+    }
+    
+    this.startX = 0;
+    this.startY = 0;
+    this.distX = 0;
+    this.distY = 0;
+    this.track.style.cursor = 'grab';
+  }
+  
+  startAutoplay() {
+    if (this.totalSlides <= 1) return;
+    
+    this.autoplayTimer = setInterval(() => {
+      this.nextSlide();
+    }, this.autoplaySpeed);
+  }
+  
+  stopAutoplay() {
+    if (this.autoplayTimer) {
+      clearInterval(this.autoplayTimer);
+      this.autoplayTimer = null;
+    }
+  }
+  
+  resetAutoplay() {
+    this.stopAutoplay();
+    this.startAutoplay();
+  }
+}
+
+// Inicializar carrusel cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+  const carousels = document.querySelectorAll('[class*="banner-lollocafe-carousel-"]');
+  carousels.forEach(carousel => {
+    // Verificar si ya fue inicializado para evitar duplicados
+    if (!carousel.hasAttribute('data-carousel-initialized')) {
+      carousel.setAttribute('data-carousel-initialized', 'true');
+      new BannerLollocafeCarousel(carousel);
+      
+      // Agregar funcionalidad de clic en imagen para móvil
+      const slides = carousel.querySelectorAll('.banner-lollocafe-carousel__slide');
+      slides.forEach(slide => {
+        const mobileUrl = slide.getAttribute('data-mobile-url');
+        if (mobileUrl) {
+          // Agregar evento de clic a todo el slide
+          slide.addEventListener('click', (e) => {
+            // Solo en dispositivos móviles (ancho menor a 901px)
+            if (window.innerWidth <= 900) {
+              // Verificar si el clic no fue en un botón o enlace
+              if (!e.target.closest('a, button')) {
+                // Prevenir que el clic active otros elementos
+                e.preventDefault();
+                e.stopPropagation();
+                // Redirigir a la URL
+                window.open(mobileUrl, '_blank');
+              }
+            }
+          });
+          
+          // Agregar cursor pointer en móvil
+          slide.style.cursor = window.innerWidth <= 900 ? 'pointer' : 'default';
+          
+          // Actualizar cursor en resize
+          window.addEventListener('resize', () => {
+            slide.style.cursor = window.innerWidth <= 900 ? 'pointer' : 'default';
+          });
+        }
+      });
+    }
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Banner Lollocafe",
+  "tag": "section",
+  "class": "section-banner-lollocafe",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Reproducción automática",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 2000,
+      "max": 9500,
+      "step": 500,
+      "unit": "ms",
+      "label": "Velocidad de reproducción automática",
+      "default": 5000
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Mostrar flechas de navegación",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_text",
+      "label": "Mostrar texto",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_text_mobile",
+      "label": "Ocultar texto en móvil",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior (px)",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior (px)",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "desktop_image",
+          "label": "Imagen de fondo (Desktop - 1920x600)"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Imagen de fondo (Móvil - 768x400)"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Color de fondo alternativo",
+          "default": "#8B4513"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "Color de superposición",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Opacidad de superposición",
+          "default": 30
+        },
+        {
+          "type": "select",
+          "id": "text_position_desktop",
+          "label": "Posición del texto (Desktop)",
+          "options": [
+            { "value": "top-left", "label": "Arriba Izquierda" },
+            { "value": "top-center", "label": "Arriba Centro" },
+            { "value": "top-right", "label": "Arriba Derecha" },
+            { "value": "center-left", "label": "Centro Izquierda" },
+            { "value": "center-center", "label": "Centro Centro" },
+            { "value": "center-right", "label": "Centro Derecha" },
+            { "value": "bottom-left", "label": "Abajo Izquierda" },
+            { "value": "bottom-center", "label": "Abajo Centro" },
+            { "value": "bottom-right", "label": "Abajo Derecha" }
+          ],
+          "default": "center-center"
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Alineación del texto",
+          "options": [
+            { "value": "left", "label": "Izquierda" },
+            { "value": "center", "label": "Centro" },
+            { "value": "right", "label": "Derecha" }
+          ],
+          "default": "center",
+          "info": "Controla la justificación del texto independientemente de su posición"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Bienvenido a Lollocafe"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Color del título",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "range",
+          "id": "title_size",
+          "label": "Tamaño del título (px)",
+          "min": 16,
+          "max": 80,
+          "step": 2,
+          "default": 48
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": "Subtítulo",
+          "default": "Descubre el mejor café artesanal"
+        },
+        {
+          "type": "color",
+          "id": "subtitle_color",
+          "label": "Color del subtítulo",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "range",
+          "id": "subtitle_size",
+          "label": "Tamaño del subtítulo (px)",
+          "min": 12,
+          "max": 40,
+          "step": 2,
+          "default": 18
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del botón"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "URL del botón"
+        },
+        {
+          "type": "url",
+          "id": "mobile_click_url",
+          "label": "URL al hacer clic en imagen (móvil)",
+          "info": "URL a la que redirigirá al hacer clic en la imagen del banner en dispositivos móviles"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Color de fondo del botón",
+          "default": "#8B4513"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Color del texto del botón",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "range",
+          "id": "button_size",
+          "label": "Tamaño del texto del botón (px)",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "button_padding_horizontal",
+          "label": "Espaciado horizontal del botón (px)",
+          "min": 10,
+          "max": 50,
+          "step": 2,
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "button_padding_vertical",
+          "label": "Espaciado vertical del botón (px)",
+          "min": 8,
+          "max": 30,
+          "step": 2,
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "button_border_radius",
+          "label": "Bordes redondeados del botón (px)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 8
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner Lollocafe",
+      "blocks": [
+        {
+          "type": "slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

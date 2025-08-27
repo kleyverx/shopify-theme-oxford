@@ -1,0 +1,1580 @@
+{% comment %}
+  Sección de Cards de Productos
+  Diseño limpio y moderno con efecto hover de granos de café
+  Versión mejorada con navegación independiente
+{% endcomment %}
+
+<section class="product-cards-section product-cards-{{ section.id }}" style="
+  background-color: {{ section.settings.background_color }};
+  padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0;
+">
+  <div class="product-cards-container">
+    {% if section.settings.title != blank %}
+      <h2 class="product-cards-title">{{ section.settings.title }}</h2>
+    {% endif %}
+    
+    {% if section.settings.subtitle != blank %}
+      <p class="product-cards-subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+
+    <div class="product-cards-carousel" id="carousel-wrapper-{{ section.id }}">
+      <div class="carousel-container" id="carousel-{{ section.id }}">
+        <div class="carousel-track" id="track-{{ section.id }}">
+          {% for block in section.blocks %}
+            <div class="product-card carousel-slide" {{ block.shopify_attributes }}>
+              <div class="product-card-inner">
+                <div class="product-card-image">
+                  {% if block.settings.image != blank %}
+                    <img src="{{ block.settings.image | image_url: width: 400 }}" 
+                         alt="{{ block.settings.title | escape }}" 
+                         loading="lazy">
+                  {% else %}
+                    <div class="product-card-placeholder">
+                      <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                        <rect width="100" height="100" fill="#f0f0f0"/>
+                        <text x="50" y="50" text-anchor="middle" dy=".3em" fill="#999">Imagen</text>
+                      </svg>
+                    </div>
+                  {% endif %}
+                </div>
+                
+                <!-- Overlay de imagen personalizable para hover que cubre toda la card -->
+                <div class="hover-image-overlay">
+                  {% if block.settings.hover_image != blank %}
+                    <img class="hover-background" src="{{ block.settings.hover_image | image_url: width: 600 }}" alt="Hover background" />
+                  {% else %}
+                    <!-- Overlay con gradiente por defecto para dispositivos táctiles -->
+                    <div class="hover-background default-overlay"></div>
+                  {% endif %}
+                </div>
+                
+                <div class="product-card-content">
+                  {% if block.settings.title != blank %}
+                    <h3 class="product-card-title">{{ block.settings.title }}</h3>
+                  {% endif %}
+                  
+                  {% if block.settings.description != blank %}
+                    <p class="product-card-description">{{ block.settings.description }}</p>
+                  {% endif %}
+                  
+                  {% if block.settings.price != blank %}
+                    <div class="product-card-price">{{ block.settings.price }}</div>
+                  {% endif %}
+                  
+                  {% if block.settings.button_text != blank and block.settings.button_url != blank %}
+                    <a href="{{ block.settings.button_url }}" class="product-card-button">
+                      {{ block.settings.button_text }}
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Navegación del carrusel -->
+      {% if section.settings.show_navigation %}
+        <div class="carousel-navigation" id="nav-{{ section.id }}">
+          <button class="carousel-btn carousel-btn-prev" id="prev-btn-{{ section.id }}" type="button" aria-label="Anterior">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <button class="carousel-btn carousel-btn-next" id="next-btn-{{ section.id }}" type="button" aria-label="Siguiente">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      {% endif %}
+
+      <!-- Indicadores de navegación -->
+      {% if section.settings.show_dots and section.blocks.size > 1 %}
+        <div class="carousel-dots" id="dots-{{ section.id }}">
+          {% for i in (1..section.blocks.size) %}
+            <button class="carousel-dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}" aria-label="Ir al slide {{ forloop.index }}"></button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Product Cards Styles - Updated {{ 'now' | date: '%Y%m%d%H%M%S' }} -->
+<style>
+  /* Estilos base específicos para esta sección */
+  .product-cards-section.product-cards-{{ section.id }} {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    position: relative;
+    padding-top: 30px;
+    overflow: hidden;
+    isolation: isolate; /* Crear contexto de apilamiento */
+  }
+  
+  {% if section.settings.background_image != blank %}
+  .product-cards-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -25%;
+    width: 150%;
+    height: 200%;
+    background-image: url('{{ section.settings.background_image | image_url: width: 6144, height: 3072 }}');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: {{ section.settings.background_opacity | divided_by: 100.0 }};
+    z-index: -1;
+    transform: translate3d(0, var(--parallax-y, 0), 0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+  {% endif %}
+  
+  .product-cards-{{ section.id }} * {
+    box-sizing: border-box;
+  }
+  
+  .product-cards-{{ section.id }} .product-cards-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+  .product-cards-{{ section.id }} .product-cards-title {
+    text-align: center;
+    font-size: {{ section.settings.title_font_size }}px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: {{ section.settings.text_color }};
+  }
+  
+  .product-cards-{{ section.id }} .product-cards-subtitle {
+    text-align: center;
+    font-size: {{ section.settings.description_font_size }}px;
+    color: {{ section.settings.text_color }};
+    margin-bottom: {{ section.settings.subtitle_margin_bottom }}px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .product-cards-{{ section.id }} .product-cards-carousel {
+    position: relative;
+    max-width: 1200px;
+    margin: 2rem auto 0;
+    padding: 80px 80px 60px 80px;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-container {
+    position: relative;
+    overflow: visible;
+    border-radius: 12px;
+    min-height: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    gap: 20px;
+    cursor: grab;
+    will-change: transform;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-track:active {
+    cursor: grabbing;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-slide {
+    flex: 0 0 auto;
+    width: 300px;
+    min-width: 300px;
+    max-width: 350px;
+    min-height: 450px;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Navegación con flechas */
+  .product-cards-{{ section.id }} .carousel-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 100;
+    padding: 0 10px;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-btn {
+    width: 50px;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+    z-index: 101;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-btn:hover {
+    background: {{ section.settings.button_background }};
+    color: white;
+    transform: scale(1.1);
+    border-color: {{ section.settings.button_background }};
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .product-cards-{{ section.id }} .carousel-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+  }
+  
+  .product-cards-{{ section.id }} .carousel-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: scale(0.9);
+  }
+  
+  .product-cards-{{ section.id }} .carousel-btn:disabled:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    transform: scale(0.9);
+  }
+  
+  .product-cards-{{ section.id }} .carousel-btn-prev {
+    left: 20px;
+  }
+
+  .product-cards-{{ section.id }} .carousel-btn-next {
+    right: 20px;
+  }
+
+  /* Indicadores de puntos */
+  .product-cards-{{ section.id }} .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 0;
+  }
+
+  .product-cards-{{ section.id }} .carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+
+  .product-cards-{{ section.id }} .carousel-dot:hover {
+    background: {{ section.settings.button_background | color_modify: 'alpha', 0.7 }};
+    transform: scale(1.2);
+  }
+
+  .product-cards-{{ section.id }} .carousel-dot.active {
+    background: {{ section.settings.button_background }};
+    transform: scale(1.3);
+  }
+  
+  /* Estilos de las tarjetas */
+  .product-cards-{{ section.id }} .product-card {
+    background: white;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    position: relative;
+    aspect-ratio: 3/4;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1;
+  }
+  
+  .product-cards-{{ section.id }} .product-card-inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: {{ section.settings.button_border_radius }}px;
+  }
+  
+  .product-cards-{{ section.id }} .product-card-image {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    background: transparent;
+  }
+  
+  .product-cards-{{ section.id }} .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    z-index: 2;
+  }
+  
+
+  
+  .product-cards-{{ section.id }} .product-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+  }
+  
+  .product-cards-{{ section.id }} .hover-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1;
+    overflow: hidden;
+    transform: scale(1);
+    border-radius: {{ section.settings.button_border_radius }}px;
+  }
+  
+  /* Efectos hover solo para dispositivos no táctiles */
+  @media (hover: hover) and (pointer: fine) {
+    .product-cards-{{ section.id }} .product-card:hover .hover-image-overlay {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .product-cards-{{ section.id }} .product-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      z-index: 10;
+    }
+    
+    .product-cards-{{ section.id }} .product-card:hover .product-card-image img {
+      transform: scale(1.1);
+    }
+    
+    .product-cards-{{ section.id }} .product-card:hover .product-card-content {
+      transform: translateY(-5px);
+      background: transparent;
+    }
+    
+    .product-cards-{{ section.id }} .product-card:hover .product-card-title {
+      color: {{ section.settings.card_title_hover_color }};
+      transform: translateX(5px);
+    }
+    
+    .product-cards-{{ section.id }} .product-card:hover .product-card-description {
+      color: {{ section.settings.card_description_hover_color }};
+      transform: translateX(3px);
+    }
+    
+    .product-cards-{{ section.id }} .product-card:hover .product-card-price {
+      color: {{ section.settings.card_price_hover_color }};
+      transform: translateX(5px) scale(1.05);
+    }
+  }
+  
+  /* Para dispositivos táctiles: mostrar imagen de fondo automáticamente */
+  @media (hover: none) and (pointer: coarse) {
+    .product-cards-{{ section.id }} .hover-image-overlay {
+      opacity: 0.8;
+      animation: fadeInBackground 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes fadeInBackground {
+      0% { opacity: 0.6; }
+      100% { opacity: 0.9; }
+    }
+    
+    .product-cards-{{ section.id }} .product-card {
+      transform: none;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  .product-cards-{{ section.id }} .hover-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: {{ section.settings.button_border_radius }}px;
+  }
+  
+  .product-cards-{{ section.id }} .hover-background.default-overlay {
+    background: linear-gradient(135deg, 
+      rgba({{ section.settings.button_background | color_extract: 'red' }}, {{ section.settings.button_background | color_extract: 'green' }}, {{ section.settings.button_background | color_extract: 'blue' }}, 0.1) 0%,
+      rgba({{ section.settings.button_background | color_extract: 'red' }}, {{ section.settings.button_background | color_extract: 'green' }}, {{ section.settings.button_background | color_extract: 'blue' }}, 0.3) 50%,
+      rgba({{ section.settings.button_background | color_extract: 'red' }}, {{ section.settings.button_background | color_extract: 'green' }}, {{ section.settings.button_background | color_extract: 'blue' }}, 0.1) 100%
+    );
+  }
+  
+  .product-cards-{{ section.id }} .product-card-content {
+    padding: 0.8rem;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateY(0);
+    background: transparent;
+    border-radius: 0 0 {{ section.settings.button_border_radius }}px {{ section.settings.button_border_radius }}px;
+  }
+  
+  .product-cards-{{ section.id }} .product-card:hover .product-card-content {
+    {% if section.settings.enable_hover_blur %}
+      backdrop-filter: blur({{ section.settings.hover_blur_intensity }}px);
+    {% endif %}
+    {% assign overlay_color_rgb = section.settings.hover_overlay_color | color_extract: 'red' | append: ', ' | append: section.settings.hover_overlay_color | color_extract: 'green' | append: ', ' | append: section.settings.hover_overlay_color | color_extract: 'blue' %}
+    background: rgba({{ overlay_color_rgb }}, {{ section.settings.hover_overlay_opacity | divided_by: 100.0 }});
+    {% if section.settings.enable_hover_transform %}
+      transform: translateY(-{{ section.settings.hover_translate_y }}px) scale({{ section.settings.hover_scale | divided_by: 100.0 }});
+    {% endif %}
+  }
+  
+  {% if section.settings.enable_text_shadow %}
+  .product-cards-{{ section.id }} .product-card:hover .product-card-title,
+  .product-cards-{{ section.id }} .product-card:hover .product-card-description,
+  .product-cards-{{ section.id }} .product-card:hover .product-card-price,
+  .product-cards-{{ section.id }} .product-card:hover .product-card-button {
+    {% assign shadow_color_rgb = section.settings.text_shadow_color | color_extract: 'red' | append: ', ' | append: section.settings.text_shadow_color | color_extract: 'green' | append: ', ' | append: section.settings.text_shadow_color | color_extract: 'blue' %}
+    text-shadow: 2px 2px 4px rgba({{ shadow_color_rgb }}, {{ section.settings.text_shadow_opacity | divided_by: 100.0 }});
+  }
+  {% endif %}
+  
+  /* Estilos personalizados por bloque */
+  {% for block in section.blocks %}
+    {% if block.settings.custom_text_color != blank %}
+      .product-cards-{{ section.id }} .product-card:nth-child({{ forloop.index }}) .product-card-title,
+      .product-cards-{{ section.id }} .product-card:nth-child({{ forloop.index }}) .product-card-description {
+        color: {{ block.settings.custom_text_color }} !important;
+      }
+    {% endif %}
+    
+    {% if block.settings.custom_button_background != blank %}
+      .product-cards-{{ section.id }} .product-card:nth-child({{ forloop.index }}) .product-card-button {
+        background: {{ block.settings.custom_button_background }} !important;
+      }
+      .product-cards-{{ section.id }} .product-card:nth-child({{ forloop.index }}) .product-card-price {
+        color: {{ block.settings.custom_button_background }} !important;
+      }
+    {% endif %}
+    
+    {% if block.settings.custom_button_text_color != blank %}
+      .product-cards-{{ section.id }} .product-card:nth-child({{ forloop.index }}) .product-card-button {
+        color: {{ block.settings.custom_button_text_color }} !important;
+      }
+    {% endif %}
+    
+    {% if block.settings.override_hover_settings %}
+      .product-cards-{{ section.id }} .product-card:nth-child({{ forloop.index }}):hover .product-card-content {
+        backdrop-filter: blur({{ block.settings.custom_hover_blur }}px) !important;
+        {% assign custom_overlay_rgb = block.settings.custom_hover_overlay_color | color_extract: 'red' | append: ', ' | append: block.settings.custom_hover_overlay_color | color_extract: 'green' | append: ', ' | append: block.settings.custom_hover_overlay_color | color_extract: 'blue' %}
+        background: rgba({{ custom_overlay_rgb }}, {{ block.settings.custom_hover_overlay_opacity | divided_by: 100.0 }}) !important;
+        transform: translateY(-{{ block.settings.custom_hover_translate_y }}px) scale({{ block.settings.custom_hover_scale | divided_by: 100.0 }}) !important;
+      }
+    {% endif %}
+  {% endfor %}
+  
+  .product-cards-{{ section.id }} .product-card-title {
+    font-size: {{ section.settings.card_title_font_size }}px;
+    font-weight: 600;
+    color: {{ section.settings.card_title_color }};
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+
+  
+  .product-cards-{{ section.id }} .product-card-description {
+    color: {{ section.settings.card_description_color }};
+    font-size: {{ section.settings.card_description_font_size }}px;
+    line-height: 1.3;
+    margin-bottom: 0.3rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+
+  
+  .product-cards-{{ section.id }} .product-card-price {
+    font-size: {{ section.settings.card_price_font_size }}px;
+    font-weight: 600;
+    color: {{ section.settings.card_price_color }};
+    margin-bottom: 0.3rem;
+    flex-shrink: 0;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+
+  
+  .product-cards-{{ section.id }} .product-card-button {
+    background: {{ section.settings.button_background }};
+    color: {{ section.settings.button_text_color }};
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border: 2px solid {{ section.settings.button_background }};
+    box-shadow: 0 2px 8px {{ section.settings.button_background | color_modify: 'alpha', 0.3 }};
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-align: center;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  
+  .product-cards-{{ section.id }} .product-card-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: -1;
+  }
+  
+  .product-cards-{{ section.id }} .product-card-button:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .product-cards-{{ section.id }} .product-card-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px {{ section.settings.button_background | color_modify: 'alpha', 0.4 }};
+    border-color: rgba(255, 255, 255, 0.3);
+    background-color: {{ section.settings.button_background | color_modify: 'lightness', '+10' }};
+    color: {{ section.settings.button_text_color }};
+  }
+  
+  .product-cards-{{ section.id }} .product-card-button:active {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .product-cards-{{ section.id }} .carousel-slide {
+      width: 280px;
+      min-width: 280px;
+      max-width: 320px;
+    }
+    
+    .product-cards-{{ section.id }} .product-cards-carousel {
+      padding: 60px 60px 40px 60px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+     .product-cards-{{ section.id }} .carousel-slide {
+      width: 280px;
+      min-width: 280px;
+      max-width: 300px;
+      min-height: 420px;
+    }
+    
+    .product-cards-{{ section.id }} .product-cards-carousel {
+      padding: 50px 20px 30px 20px;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-content {
+      padding: 1rem;
+      height: 35%;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-title {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-description {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+      height: auto;
+      max-height: 3.6em;
+      -webkit-line-clamp: 3;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-price {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-button {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.75rem;
+      border-radius: 8px;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-btn {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-btn-prev {
+      left: 10px;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-btn-next {
+      right: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .product-cards-{{ section.id }} .product-card-image img {
+      object-fit: contain;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-content {
+      backdrop-filter: blur(2px);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1.2rem;
+      height: min-content;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-slide {
+      width: 240px;
+      min-width: 260px;
+      max-width: 280px;
+      min-height: 400px;
+    }
+    
+    .product-cards-{{ section.id }} .product-cards-carousel {
+      padding: 40px 15px 20px 15px;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+      max-height: 2.6em;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-description {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 0.6rem;
+      height: auto;
+      max-height: 4.2em;
+      -webkit-line-clamp: 3;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-price {
+      font-size: 1.1rem;
+      margin-bottom: 0.6rem;
+      font-weight: 700;
+    }
+    
+    .product-cards-{{ section.id }} .product-card-button {
+      padding: 0.7rem 1.4rem;
+      font-size: 0.8rem;
+      border-radius: {{ section.settings.button_border_radius }}px;
+      font-weight: 700;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-btn {
+      width: 35px;
+      height: 35px;
+    }
+    
+    .product-cards-{{ section.id }} .carousel-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    .product-cards-{{ section.id }} .product-cards-title {
+      font-size: {{ section.settings.title_font_size | minus: 8 }}px;
+      margin-bottom: 0.8rem;
+    }
+    
+    .product-cards-{{ section.id }} .product-cards-subtitle {
+       font-size: {{ section.settings.description_font_size | minus: 4 }}px;
+       margin-bottom: 2rem;
+       padding: 0 1rem;
+     }
+   }
+   
+   @media (max-width: 360px) {
+       .product-cards-{{ section.id }} .carousel-slide {
+       width: 240px;
+       min-width: 240px;
+       max-width: 260px;
+       min-height: 380px;
+     }
+     
+     .product-cards-{{ section.id }} .product-cards-carousel {
+       padding: 35px 10px 15px 10px;
+     }
+     
+     .product-cards-{{ section.id }} .product-card-content {
+       padding: 1rem;
+       height: 40%;
+     }
+     
+     .product-cards-{{ section.id }} .product-card-title {
+       font-size: 1rem;
+       margin-bottom: 0.4rem;
+     }
+     
+     .product-cards-{{ section.id }} .product-card-description {
+       font-size: 0.8rem;
+       margin-bottom: 0.5rem;
+       max-height: 3.2em;
+       -webkit-line-clamp: 2;
+     }
+     
+     .product-cards-{{ section.id }} .product-card-price {
+       font-size: 1rem;
+       margin-bottom: 0.5rem;
+     }
+     
+     .product-cards-{{ section.id }} .product-card-button {
+       padding: 0.6rem 1.2rem;
+       font-size: 0.75rem;
+     }
+   }
+ </style>
+
+<script>
+  // JavaScript completamente aislado para esta sección específica
+  (function() {
+    'use strict';
+    
+    // Esperar a que el DOM esté cargado
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCarousel{{ section.id | replace: '-', '' }});
+    } else {
+      initCarousel{{ section.id | replace: '-', '' }}();
+    }
+    
+    function initCarousel{{ section.id | replace: '-', '' }}() {
+      const sectionId = '{{ section.id }}';
+      const carouselWrapper = document.querySelector('#carousel-wrapper-' + sectionId);
+      
+      if (!carouselWrapper) return;
+      
+      const carousel = carouselWrapper.querySelector('.carousel-container');
+      const track = carouselWrapper.querySelector('.carousel-track');
+      const slides = track.querySelectorAll('.carousel-slide');
+      const prevBtn = carouselWrapper.querySelector('#prev-btn-' + sectionId);
+      const nextBtn = carouselWrapper.querySelector('#next-btn-' + sectionId);
+      const dots = carouselWrapper.querySelectorAll('.carousel-dot');
+      
+      if (!track || slides.length === 0) return;
+      
+      let currentIndex = 0;
+      let isAnimating = false;
+      let autoPlayInterval = null;
+      let isHovered = false;
+      
+      // Variables para arrastre
+      let isDragging = false;
+      let startX = 0;
+      let currentX = 0;
+      let initialTransform = 0;
+      const dragThreshold = 50;
+      
+      function getSlidesToShow() {
+        const containerWidth = carousel.offsetWidth;
+        const slideWidth = slides[0].offsetWidth + 20; // incluir gap
+        return Math.floor(containerWidth / slideWidth);
+      }
+      
+      function getMaxIndex() {
+        const slidesToShow = getSlidesToShow();
+        return Math.max(0, slides.length - slidesToShow);
+      }
+      
+      function updateCarousel(animate = true) {
+        if (isAnimating && animate) return;
+        
+        const slideWidth = slides[0].offsetWidth + 20; // incluir gap
+        const translateX = -currentIndex * slideWidth;
+        
+        if (animate) {
+          isAnimating = true;
+          track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          setTimeout(() => {
+            isAnimating = false;
+          }, 500);
+        } else {
+          track.style.transition = 'none';
+        }
+        
+        track.style.transform = `translateX(${translateX}px)`;
+        
+        // Actualizar botones
+        if (prevBtn) {
+          prevBtn.disabled = currentIndex <= 0;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = currentIndex >= getMaxIndex();
+        }
+        
+        // Actualizar dots
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentIndex);
+        });
+      }
+      
+      function nextSlide() {
+        if (isAnimating) return;
+        const maxIndex = getMaxIndex();
+        if (currentIndex < maxIndex) {
+          currentIndex++;
+          updateCarousel();
+        }
+      }
+      
+      function prevSlide() {
+        if (isAnimating) return;
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateCarousel();
+        }
+      }
+      
+      function goToSlide(index) {
+        if (isAnimating) return;
+        const maxIndex = getMaxIndex();
+        currentIndex = Math.max(0, Math.min(index, maxIndex));
+        updateCarousel();
+      }
+      
+      // Funciones de arrastre
+      function handleDragStart(e) {
+        if (isAnimating) return;
+        isDragging = true;
+        startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+        currentX = startX;
+        track.style.transition = 'none';
+        track.style.cursor = 'grabbing';
+        e.preventDefault();
+      }
+      
+      function handleDragMove(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+        const deltaX = currentX - startX;
+        const slideWidth = slides[0].offsetWidth + 20;
+        const currentOffset = currentIndex * slideWidth;
+        
+        track.style.transform = `translateX(-${currentOffset - deltaX}px)`;
+      }
+      
+      function handleDragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        const deltaX = currentX - startX;
+        track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        track.style.cursor = 'grab';
+        
+        if (Math.abs(deltaX) > dragThreshold) {
+          if (deltaX > 0 && currentIndex > 0) {
+            prevSlide();
+          } else if (deltaX < 0 && currentIndex < getMaxIndex()) {
+            nextSlide();
+          } else {
+            updateCarousel();
+          }
+        } else {
+          updateCarousel();
+        }
+      }
+      
+      // Auto-play
+      function startAutoPlay() {
+        {% if section.settings.enable_autoplay %}
+          if (autoPlayInterval) clearInterval(autoPlayInterval);
+          autoPlayInterval = setInterval(() => {
+            if (!isHovered && !isDragging && !isAnimating) {
+              if (currentIndex >= getMaxIndex()) {
+                currentIndex = 0;
+              } else {
+                currentIndex++;
+              }
+              updateCarousel();
+            }
+          }, {{ section.settings.autoplay_speed | times: 1000 }});
+        {% endif %}
+      }
+      
+      function stopAutoPlay() {
+        if (autoPlayInterval) {
+          clearInterval(autoPlayInterval);
+          autoPlayInterval = null;
+        }
+      }
+      
+      // Event listeners
+      if (nextBtn) {
+        nextBtn.addEventListener('click', nextSlide);
+      }
+      
+      if (prevBtn) {
+        prevBtn.addEventListener('click', prevSlide);
+      }
+      
+      // Event listeners para dots
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => goToSlide(index));
+      });
+      
+      // Event listeners para arrastre
+      track.addEventListener('mousedown', handleDragStart);
+      document.addEventListener('mousemove', handleDragMove);
+      document.addEventListener('mouseup', handleDragEnd);
+      
+      track.addEventListener('touchstart', handleDragStart, { passive: false });
+      track.addEventListener('touchmove', handleDragMove, { passive: false });
+      track.addEventListener('touchend', handleDragEnd);
+      
+      // Prevenir selección de texto
+      track.addEventListener('dragstart', (e) => e.preventDefault());
+      track.style.cursor = 'grab';
+      
+      // Event listeners para auto-play
+      carouselWrapper.addEventListener('mouseenter', () => {
+        isHovered = true;
+        stopAutoPlay();
+      });
+      
+      carouselWrapper.addEventListener('mouseleave', () => {
+        isHovered = false;
+        startAutoPlay();
+      });
+      
+      // Resize handler
+      let resizeTimeout;
+      function handleResize() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const maxIndex = getMaxIndex();
+          currentIndex = Math.min(currentIndex, maxIndex);
+          updateCarousel(false);
+        }, 100);
+      }
+      
+      window.addEventListener('resize', handleResize);
+      
+      // Inicializar
+      updateCarousel(false);
+      startAutoPlay();
+    }
+  })();
+  
+  // Parallax scroll effect mejorado
+  (function() {
+    'use strict';
+    
+    const sectionId = '{{ section.id }}';
+    let parallaxSpeed = {{ section.settings.parallax_speed | default: 0.5 }};
+    let ticking = false;
+    
+    function updateParallax() {
+      const scrolled = window.pageYOffset;
+      const section = document.querySelector('.product-cards-' + sectionId);
+      if (!section) return;
+      
+      const sectionRect = section.getBoundingClientRect();
+      const sectionTop = scrolled + sectionRect.top;
+      const sectionHeight = sectionRect.height;
+      const windowHeight = window.innerHeight;
+      
+      // Solo aplicar parallax cuando la sección está visible
+      if (sectionTop < scrolled + windowHeight && sectionTop + sectionHeight > scrolled) {
+        const yPos = -(scrolled - sectionTop) * parallaxSpeed;
+        
+        // Aplicar transform directamente al pseudo-elemento usando CSS custom property
+        section.style.setProperty('--parallax-y', yPos + 'px');
+      }
+      
+      ticking = false;
+    }
+    
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }
+    
+    // Inicializar parallax solo si hay imagen de fondo
+    {% if section.settings.background_image != blank %}
+      window.addEventListener('scroll', requestTick, { passive: true });
+      window.addEventListener('resize', requestTick, { passive: true });
+      updateParallax(); // Llamada inicial
+    {% endif %}
+  })();
+
+  </script>
+
+{% schema %}
+{
+  "name": "Cards de Productos",
+  "tag": "section",
+  "class": "product-cards-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configuración General"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Más populares"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtítulo",
+      "default": "Descubre nuestros productos más destacados"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Tamaño de fuente del título (px)",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Tamaño de fuente de la descripción (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Botones"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Color de fondo del botón",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color del texto del botón",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Radio del borde del botón (px)",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Navegación"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Mostrar flechas de navegación",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Mostrar indicadores de puntos",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Auto-play"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Activar reproducción automática",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidad de reproducción automática (segundos)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Efectos Hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_blur",
+      "label": "Activar efecto blur en hover",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "hover_blur_intensity",
+      "label": "Intensidad del blur (px)",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_transform",
+      "label": "Activar transformación en hover",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "hover_scale",
+      "label": "Escala en hover",
+      "min": 100,
+      "max": 120,
+      "step": 1,
+      "default": 105
+    },
+    {
+      "type": "range",
+      "id": "hover_translate_y",
+      "label": "Elevación en hover (px)",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "color",
+      "id": "hover_overlay_color",
+      "label": "Color del overlay en hover",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "hover_overlay_opacity",
+      "label": "Opacidad del overlay en hover (%)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_text_shadow",
+      "label": "Activar sombra de texto en hover",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "text_shadow_color",
+      "label": "Color de la sombra de texto",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "text_shadow_opacity",
+      "label": "Opacidad de la sombra de texto (%)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 70
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Texto de Tarjetas"
+    },
+    {
+      "type": "range",
+      "id": "card_title_font_size",
+      "label": "Tamaño de fuente del título de tarjeta (px)",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "card_description_font_size",
+      "label": "Tamaño de fuente de la descripción de tarjeta (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "card_price_font_size",
+      "label": "Tamaño de fuente del precio (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Color del título de tarjeta",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "card_description_color",
+      "label": "Color de la descripción de tarjeta",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "card_price_color",
+      "label": "Color del precio",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_margin_bottom",
+      "label": "Espaciado entre subtítulo y carrusel (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Hover de Texto"
+    },
+    {
+      "type": "color",
+      "id": "card_title_hover_color",
+      "label": "Color del título en hover",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "color",
+      "id": "card_description_hover_color",
+      "label": "Color de la descripción en hover",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "card_price_hover_color",
+      "label": "Color del precio en hover",
+      "default": "#c0392b"
+    },
+    {
+      "type": "header",
+      "content": "Imagen de Fondo con Parallax"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Imagen de fondo"
+    },
+    {
+      "type": "range",
+      "id": "parallax_speed",
+      "label": "Velocidad del efecto parallax",
+      "min": 0.1,
+      "max": 1.0,
+      "step": 0.1,
+      "default": 0.5
+    },
+    {
+      "type": "range",
+      "id": "background_opacity",
+      "label": "Opacidad de la imagen de fondo (%)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Card de Producto",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Contenido del Producto"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen del producto"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título del producto",
+          "default": "Producto"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Descripción",
+          "default": "Descripción del producto"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Precio",
+          "default": "$0.00"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Texto del botón",
+          "default": "COMPRAR"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "URL del botón"
+        },
+        {
+          "type": "header",
+          "content": "Personalización de Colores"
+        },
+        {
+          "type": "color",
+          "id": "custom_text_color",
+          "label": "Color del texto personalizado",
+          "info": "Deja vacío para usar el color global"
+        },
+        {
+          "type": "color",
+          "id": "custom_button_background",
+          "label": "Color del botón personalizado",
+          "info": "Deja vacío para usar el color global"
+        },
+        {
+          "type": "color",
+          "id": "custom_button_text_color",
+          "label": "Color del texto del botón personalizado",
+          "info": "Deja vacío para usar el color global"
+        },
+        {
+          "type": "header",
+          "content": "Efecto Hover Personalizado"
+        },
+        {
+          "type": "image_picker",
+          "id": "hover_image",
+          "label": "Imagen de fondo para hover",
+          "info": "Imagen que se mostrará como fondo cuando se haga hover sobre la tarjeta"
+        },
+        {
+          "type": "checkbox",
+          "id": "override_hover_settings",
+          "label": "Personalizar efectos de hover para esta tarjeta",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "custom_hover_blur",
+          "label": "Intensidad del blur personalizado (px)",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "color",
+          "id": "custom_hover_overlay_color",
+          "label": "Color del overlay personalizado",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "custom_hover_overlay_opacity",
+          "label": "Opacidad del overlay personalizado (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "custom_hover_scale",
+          "label": "Escala personalizada en hover",
+          "min": 100,
+          "max": 120,
+          "step": 1,
+          "default": 105
+        },
+        {
+          "type": "range",
+          "id": "custom_hover_translate_y",
+          "label": "Elevación personalizada en hover (px)",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cards de Productos",
+      "blocks": [
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "Nuevas aventuras edición Parejas",
+            "description": "Fortalece tu relación con 50 citas respables, pistas románticas y un álbum de recuerdos para atesorar cada momento.",
+            "price": "$8.00",
+            "button_text": "COMPRAR"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "Nuevas aventuras edición Contigo mismo",
+            "description": "Reconecta contigo a través de 25 citas sorpresa, una brújula emocional y espacios para personalizar cada página.",
+            "price": "$8.00",
+            "button_text": "COMPRAR"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "Nuevas aventuras edición Familia",
+            "description": "Transforma cada día en una aventura con actividades respables y pistas para toda la familia. Ideal para crear recuerdos y fortalecer vínculos.",
+            "price": "$8.00",
+            "button_text": "COMPRAR"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "Nuevas aventuras edición Amigos",
+            "description": "Crea momentos únicos con tus amigos a través de desafíos divertidos y actividades que fortalecen la amistad.",
+            "price": "$8.00",
+            "button_text": "COMPRAR"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "Nuevas aventuras edición Trabajo",
+            "description": "Mejora el ambiente laboral con actividades de team building y dinámicas que fomentan la colaboración.",
+            "price": "$8.00",
+            "button_text": "COMPRAR"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "Nuevas aventuras edición Viajes",
+            "description": "Convierte cada viaje en una experiencia memorable con guías de actividades y retos para explorar.",
+            "price": "$8.00",
+            "button_text": "COMPRAR"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

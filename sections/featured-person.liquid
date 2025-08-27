@@ -1,0 +1,407 @@
+{% comment %}
+  Sección de Persona Destacada
+  Muestra información sobre una persona importante con animaciones de entrada
+{% endcomment %}
+
+<section class="featured-person-section featured-person-{{ section.id }}" style="
+  background-color: {{ section.settings.background_color }};
+  padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0;
+">
+  <div class="featured-person-container">
+    <div class="featured-person-content">
+      <!-- Imagen de la persona (lado izquierdo) -->
+      <div class="featured-person-image animate-from-left" data-animate="slideInLeft">
+        {% if section.settings.person_image != blank %}
+          <img src="{{ section.settings.person_image | image_url: width: 600 }}" 
+               alt="{{ section.settings.person_name | escape }}" 
+               loading="lazy">
+        {% else %}
+          <div class="featured-person-placeholder">
+            <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+              <rect width="200" height="200" fill="#f0f0f0" rx="10"/>
+              <circle cx="100" cy="80" r="30" fill="#ddd"/>
+              <path d="M60 140 Q100 120 140 140 L140 180 Q100 160 60 180 Z" fill="#ddd"/>
+              <text x="100" y="195" text-anchor="middle" fill="#999" font-size="12">Foto</text>
+            </svg>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Contenido de texto (lado derecho) -->
+      <div class="featured-person-text animate-from-right" data-animate="slideInRight">
+        {% if section.settings.person_name != blank %}
+          <h2 class="featured-person-name">{{ section.settings.person_name }}</h2>
+        {% endif %}
+        
+        {% if section.settings.person_title != blank %}
+          <h3 class="featured-person-title">{{ section.settings.person_title }}</h3>
+        {% endif %}
+        
+        {% if section.settings.person_description != blank %}
+          <p class="featured-person-description">{{ section.settings.person_description }}</p>
+        {% endif %}
+        
+        {% if section.settings.button_text != blank and section.settings.button_url != blank %}
+          <a href="{{ section.settings.button_url }}" class="featured-person-button">
+            {{ section.settings.button_text }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Person Styles -->
+<style>
+  .featured-person-section.featured-person-{{ section.id }} {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    min-height: 500px;
+  }
+  
+  /* Imagen de la persona */
+  .featured-person-{{ section.id }} .featured-person-image {
+    position: relative;
+    opacity: 0;
+    transform: translateX(-100px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-image.animate-in {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-image img {
+    width: 100%;
+    height: auto;
+    border-radius: {{ section.settings.image_border_radius }}px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-image:hover img {
+    transform: scale(1.05);
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-placeholder {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border-radius: {{ section.settings.image_border_radius }}px;
+  }
+  
+  /* Contenido de texto */
+  .featured-person-{{ section.id }} .featured-person-text {
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-delay: 0.2s;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-text.animate-in {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-name {
+    font-size: {{ section.settings.name_font_size }}px;
+    font-weight: 700;
+    color: {{ section.settings.name_color }};
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-title {
+    font-size: {{ section.settings.title_font_size }}px;
+    font-weight: 500;
+    color: {{ section.settings.title_color }};
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-description {
+    font-size: {{ section.settings.description_font_size }}px;
+    color: {{ section.settings.description_color }};
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-button {
+    display: inline-block;
+    background: {{ section.settings.button_background }};
+    color: {{ section.settings.button_text_color }};
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px {{ section.settings.button_background | color_modify: 'alpha', 0.3 }};
+  }
+  
+  .featured-person-{{ section.id }} .featured-person-button:hover {
+    background: {{ section.settings.button_background | color_darken: 10 }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px {{ section.settings.button_background | color_modify: 'alpha', 0.4 }};
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .featured-person-{{ section.id }} .featured-person-content {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      text-align: center;
+    }
+    
+    .featured-person-{{ section.id }} .featured-person-image {
+      order: 1;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    
+    .featured-person-{{ section.id }} .featured-person-text {
+      order: 2;
+    }
+    
+    .featured-person-{{ section.id }} .featured-person-name {
+      font-size: {{ section.settings.name_font_size | minus: 8 }}px;
+    }
+    
+    .featured-person-{{ section.id }} .featured-person-title {
+      font-size: {{ section.settings.title_font_size | minus: 4 }}px;
+    }
+    
+    .featured-person-{{ section.id }} .featured-person-description {
+      font-size: {{ section.settings.description_font_size | minus: 2 }}px;
+    }
+  }
+</style>
+
+<!-- JavaScript para animaciones -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('.featured-person-{{ section.id }}');
+    if (!section) return;
+    
+    const animateElements = section.querySelectorAll('[data-animate]');
+    
+    // Intersection Observer para detectar cuando la sección es visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Animar elementos con delay escalonado
+          animateElements.forEach((element, index) => {
+            setTimeout(() => {
+              element.classList.add('animate-in');
+            }, index * 200);
+          });
+          
+          // Dejar de observar una vez que se ha animado
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.3,
+      rootMargin: '0px 0px -50px 0px'
+    });
+    
+    observer.observe(section);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Persona Destacada",
+  "tag": "section",
+  "class": "featured-person-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configuración de la Persona"
+    },
+    {
+      "type": "image_picker",
+      "id": "person_image",
+      "label": "Imagen de la persona",
+      "info": "Recomendado: 600x600px o mayor"
+    },
+    {
+      "type": "text",
+      "id": "person_name",
+      "label": "Nombre de la persona",
+      "default": "Chef María González"
+    },
+    {
+      "type": "text",
+      "id": "person_title",
+      "label": "Título o profesión",
+      "default": "Chef Ejecutiva y Fundadora"
+    },
+    {
+      "type": "textarea",
+      "id": "person_description",
+      "label": "Descripción",
+      "default": "Con más de 15 años de experiencia en la alta cocina, María ha revolucionado la gastronomía local con su enfoque innovador y su pasión por los ingredientes frescos y locales."
+    },
+    {
+      "type": "header",
+      "content": "Botón de Acción"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Texto del botón",
+      "default": "Conoce más"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "header",
+      "content": "Estilos de Texto"
+    },
+    {
+      "type": "range",
+      "id": "name_font_size",
+      "label": "Tamaño de fuente del nombre",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Color del nombre",
+      "default": "#2c3e50"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Tamaño de fuente del título",
+      "min": 16,
+      "max": 28,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#7f8c8d"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Tamaño de fuente de la descripción",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#34495e"
+    },
+    {
+      "type": "header",
+      "content": "Estilos del Botón"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Color de fondo del botón",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color del texto del botón",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Radio de borde del botón",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "default": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Configuración General"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Radio de borde de la imagen",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Persona Destacada",
+      "category": "Contenido"
+    }
+  ]
+}
+{% endschema %}

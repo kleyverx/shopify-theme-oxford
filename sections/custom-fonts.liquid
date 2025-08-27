@@ -80,7 +80,7 @@
 }
 {% endschema %}
 
-{% comment %} Cargar fuentes según la fuente seleccionada {% endcomment %}
+{% comment %} Cargar fuentes siempre (independientemente de la previsualización) {% endcomment %}
 {% assign google_fonts = '' %}
 {% if section.settings.font_source == 'shopify' %}
   {% comment %} Cargar fuentes de Shopify {% endcomment %}
@@ -91,61 +91,59 @@
     {{ section.settings.paragraph_font | font_face }}
   {% endif %}
 {% elsif section.settings.font_source == 'google' %}
-  {% comment %} Cargar fuentes de Google Fonts {% endcomment %}
-  {% if section.settings.google_title_font != blank %}
-    {% assign title_font_name = section.settings.google_title_font | replace: ' ', '+' %}
-    {% assign google_fonts = google_fonts | append: title_font_name %}
-    {% if section.settings.google_font_weights != blank %}
-      {% assign formatted_weights = section.settings.google_font_weights | replace: ',', ';' %}
-      {% assign google_fonts = google_fonts | append: ':wght@' | append: formatted_weights %}
-    {% endif %}
+{% comment %} Cargar fuentes de Google Fonts {% endcomment %}
+{% if section.settings.google_title_font != blank %}
+  {% assign title_font_name = section.settings.google_title_font | replace: ' ', '+' %}
+  {% assign google_fonts = google_fonts | append: title_font_name %}
+  {% if section.settings.google_font_weights != blank %}
+    {% assign formatted_weights = section.settings.google_font_weights | replace: ',', ';' %}
+    {% assign google_fonts = google_fonts | append: ':wght@' | append: formatted_weights %}
   {% endif %}
-  
-  {% if section.settings.google_paragraph_font != blank %}
-    {% assign paragraph_font_name = section.settings.google_paragraph_font | replace: ' ', '+' %}
-    {% if google_fonts != blank %}
-      {% assign google_fonts = google_fonts | append: '&family=' %}
-    {% endif %}
-    {% assign google_fonts = google_fonts | append: paragraph_font_name %}
-    {% if section.settings.google_font_weights != blank %}
-      {% assign formatted_weights = section.settings.google_font_weights | replace: ',', ';' %}
-      {% assign google_fonts = google_fonts | append: ':wght@' | append: formatted_weights %}
-    {% endif %}
-  {% endif %}
-  
+{% endif %}
+
+{% if section.settings.google_paragraph_font != blank %}
+  {% assign paragraph_font_name = section.settings.google_paragraph_font | replace: ' ', '+' %}
   {% if google_fonts != blank %}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family={{ google_fonts }}&display=swap" rel="stylesheet">
-    
-    <style>
-      /* Forzar aplicación de fuentes de Google con máxima especificidad */
-      {% if section.settings.google_title_font != blank %}
-        * h1, * h2, * h3, * h4, * h5, * h6,
-        .custom-fonts-title,
-        .collections-title,
-        .collection-card__title,
-        .product-title,
-        .section-title,
-        .page-title,
-        body h1, body h2, body h3, body h4, body h5, body h6 {
-          font-family: '{{ section.settings.google_title_font }}' !important;
-        }
-      {% endif %}
-      
-      {% if section.settings.google_paragraph_font != blank %}
-        * p, * span, * div, * a, * li, * td, * th,
-        .custom-fonts-paragraph,
-        .collection-card__description,
-        .collections-subtitle,
-        .product-description,
-        .page-content,
-        body, body p, body span, body div, body a, body li {
-          font-family: '{{ section.settings.google_paragraph_font }}' !important;
-        }
-      {% endif %}
-    </style>
+    {% assign google_fonts = google_fonts | append: '&family=' %}
   {% endif %}
+  {% assign google_fonts = google_fonts | append: paragraph_font_name %}
+  {% if section.settings.google_font_weights != blank %}
+    {% assign formatted_weights = section.settings.google_font_weights | replace: ',', ';' %}
+    {% assign google_fonts = google_fonts | append: ':wght@' | append: formatted_weights %}
+  {% endif %}
+{% endif %}
+
+{% if google_fonts != blank %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{ google_fonts }}&display=swap" rel="stylesheet">
+    
+  <style>
+    /* Aplicación selectiva de fuentes de Google */
+    {% if section.settings.google_title_font != blank %}
+      h1, h2, h3, h4, h5, h6,
+      .custom-fonts-title,
+      .collections-title,
+      .collection-card__title,
+      .product-title,
+      .section-title,
+      .page-title {
+        font-family: '{{ section.settings.google_title_font }}', Arial, sans-serif;
+      }
+    {% endif %}
+    
+    {% if section.settings.google_paragraph_font != blank %}
+      p, span,
+      .custom-fonts-paragraph,
+      .collection-card__description,
+      .collections-subtitle,
+      .product-description,
+      .page-content,
+      body {
+        font-family: '{{ section.settings.google_paragraph_font }}', Arial, sans-serif;
+      }
+    {% endif %}
+  </style>
 {% endif %}
 
 <style>
@@ -169,24 +167,27 @@
     .product-title,
     .section-title,
     .page-title {
-      font-family: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }} !important;
+      font-family: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }};
       font-weight: {{ section.settings.title_font.weight }};
       font-style: {{ section.settings.title_font.style }};
     }
 
-    p, span, div, 
+    p, span,
     .custom-fonts-paragraph,
     .collection-card__description,
     .collections-subtitle,
     .product-description,
     .page-content,
-    body,
-    .main-content {
-      font-family: {{ section.settings.paragraph_font.family }}, {{ section.settings.paragraph_font.fallback_families }} !important;
+    body {
+      font-family: {{ section.settings.paragraph_font.family }}, {{ section.settings.paragraph_font.fallback_families }};
       font-weight: {{ section.settings.paragraph_font.weight }};
       font-style: {{ section.settings.paragraph_font.style }};
     }
   {% endif %}
+</style>
+
+{% if section.settings.show_preview %}
+<style>
   
   /* Estilos para la vista previa */
   .custom-fonts-preview {
@@ -204,6 +205,7 @@
     border-radius: 4px;
   }
 </style>
+{% endif %}
 
 <div class="custom-fonts">
   {% if section.settings.show_preview %}
@@ -290,3 +292,4 @@
     </div>
   {% endif %}
 </div>
+{% endif %}
