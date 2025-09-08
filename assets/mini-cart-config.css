@@ -1,0 +1,175 @@
+/* Mini Cart Theme Configuration Styles */
+
+/* CSS Variables for dynamic theming */
+.mini-cart__dropdown {
+  --mini-cart-width: 400px;
+  --mini-cart-max-height: 100vh;
+  --mini-cart-bg-color: #ffffff;
+  --mini-cart-text-color: #333333;
+  --mini-cart-accent-color: #007bff;
+  --mini-cart-border-color: #e0e0e0;
+}
+
+/* Position variants */
+.mini-cart__dropdown--left .mini-cart__panel {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+
+.mini-cart__dropdown--right .mini-cart__panel {
+  right: 0;
+  left: auto;
+  transform-origin: top right;
+}
+
+.mini-cart__dropdown--center .mini-cart__panel {
+  right: 50%;
+  left: auto;
+  transform: translateX(50%);
+  transform-origin: top center;
+}
+
+/* Dynamic sizing */
+.mini-cart__panel {
+  width: var(--mini-cart-width);
+  height: var(--mini-cart-max-height);
+  max-height: var(--mini-cart-max-height);
+  background-color: var(--mini-cart-bg-color);
+  color: var(--mini-cart-text-color);
+  border: 1px solid var(--mini-cart-border-color);
+}
+
+/* Accent color applications */
+.mini-cart__checkout-btn,
+.mini-cart__empty-btn {
+  background-color: var(--mini-cart-accent-color);
+}
+
+.mini-cart__checkout-btn:hover,
+.mini-cart__empty-btn:hover {
+  background-color: color-mix(in srgb, var(--mini-cart-accent-color) 85%, black);
+}
+
+.mini-cart__qty-btn:hover {
+  background-color: color-mix(in srgb, var(--mini-cart-accent-color) 10%, transparent);
+  color: var(--mini-cart-accent-color);
+}
+
+.mini-cart__view-cart-btn {
+  color: var(--mini-cart-accent-color);
+  border-color: var(--mini-cart-accent-color);
+}
+
+.mini-cart__view-cart-btn:hover {
+  background-color: var(--mini-cart-accent-color);
+  color: var(--mini-cart-bg-color);
+}
+
+/* Progress bar for free shipping */
+.mini-cart__progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: color-mix(in srgb, var(--mini-cart-border-color) 50%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.mini-cart__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mini-cart-accent-color), color-mix(in srgb, var(--mini-cart-accent-color) 80%, white));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Quantity static display */
+.mini-cart__quantity-static {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: color-mix(in srgb, var(--mini-cart-border-color) 20%, transparent);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mini-cart__dropdown {
+    --mini-cart-width: 100vw;
+    --mini-cart-max-height: 100vh;
+  }
+  
+  .mini-cart__panel {
+    right: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    height: var(--mini-cart-max-height);
+    max-height: var(--mini-cart-max-height);
+  }
+}
+
+/* Animation speed variants */
+.mini-cart__dropdown[data-animation-speed="fast"] .mini-cart__panel {
+  transition-duration: 0.15s;
+}
+
+.mini-cart__dropdown[data-animation-speed="normal"] .mini-cart__panel {
+  transition-duration: 0.3s;
+}
+
+.mini-cart__dropdown[data-animation-speed="slow"] .mini-cart__panel {
+  transition-duration: 0.5s;
+}
+
+/* Hide elements based on settings */
+.mini-cart-wrapper[data-hide-images="true"] .mini-cart__item-image {
+  display: none;
+}
+
+.mini-cart-wrapper[data-hide-quantity-controls="true"] .mini-cart__quantity {
+  display: none;
+}
+
+.mini-cart-wrapper[data-hide-remove-button="true"] .mini-cart__remove-btn {
+  display: none;
+}
+
+.mini-cart-wrapper[data-hide-subtotal="true"] .mini-cart__subtotal {
+  display: none;
+}
+
+.mini-cart-wrapper[data-hide-checkout-button="true"] .mini-cart__checkout-btn {
+  display: none;
+}
+
+.mini-cart-wrapper[data-hide-view-cart-button="true"] .mini-cart__view-cart-btn {
+  display: none;
+}
+
+/* Enhanced accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .mini-cart__panel,
+  .mini-cart__progress-fill {
+    transition: none;
+  }
+  
+  .mini-cart__dropdown[data-animation-speed] .mini-cart__panel {
+    transition-duration: 0.01s;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mini-cart__panel {
+    border-width: 2px;
+  }
+  
+  .mini-cart__qty-btn,
+  .mini-cart__remove-btn {
+    border: 1px solid currentColor;
+  }
+}

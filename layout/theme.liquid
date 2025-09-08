@@ -7,10 +7,14 @@
         // Only redirect if we're not already on the Spanish version and we're not in the theme editor
         if (!window.Shopify || !window.Shopify.designMode) {
           var currentUrl = window.location.href;
-          // Check if the URL already has a locale parameter
-          if (currentUrl.indexOf('/es/') === -1) {
-            // Redirect to Spanish version
-            window.location.href = currentUrl.replace(window.location.pathname, '/es' + window.location.pathname);
+          var currentPath = window.location.pathname;
+          // Check if the URL already has a locale parameter and avoid infinite redirects
+          if (currentUrl.indexOf('/es/') === -1 && currentPath !== '/es' && !currentPath.startsWith('/es/')) {
+            // Redirect to Spanish version only once
+            var newPath = '/es' + currentPath;
+            if (newPath !== currentPath) {
+              window.location.href = currentUrl.replace(currentPath, newPath);
+            }
           }
         }
       </script>
@@ -21,6 +25,9 @@
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    
+    {% # Add to Cart Block CSS %}
+    {{ 'add-to-cart-block.css' | asset_url | stylesheet_tag }}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
@@ -44,6 +51,12 @@
     {% render 'social-floating-nav' %}
 
     {% sections 'footer-group' %}
+    
+    <!-- Mini Cart Dropdown (rendered at body level to avoid stacking context issues) -->
+    <div id="mini-cart-dropdown-portal"></div>
+    
+    {% # Add to Cart Block JavaScript %}
+    {{ 'add-to-cart-block.js' | asset_url | script_tag }}
   </body>
 </html>
 

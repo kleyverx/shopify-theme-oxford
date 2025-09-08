@@ -598,49 +598,35 @@
       {%- endif -%}
     </div>
 
-    {%- comment -%} Crear pines para ubicaciones {%- endcomment -%}
-    {%- assign processed_groups = '' | split: ',' -%}
-    
+    {%- comment -%} Crear pines para ubicaciones agrupadas por ciudad {%- endcomment -%}
     {%- for block in section.blocks -%}
-      {%- if block.type == 'location' -%}
+      {%- if block.type == 'city_group' -%}
         {%- assign b = block.settings -%}
-        {%- assign group_id = b.group_id | default: block.id -%}
+        {%- assign city_name = b.city_name | default: 'Ubicaciones' -%}
+        {%- assign locations_list = b.locations_text | split: ',' -%}
+        {%- assign locations_count = locations_list.size -%}
         
-        {%- unless processed_groups contains group_id -%}
-          {%- assign processed_groups = processed_groups | append: group_id | append: ',' | split: ',' -%}
-          
-          {%- comment -%} Contar ubicaciones en este grupo {%- endcomment -%}
-          {%- assign group_count = 0 -%}
-          {%- for check_block in section.blocks -%}
-            {%- if check_block.type == 'location' -%}
-              {%- assign check_group_id = check_block.settings.group_id | default: check_block.id -%}
-              {%- if check_group_id == group_id -%}
-                {%- assign group_count = group_count | plus: 1 -%}
-              {%- endif -%}
+        {%- assign hide_mobile = false -%}
+        {%- if se_stts.hide_pins_on_mobile or b.hide_on_mobile -%}
+          {%- assign hide_mobile = true -%}
+        {%- endif -%}
+        
+        <div id="store-pin-{{ block.id }}"
+             class="t4s-lookbook-pin t4s-store-pin pin__size--{{ b.pos_size }} {% if hide_mobile %}hide-mobile{% endif %}"
+             style="--ps-top: {{ b.pos_t }}%; --ps-left: {{ b.pos_l }}%; --bg-pin: {{ b.bg_cl }}; --cl-pin: {{ b.cl_text }};"
+             data-city-name="{{ city_name }}"
+             data-block-id="{{ block.id }}"
+             data-locations-count="{{ locations_count }}">
+          <span class="t4s-pin-tt">
+            <svg class="t4s-nav-link-icon" viewBox="0 0 336.643 336.643" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="M157.618,327.478c5.908,12.226,15.501,12.22,21.397-0.012c25.299-52.481,86.896-180.42,88.812-185.743l0.324-0.886 c3.837-10.959,6.028-22.689,6.028-34.969C274.18,47.411,226.79,0,168.331,0C109.859,0,62.463,47.402,62.463,105.868 c0,8.656,1.156,17.021,3.113,25.076l0.108,0.447C68.393,142.269,131.86,274.167,157.618,327.478z M168.336,46.162 c32.969,0,59.691,26.751,59.691,59.712c0,32.981-26.728,59.705-59.691,59.705c-32.984,0-59.711-26.73-59.711-59.705 C108.631,72.913,135.352,46.162,168.336,46.162z"/>
+            </svg>
+            {%- if locations_count > 1 -%}
+              <span class="t4s-pin-count">{{ locations_count }}</span>
             {%- endif -%}
-          {%- endfor -%}
-          
-          {%- assign hide_mobile = false -%}
-          {%- if se_stts.hide_pins_on_mobile or b.hide_on_mobile -%}
-            {%- assign hide_mobile = true -%}
-          {%- endif -%}
-          
-          <div id="store-pin-group-{{ group_id }}"
-               class="t4s-lookbook-pin t4s-store-pin pin__size--{{ b.pos_size }} {% if hide_mobile %}hide-mobile{% endif %}"
-               style="--ps-top: {{ b.pos_t }}%; --ps-left: {{ b.pos_l }}%; --bg-pin: {{ b.bg_cl }}; --cl-pin: {{ b.cl_text }};"
-               data-group-id="{{ group_id }}"
-               data-locations-count="{{ group_count }}">
-            <span class="t4s-pin-tt">
-              <svg class="t4s-nav-link-icon" viewBox="0 0 336.643 336.643" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M157.618,327.478c5.908,12.226,15.501,12.22,21.397-0.012c25.299-52.481,86.896-180.42,88.812-185.743l0.324-0.886 c3.837-10.959,6.028-22.689,6.028-34.969C274.18,47.411,226.79,0,168.331,0C109.859,0,62.463,47.402,62.463,105.868 c0,8.656,1.156,17.021,3.113,25.076l0.108,0.447C68.393,142.269,131.86,274.167,157.618,327.478z M168.336,46.162 c32.969,0,59.691,26.751,59.691,59.712c0,32.981-26.728,59.705-59.691,59.705c-32.984,0-59.711-26.73-59.711-59.705 C108.631,72.913,135.352,46.162,168.336,46.162z"/>
-              </svg>
-              {%- if group_count > 1 -%}
-                <span class="t4s-pin-count">{{ group_count }}</span>
-              {%- endif -%}
-            </span>
-            <span class="t4s-zoompin"></span>
-          </div>
-        {%- endunless -%}
+          </span>
+          <span class="t4s-zoompin"></span>
+        </div>
       {%- endif -%}
     {%- endfor -%}
 
@@ -758,54 +744,39 @@
       console.log('Store Locations: Modo editor detectado - usando inicialización optimizada');
     }
     
-    // Datos de ubicaciones optimizados - carga diferida para mejorar rendimiento en editor
-    var allLocations = {};
-    var locationDataLoaded = false;
+    // Datos de ciudades optimizados - carga diferida para mejorar rendimiento en editor
+    var allCityGroups = {};
+    var cityDataLoaded = false;
     
-    // Función para cargar datos de ubicaciones bajo demanda
-    function loadLocationData() {
-      if (locationDataLoaded) return allLocations;
+    // Función para cargar datos de ciudades bajo demanda
+    function loadCityData() {
+      if (cityDataLoaded) return allCityGroups;
       
       // Solo cargar datos cuando realmente se necesiten
-      allLocations = {
+      allCityGroups = {
         {%- for block in section.blocks -%}
-          {%- if block.type == 'location' -%}
+          {%- if block.type == 'city_group' -%}
             {%- assign b = block.settings -%}
-            '{{ block.id }}': {
+            {%- assign locations_list = b.locations_text | split: ',' -%}
+            {{ b.city_name | json }}: {
               id: '{{ block.id }}',
-              groupId: '{{ b.group_id | default: block.id }}',
-              groupTitle: {{ b.group_title | json }},
-              title: {{ b.title | json }},
-              address: {{ b.address | json }},
-              schedule: {{ b.schedule | json }},
-              phone: {{ b.phone | json }},
-              mapsUrl: {{ b.maps_url | json }},
-              whatsappPhone: {{ b.whatsapp_phone | json }},
-              whatsappMessage: {{ b.whatsapp_message | json }},
-              whatsappButtonText: {{ b.whatsapp_button_text | default: 'WhatsApp' | json }},
-              cardBgColor: {{ b.card_bg_color | json }},
-              cardTextColor: {{ b.card_text_color | json }},
-              cardBorderColor: {{ b.card_border_color | json }},
-              cardTitleColor: {{ b.card_title_color | json }},
-              cardContentColor: {{ b.card_content_color | json }},
-              cardPhoneColor: {{ b.card_phone_color | json }},
-              btnMapBg: {{ b.btn_map_bg | json }},
-              btnMapText: {{ b.btn_map_text | json }},
-              btnMapBorder: {{ b.btn_map_border | json }},
-              btnMapHoverBg: {{ b.btn_map_hover_bg | json }},
-              btnMapHoverText: {{ b.btn_map_hover_text | json }},
-              btnWaBg: {{ b.btn_wa_bg | json }},
-              btnWaText: {{ b.btn_wa_text | json }},
-              btnWaBorder: {{ b.btn_wa_border | json }},
-              btnWaHoverBg: {{ b.btn_wa_hover_bg | json }},
-              btnWaHoverText: {{ b.btn_wa_hover_text | json }}
+              cityName: {{ b.city_name | json }},
+              locations: [
+                {%- for location in locations_list -%}
+                  {
+                    title: {{ location | strip | json }},
+                    address: "",
+                    whatsappNumber: {{ b.whatsapp_number | json }}
+                  }{% unless forloop.last %},{% endunless %}
+                {%- endfor -%}
+              ]
             }{% unless forloop.last %},{% endunless %}
           {%- endif -%}
         {%- endfor -%}
       };
       
-      locationDataLoaded = true;
-      return allLocations;
+      cityDataLoaded = true;
+      return allCityGroups;
     }
 
     var modal = document.getElementById('store-modal');
@@ -848,45 +819,41 @@
       initializeComponents();
     }
 
-    // Función optimizada para inicializar lista móvil
+    // Función optimizada para inicializar lista móvil con dropdowns separados por ciudad
     function initMobileListOptimized() {
       var startTime = performance.now();
       
-      // Cargar datos de ubicaciones bajo demanda
-      var locations = loadLocationData();
+      // Cargar datos de ciudades bajo demanda
+      var cityGroups = loadCityData();
+      var groupIds = Object.keys(cityGroups);
       
-      // Agrupar ubicaciones por groupId
-      var groups = {};
-      Object.values(locations).forEach(function(location) {
-        if (!groups[location.groupId]) {
-          groups[location.groupId] = [];
-        }
-        groups[location.groupId].push(location);
+      // Calcular total de ubicaciones
+      var totalLocations = 0;
+      groupIds.forEach(function(cityId) {
+        totalLocations += cityGroups[cityId].locations.length;
       });
-
+      
       // Actualizar métricas
-      performanceMetrics.totalLocations = Object.keys(locations).length;
+      performanceMetrics.totalLocations = totalLocations;
 
       // Limpiar contenido anterior
       mobileLocations.innerHTML = '';
       
-      var totalGroups = Object.keys(groups).length;
-      
-      // Si hay muchos grupos, usar renderizado por lotes
-      if (totalGroups > performanceConfig.virtualScrollThreshold) {
-        renderGroupsBatched(groups, startTime);
+      // Decidir estrategia de renderizado basada en cantidad de grupos
+      if (groupIds.length <= performanceConfig.virtualScrollThreshold) {
+        renderCityGroupsImmediate(cityGroups, startTime);
       } else {
-        renderGroupsImmediate(groups, startTime);
+        renderCityGroupsBatched(cityGroups, startTime);
       }
     }
     
     // Renderizado inmediato para pocos grupos
-    function renderGroupsImmediate(groups, startTime) {
+    function renderCityGroupsImmediate(cityGroups, startTime) {
       var fragment = document.createDocumentFragment();
       
-      Object.keys(groups).forEach(function(groupId) {
-        var groupLocations = groups[groupId];
-        var element = createGroupElement(groupId, groupLocations);
+      Object.keys(cityGroups).forEach(function(cityId) {
+        var cityData = cityGroups[cityId];
+        var element = createCityGroupElement(cityId, cityData);
         fragment.appendChild(element);
       });
       
@@ -897,20 +864,20 @@
     }
     
     // Renderizado por lotes para muchos grupos
-    function renderGroupsBatched(groups, startTime) {
-      var groupIds = Object.keys(groups);
+    function renderCityGroupsBatched(cityGroups, startTime) {
+      var cityIds = Object.keys(cityGroups);
       var currentBatch = 0;
       var batchSize = performanceConfig.batchSize;
       
       function renderNextBatch() {
         var fragment = document.createDocumentFragment();
         var start = currentBatch * batchSize;
-        var end = Math.min(start + batchSize, groupIds.length);
+        var end = Math.min(start + batchSize, cityIds.length);
         
         for (var i = start; i < end; i++) {
-          var groupId = groupIds[i];
-          var groupLocations = groups[groupId];
-          var element = createGroupElement(groupId, groupLocations);
+          var cityId = cityIds[i];
+          var cityData = cityGroups[cityId];
+          var element = createCityGroupElement(cityId, cityData);
           fragment.appendChild(element);
         }
         
@@ -919,7 +886,7 @@
         performanceMetrics.batchesRendered++;
         
         // Continuar con el siguiente lote si hay más grupos
-        if (end < groupIds.length) {
+        if (end < cityIds.length) {
           requestAnimationFrame(renderNextBatch);
         } else {
           // Registrar tiempo total cuando termine el último lote
@@ -930,12 +897,13 @@
       renderNextBatch();
     }
     
-    // Función unificada para crear elementos de grupo
-    function createGroupElement(groupId, groupLocations) {
-      if (groupLocations.length === 1) {
-        return createMobileLocationElement(groupLocations[0]);
+    // Función unificada para crear elementos de ciudad
+    function createCityGroupElement(cityId, cityData) {
+      var locations = cityData.locations || [];
+      if (locations.length === 1) {
+        return createMobileLocationElement(locations[0]);
       } else {
-        return createMobileDropdownElementOptimized(groupId, groupLocations);
+        return createMobileDropdownElementOptimized(cityId, locations);
       }
     }
 
@@ -948,7 +916,7 @@
         html += '<h3 class="t4s-mobile-location__title">' + escapeHtml(location.title) + '</h3>';
       }
       if (location.address) {
-        html += '<p class="t4s-mobile-location__info"><strong>Dirección:</strong> ' + escapeHtml(location.address) + '</p>';
+        html += '<p class="t4s-mobile-location__info">' + escapeHtml(location.address) + '</p>';
       }
       if (location.schedule) {
         html += '<p class="t4s-mobile-location__info"><strong>Horario:</strong> ' + escapeHtml(location.schedule) + '</p>';
@@ -1114,7 +1082,7 @@
         html += '<h4 class="t4s-mobile-dropdown__item-title">' + escapeHtml(location.title) + '</h4>';
       }
       if (location.address) {
-        html += '<p class="t4s-mobile-dropdown__item-info"><strong>Dirección:</strong> ' + escapeHtml(location.address) + '</p>';
+        html += '<p class="t4s-mobile-dropdown__item-info">' + escapeHtml(location.address) + '</p>';
       }
       if (location.schedule) {
         html += '<p class="t4s-mobile-dropdown__item-info"><strong>Horario:</strong> ' + escapeHtml(location.schedule) + '</p>';
@@ -1142,34 +1110,18 @@
         
         actionsHtml += '<a class="t4s-btn t4s-btn--map" href="' + location.mapsUrl + '" target="_blank" rel="noopener"' + (mapBtnStyles ? ' style="' + mapBtnStyles + '"' : '') + '>Ver en Maps</a>';
       }
-      if (enableWhatsApp && location.whatsappPhone) {
-        var waPhone = location.whatsappPhone.replace(/[\s\(\)\-\+]/g, '');
-        var waText = location.whatsappMessage || ('Hola, quiero información sobre ' + location.title);
+      if (enableWhatsApp && location.whatsappNumber) {
+        var waPhone = location.whatsappNumber.replace(/[\s\(\)\-\+]/g, '');
+        var waText = 'Hola, quiero información sobre ' + location.title;
         
-        var waBtnStyles = '';
-        if (location.btnWaBg) waBtnStyles += 'background-color: ' + location.btnWaBg + '; ';
-        if (location.btnWaText) waBtnStyles += 'color: ' + location.btnWaText + '; ';
-        if (location.btnWaBorder) waBtnStyles += 'border-color: ' + location.btnWaBorder + '; ';
-        
-        actionsHtml += '<a class="t4s-btn t4s-btn--wa" href="https://wa.me/' + waPhone + '?text=' + encodeURIComponent(waText) + '" target="_blank" rel="noopener"' + (waBtnStyles ? ' style="' + waBtnStyles + '"' : '') + '>' + escapeHtml(location.whatsappButtonText) + '</a>';
+        actionsHtml += '<a class="t4s-btn t4s-btn--wa" href="https://wa.me/' + waPhone + '?text=' + encodeURIComponent(waText) + '" target="_blank" rel="noopener">WhatsApp</a>';
       }
       return actionsHtml;
     }
 
-    function getGroupTitle(groupId) {
-      // Cargar datos de ubicaciones bajo demanda
-      var locations = loadLocationData();
-      
-      // Buscar la primera ubicación del grupo
-      for (var locationId in locations) {
-        var location = locations[locationId];
-        if (location.groupId === groupId) {
-          // Usar groupTitle si está definido, sino usar el título de la ubicación
-          return location.groupTitle || location.title;
-        }
-      }
-      
-      return 'Ubicaciones disponibles';
+    function getGroupTitle(cityId) {
+      // En la nueva estructura, el cityId es directamente el nombre de la ciudad
+      return cityId || 'Ubicaciones disponibles';
     }
 
     // Función para inicializar Intersection Observer optimizado
@@ -1203,40 +1155,35 @@
     }
     
     // Función optimizada para abrir modal con cache
-     function openModal(groupId) {
+     function openModal(cityName) {
        var startTime = performance.now();
        
-       // Verificar cache primero
-       var cacheKey = 'modal_' + groupId;
+       // Cargar datos de ciudades bajo demanda
+       var cityGroups = loadCityData();
        
-       // Cargar datos de ubicaciones bajo demanda
-       var locations = loadLocationData();
-       
-       // Filtrar ubicaciones por grupo
-       var groupLocations = Object.values(locations).filter(function(loc) {
-         return loc.groupId === groupId;
-       });
+       // Obtener ubicaciones de la ciudad
+       var cityData = cityGroups[cityName];
+       if (!cityData || !cityData.locations || cityData.locations.length === 0) return;
 
-       if (groupLocations.length === 0) return;
+       var locations = cityData.locations;
 
        // Limpiar contenido anterior
        modalLocations.innerHTML = '';
        
        // Usar renderizado por lotes si hay muchas ubicaciones
-       if (groupLocations.length > performanceConfig.batchSize) {
-         renderModalLocationsBatched(groupLocations, startTime);
+       if (locations.length > performanceConfig.batchSize) {
+         renderModalLocationsBatched(locations, startTime);
        } else {
-         renderModalLocationsImmediate(groupLocations, startTime);
+         renderModalLocationsImmediate(locations, startTime);
        }
 
-      // Actualizar título del modal con el nombre del grupo
+      // Actualizar título del modal con el nombre de la ciudad
       var modalTitle = modal.querySelector('.t4s-store-modal__title');
       if (modalTitle) {
-        if (groupLocations.length === 1) {
-          modalTitle.textContent = groupLocations[0].title || 'Información de la tienda';
+        if (locations.length === 1) {
+          modalTitle.textContent = locations[0].title || 'Información de la tienda';
         } else {
-          var groupTitle = getGroupTitle(groupId);
-          modalTitle.textContent = groupTitle + ' (' + groupLocations.length + ')';
+          modalTitle.textContent = cityName + ' (' + locations.length + ')';
         }
       }
 
@@ -1307,7 +1254,7 @@
         html += '<h3 class="t4s-store-modal__location-title">' + escapeHtml(location.title) + '</h3>';
       }
       if (location.address) {
-        html += '<p class="t4s-store-modal__location-info"><strong>Dirección:</strong> ' + escapeHtml(location.address) + '</p>';
+        html += '<p class="t4s-store-modal__location-info">' + escapeHtml(location.address) + '</p>';
       }
       if (location.schedule) {
         html += '<p class="t4s-store-modal__location-info"><strong>Horario:</strong> ' + escapeHtml(location.schedule) + '</p>';
@@ -1398,8 +1345,8 @@
         } else {
           pin.addEventListener('click', function(e) {
             e.preventDefault();
-            var groupId = this.getAttribute('data-group-id');
-            openModal(groupId);
+            var cityName = this.getAttribute('data-city-name');
+            openModal(cityName);
           });
         }
       });
@@ -1415,8 +1362,8 @@
             dropdown.classList.toggle('is-open');
             // Cargar contenido si es necesario
             var content = dropdown.querySelector('.t4s-mobile-dropdown__content');
-            if (content && intersectionObserver) {
-              intersectionObserver.observe(content);
+            if (content && content.getAttribute('data-loaded') !== 'true') {
+              loadDropdownContent(content);
             }
           }
           return;
@@ -1538,8 +1485,8 @@
   ],
   "blocks": [
     {
-      "type": "location",
-      "name": "Ubicación",
+      "type": "city_group",
+      "name": "Grupo de Ciudad",
       "settings": [
         { "type": "header", "content": "+ Posición y estilo del pin" },
         { "type": "range", "id": "pos_t", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "Posición top", "default": 50 },
@@ -1557,73 +1504,32 @@
         { "type": "color", "id": "cl_text", "label": "Color del ícono/texto", "default": "#fff" },
         { "type": "checkbox", "id": "hide_on_mobile", "label": "Ocultar este pin en móvil", "default": false },
 
-        { "type": "header", "content": "+ Agrupación" },
-        { "type": "text", "id": "group_id", "label": "ID del grupo (ubicaciones con el mismo ID se agruparán)", "info": "Deja vacío para ubicación individual. Usa el mismo ID para agrupar múltiples ubicaciones en un solo pin.", "placeholder": "ej: centro, norte, sur" },
-        
-        { "type": "header", "content": "+ Información de la tienda" },
-        { "type": "text", "id": "title", "label": "Nombre de la tienda", "default": "Oxford - Tienda Centro" },
-        { "type": "text", "id": "group_title", "label": "Título del grupo (ej: Ubicaciones de Caracas)", "info": "Si se deja vacío, usará el nombre de la primera ubicación del grupo" },
-        { "type": "textarea", "id": "address", "label": "Dirección", "default": "Calle Falsa 123, Ciudad" },
-        { "type": "text", "id": "schedule", "label": "Horario", "default": "Lun - Sáb: 9am - 6pm" },
-        { "type": "text", "id": "phone", "label": "Teléfono", "default": "+58 000-0000000" },
-        { "type": "url", "id": "maps_url", "label": "Enlace Google Maps" },
-
-        { "type": "header", "content": "+ WhatsApp" },
-        { "type": "text", "id": "whatsapp_phone", "label": "Número de WhatsApp (con código de país)", "default": "+58 000-0000000" },
-        { "type": "text", "id": "whatsapp_button_text", "label": "Texto del botón", "default": "WhatsApp" },
-        { "type": "text", "id": "whatsapp_message", "label": "Mensaje predefinido", "default": "Hola, quiero información sobre la tienda" },
-
-        { "type": "header", "content": "+ Personalización de la tarjeta" },
-        { "type": "color", "id": "card_bg_color", "label": "Color de fondo de la tarjeta", "default": "#ffffff" },
-        { "type": "color", "id": "card_text_color", "label": "Color de texto principal", "default": "#111111" },
-        { "type": "color", "id": "card_border_color", "label": "Color del borde", "default": "#e0e0e0" },
-        { "type": "color", "id": "card_title_color", "label": "Color del título" },
-        { "type": "color", "id": "card_content_color", "label": "Color del contenido" },
-        { "type": "color", "id": "card_phone_color", "label": "Color del teléfono" },
-
-        { "type": "header", "content": "+ Botones de la tarjeta" },
-        { "type": "color", "id": "btn_map_bg", "label": "Fondo botón Maps", "default": "#f6f6f6" },
-        { "type": "color", "id": "btn_map_text", "label": "Texto botón Maps", "default": "#111111" },
-        { "type": "color", "id": "btn_map_border", "label": "Borde botón Maps", "default": "#e0e0e0" },
-        { "type": "color", "id": "btn_map_hover_bg", "label": "Fondo botón Maps (hover)", "default": "#e6e6e6" },
-        { "type": "color", "id": "btn_map_hover_text", "label": "Texto botón Maps (hover)", "default": "#111111" },
-        { "type": "color", "id": "btn_wa_bg", "label": "Fondo botón WhatsApp", "default": "#25D366" },
-        { "type": "color", "id": "btn_wa_text", "label": "Texto botón WhatsApp", "default": "#ffffff" },
-        { "type": "color", "id": "btn_wa_border", "label": "Borde botón WhatsApp", "default": "#25D366" },
-        { "type": "color", "id": "btn_wa_hover_bg", "label": "Fondo botón WhatsApp (hover)", "default": "#20b558" },
-        { "type": "color", "id": "btn_wa_hover_text", "label": "Texto botón WhatsApp (hover)", "default": "#ffffff" }
+        { "type": "header", "content": "+ Información de la ciudad" },
+        { "type": "text", "id": "city_name", "label": "Nombre de la ciudad", "default": "Ubicaciones de Caracas", "placeholder": "ej: Ubicaciones de Caracas" },
+        { "type": "textarea", "id": "locations_text", "label": "Lista de ubicaciones (separadas por comas)", "default": "Centro, Sur, Este", "placeholder": "Centro, Sur, Este", "info": "Escribe las ubicaciones separadas por comas. Ejemplo: Centro, Sur, Este" }
       ]
     }
   ],
   "max_blocks": 100,
   "presets": [
     {
-      "name": "Ubicaciones de tiendas",
+      "name": "Ubicaciones de tiendas agrupadas",
       "category": "VIII. Lookbook",
       "blocks": [
         { 
-          "type": "location",
+          "type": "city_group",
           "settings": {
-            "title": "Oxford - Tienda Centro",
-            "group_id": "centro",
+            "city_name": "Ubicaciones de Caracas",
+            "locations_text": "Centro, Sur, Este",
             "pos_t": 40,
             "pos_l": 30
           }
         },
         { 
-          "type": "location",
+          "type": "city_group",
           "settings": {
-            "title": "Oxford - Sucursal Centro",
-            "group_id": "centro",
-            "pos_t": 40,
-            "pos_l": 30
-          }
-        },
-        { 
-          "type": "location",
-          "settings": {
-            "title": "Oxford - Tienda Norte",
-            "group_id": "norte",
+            "city_name": "Ubicaciones de Valencia",
+            "locations_text": "Norte, Centro Comercial",
             "pos_t": 60,
             "pos_l": 70
           }

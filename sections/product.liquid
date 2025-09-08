@@ -177,6 +177,85 @@
                 
                 {% when 'html' %}
                   {{ block.settings.html_content }}
+                
+                {% when 'add_to_cart' %}
+                  <div class="add-to-cart-block" 
+                       data-product-id="{{ product.id }}" 
+                       data-max-threshold="{{ block.settings.max_threshold }}" 
+                       data-product-price="{{ product.selected_or_first_available_variant.price }}"
+                       style="--quantity-btn-color: {{ block.settings.quantity_btn_color | default: '#6b7280' }}; --quantity-btn-bg: {{ block.settings.quantity_btn_bg | default: 'transparent' }}; --quantity-label-color: {{ block.settings.quantity_label_color | default: '#374151' }}; --quantity-input-color: {{ block.settings.quantity_input_color | default: '#111827' }}; --quantity-input-bg: {{ block.settings.quantity_input_bg | default: 'transparent' }}; --price-total-label-color: {{ block.settings.price_total_label_color | default: '#374151' }}; --price-total-value-color: {{ block.settings.price_total_value_color | default: '#111827' }}; --threshold-warning-bg: {{ block.settings.threshold_warning_bg_color | default: '#fef3c7' }}; --threshold-warning-text: {{ block.settings.threshold_warning_text_color | default: '#92400e' }}; --threshold-warning-border: {{ block.settings.threshold_warning_border_color | default: '#f59e0b' }};">
+                    {% if product.available %}
+                      <form class="product-form" data-product-form>
+                        <div class="quantity-selector">
+                          <label for="quantity-{{ block.id }}" class="quantity-label">
+                            {{ block.settings.quantity_label | default: 'Cantidad' }}:
+                          </label>
+                          <div class="quantity-input-wrapper">
+                            <button type="button" class="quantity-btn quantity-minus" data-quantity-change="-1">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                              </svg>
+                            </button>
+                            <input type="number" 
+                                   id="quantity-{{ block.id }}" 
+                                   name="quantity" 
+                                   value="1" 
+                                   min="1" 
+                                   max="{{ block.settings.max_threshold | default: 999 }}" 
+                                   class="quantity-input" 
+                                   data-quantity-input>
+                            <button type="button" class="quantity-btn quantity-plus" data-quantity-change="1">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div class="price-total-display">
+                          <span class="price-total-label">Total:</span>
+                          <span class="price-total-value" data-price-total>$0.00</span>
+                        </div>
+                        
+                        <div class="cart-actions">
+                          <button type="submit" 
+                                  class="add-to-cart-btn" 
+                                  data-add-to-cart
+                                  style="background-color: {{ block.settings.button_bg_color | default: '#007bff' }}; color: {{ block.settings.button_text_color | default: '#ffffff' }};">
+                            <span class="btn-text">{{ block.settings.add_to_cart_text | default: 'Agregar al carrito' }}</span>
+                            <span class="btn-loading" style="display: none;">
+                              <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="31.416" stroke-dashoffset="31.416" opacity="0.3"/>
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="31.416" stroke-dashoffset="15.708"/>
+                              </svg>
+                              {{ block.settings.loading_text | default: 'Agregando...' }}
+                            </span>
+                          </button>
+                          
+                          <button type="button" 
+                                  class="wholesale-contact-btn" 
+                                  data-wholesale-contact
+                                  style="background-color: {{ block.settings.wholesale_bg_color | default: '#28a745' }}; color: {{ block.settings.wholesale_text_color | default: '#ffffff' }}; display: none;"
+                                  onclick="window.open('{{ block.settings.wholesale_contact_url | default: 'https://api.whatsapp.com/send?phone=' | append: block.settings.wholesale_phone | append: '&text=' | append: block.settings.wholesale_message | url_encode }}', '_blank')">
+                            {{ block.settings.wholesale_button_text | default: 'Contactar ventas al mayor' }}
+                          </button>
+                        </div>
+                        
+                        <div class="threshold-warning" data-threshold-warning style="display: none;">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 9V13M12 17H12.01M21 12C21 16.97 16.97 21 12 21S3 16.97 3 12 7.03 3 12 3 21 7.03 21 12Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                          <span>{{ block.settings.threshold_warning_text | default: 'Para cantidades mayores a [THRESHOLD], contacta a nuestro equipo de ventas al mayor.' }}</span>
+                        </div>
+                        
+                        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                      </form>
+                    {% else %}
+                      <div class="product-unavailable">
+                        <span class="unavailable-text">{{ block.settings.unavailable_text | default: 'Producto no disponible' }}</span>
+                      </div>
+                    {% endif %}
+                  </div>
                   
               {% endcase %}
             </div>
@@ -222,6 +301,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Inicializar
   updateMainImage(0);
+  
+  // Enhanced cart integration for reliable mini cart opening
+  document.addEventListener('cart:item-added', function(event) {
+    console.log('✓ Product added to cart:', event.detail);
+    
+    // Force mini cart to open with multiple methods
+    function forceOpenMiniCart() {
+      // Method 1: Direct DOM manipulation (most reliable)
+      const miniCartPanel = document.querySelector('.mini-cart__panel');
+      const miniCartOverlay = document.querySelector('.mini-cart__overlay');
+      if (miniCartPanel && miniCartOverlay) {
+        miniCartPanel.classList.add('active');
+        miniCartOverlay.classList.add('active');
+        document.body.classList.add('mini-cart-open');
+        console.log('✓ Mini cart opened via DOM manipulation');
+        return true;
+      }
+      
+      // Method 2: Global instance
+      if (window.PremiumMiniCart && typeof window.PremiumMiniCart.open === 'function') {
+        try {
+          window.PremiumMiniCart.open();
+          console.log('✓ Mini cart opened via global instance');
+          return true;
+        } catch (error) {
+          console.warn('Failed to open via global instance:', error);
+        }
+      }
+      
+      // Method 3: Trigger click
+      const miniCartTrigger = document.querySelector('[data-mini-cart-trigger], .mini-cart__trigger, .cart-icon');
+      if (miniCartTrigger) {
+        miniCartTrigger.click();
+        console.log('✓ Mini cart opened via trigger click');
+        return true;
+      }
+      
+      return false;
+    }
+    
+    // Try immediately
+    if (!forceOpenMiniCart()) {
+      // Retry after 100ms if first attempt fails
+      setTimeout(() => {
+        forceOpenMiniCart();
+      }, 100);
+    }
+  });
+  
+  // Ensure add-to-cart blocks are properly initialized
+  const addToCartBlocks = document.querySelectorAll('.add-to-cart-block');
+  if (addToCartBlocks.length === 0) {
+    console.warn('No add-to-cart blocks found on this page');
+  }
 });
 </script>
 
@@ -1110,6 +1243,183 @@ document.addEventListener('DOMContentLoaded', function() {
           "type": "html",
           "id": "html_content",
           "label": "Código HTML personalizado"
+        }
+      ]
+    },
+    {
+      "type": "add_to_cart",
+      "name": "🛒 Agregar al carrito",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Configuración general"
+        },
+        {
+          "type": "number",
+          "id": "max_threshold",
+          "label": "Umbral máximo de compra",
+          "default": 10,
+          "info": "Cantidad máxima que se puede agregar al carrito antes de mostrar el botón de ventas al mayor"
+        },
+        {
+          "type": "text",
+          "id": "quantity_label",
+          "label": "Etiqueta de cantidad",
+          "default": "Cantidad"
+        },
+        {
+          "type": "header",
+          "content": "Botón agregar al carrito"
+        },
+        {
+          "type": "text",
+          "id": "add_to_cart_text",
+          "label": "Texto del botón",
+          "default": "Agregar al carrito"
+        },
+        {
+          "type": "text",
+          "id": "loading_text",
+          "label": "Texto de carga",
+          "default": "Agregando..."
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Color de fondo del botón",
+          "default": "#007bff"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Color del texto del botón",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Botones de cantidad"
+        },
+        {
+          "type": "color",
+          "id": "quantity_btn_color",
+          "label": "Color de los botones de cantidad",
+          "default": "#6b7280"
+        },
+        {
+          "type": "color",
+          "id": "quantity_btn_bg",
+          "label": "Color de fondo de los botones",
+          "default": "transparent"
+        },
+        {
+          "type": "color",
+          "id": "quantity_label_color",
+          "label": "Color del texto del label",
+          "default": "#374151"
+        },
+        {
+          "type": "color",
+          "id": "quantity_input_color",
+          "label": "Color del texto del input",
+          "default": "#111827"
+        },
+        {
+          "type": "color",
+          "id": "quantity_input_bg",
+          "label": "Color de fondo del input",
+          "default": "transparent"
+        },
+        {
+          "type": "header",
+          "content": "Precio total"
+        },
+        {
+          "type": "color",
+          "id": "price_total_label_color",
+          "label": "Color del texto 'Total:'",
+          "default": "#374151"
+        },
+        {
+          "type": "color",
+          "id": "price_total_value_color",
+          "label": "Color del precio total",
+          "default": "#111827"
+        },
+        {
+          "type": "header",
+          "content": "Botón ventas al mayor"
+        },
+        {
+          "type": "text",
+          "id": "wholesale_button_text",
+          "label": "Texto del botón de ventas al mayor",
+          "default": "Contactar ventas al mayor"
+        },
+        {
+          "type": "color",
+          "id": "wholesale_bg_color",
+          "label": "Color de fondo del botón de ventas",
+          "default": "#28a745"
+        },
+        {
+          "type": "color",
+          "id": "wholesale_text_color",
+          "label": "Color del texto del botón de ventas",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "wholesale_phone",
+          "label": "Teléfono de ventas al mayor",
+          "placeholder": "573001234567",
+          "info": "Número de WhatsApp con código de país (sin +)"
+        },
+        {
+          "type": "textarea",
+          "id": "wholesale_message",
+          "label": "Mensaje predeterminado de WhatsApp",
+          "default": "Hola, estoy interesado en comprar este producto en cantidad mayor al umbral establecido."
+        },
+        {
+          "type": "url",
+          "id": "wholesale_contact_url",
+          "label": "URL personalizada de contacto",
+          "info": "Si se deja vacío, se usará WhatsApp con el teléfono configurado"
+        },
+        {
+          "type": "header",
+          "content": "Mensajes y advertencias"
+        },
+        {
+          "type": "color",
+          "id": "threshold_warning_bg_color",
+          "label": "Color de fondo de la advertencia",
+          "default": "#fef3c7"
+        },
+        {
+          "type": "color",
+          "id": "threshold_warning_text_color",
+          "label": "Color del texto de la advertencia",
+          "default": "#92400e"
+        },
+        {
+          "type": "color",
+          "id": "threshold_warning_border_color",
+          "label": "Color del borde de la advertencia",
+          "default": "#f59e0b"
+        },
+        {
+          "type": "textarea",
+          "id": "threshold_warning_text",
+          "label": "Texto de advertencia de umbral",
+          "default": "Para cantidades mayores a [THRESHOLD], contacta a nuestro equipo de ventas al mayor.",
+          "info": "Usa [THRESHOLD] para mostrar el número del umbral"
+        },
+        {
+          "type": "text",
+          "id": "unavailable_text",
+          "label": "Texto cuando el producto no está disponible",
+          "default": "Producto no disponible"
         }
       ]
     }

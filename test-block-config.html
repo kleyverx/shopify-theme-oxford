@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Block Configuration</title>
+    <link rel="stylesheet" href="assets/add-to-cart-block.css">
+</head>
+<body>
+    <div class="add-to-cart-block" 
+         data-product-id="123" 
+         data-max-threshold="10" 
+         data-product-price="20900"
+         style="--quantity-btn-color: #ff6b6b; --quantity-btn-bg: #ffe0e0; --quantity-label-color: #2d3748; --quantity-input-color: #1a202c; --quantity-input-bg: #f7fafc; --price-total-label-color: #4a5568; --price-total-value-color: #e53e3e; --threshold-warning-bg: #fed7d7; --threshold-warning-text: #c53030; --threshold-warning-border: #e53e3e;">
+        <form class="product-form" data-product-form>
+            <div class="quantity-selector">
+                <label for="quantity-test" class="quantity-label">
+                    Cantidad:
+                </label>
+                <div class="quantity-input-wrapper">
+                    <button type="button" class="quantity-btn quantity-minus" data-quantity-change="-1">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <input type="number" 
+                           id="quantity-test" 
+                           name="quantity" 
+                           value="1" 
+                           min="1" 
+                           max="10" 
+                           class="quantity-input" 
+                           data-quantity-input>
+                    <button type="button" class="quantity-btn quantity-plus" data-quantity-change="1">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="price-total-display">
+                <span class="price-total-label">Total:</span>
+                <span class="price-total-value" data-price-total>$25.00</span>
+            </div>
+            
+            <div class="cart-actions">
+                <button type="submit" 
+                        class="add-to-cart-btn" 
+                        data-add-to-cart
+                        style="background-color: #007bff; color: #ffffff;">
+                    <span class="btn-text">Agregar al carrito</span>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script src="assets/add-to-cart-block.js"></script>
+    <script>
+        // Verificar aplicación de variables CSS
+        const block = document.querySelector('.add-to-cart-block');
+        const label = document.querySelector('.quantity-label');
+        const input = document.querySelector('.quantity-input');
+        const btnPlus = document.querySelector('.quantity-plus');
+        const btnMinus = document.querySelector('.quantity-minus');
+        const priceLabel = document.querySelector('.price-total-label');
+        const priceValue = document.querySelector('.price-total-value');
+        const warning = document.querySelector('.threshold-warning');
+        
+        console.log('🔍 Diagnóstico del bloque add_to_cart:');
+        console.log('Bloque encontrado:', !!block);
+        
+        if (block) {
+            const computedStyle = getComputedStyle(block);
+            console.log('Variables CSS del bloque:');
+            console.log('--quantity-btn-color:', computedStyle.getPropertyValue('--quantity-btn-color'));
+            console.log('--quantity-btn-bg:', computedStyle.getPropertyValue('--quantity-btn-bg'));
+            console.log('--quantity-label-color:', computedStyle.getPropertyValue('--quantity-label-color'));
+            console.log('--quantity-input-color:', computedStyle.getPropertyValue('--quantity-input-color'));
+            console.log('--quantity-input-bg:', computedStyle.getPropertyValue('--quantity-input-bg'));
+            console.log('--price-total-label-color:', computedStyle.getPropertyValue('--price-total-label-color'));
+            console.log('--price-total-value-color:', computedStyle.getPropertyValue('--price-total-value-color'));
+            console.log('--threshold-warning-bg:', computedStyle.getPropertyValue('--threshold-warning-bg'));
+            console.log('--threshold-warning-text:', computedStyle.getPropertyValue('--threshold-warning-text'));
+            console.log('--threshold-warning-border:', computedStyle.getPropertyValue('--threshold-warning-border'));
+        }
+        
+        if (label) {
+            const labelStyle = getComputedStyle(label);
+            console.log('Color del label aplicado:', labelStyle.color);
+        }
+        
+        if (input) {
+            const inputStyle = getComputedStyle(input);
+            console.log('Color del input aplicado:', inputStyle.color);
+            console.log('Fondo del input aplicado:', inputStyle.backgroundColor);
+        }
+        
+        if (btnPlus) {
+            const btnStyle = getComputedStyle(btnPlus);
+            console.log('Color del botón + aplicado:', btnStyle.color);
+            console.log('Fondo del botón + aplicado:', btnStyle.backgroundColor);
+        }
+        
+        if (priceLabel) {
+            const priceLabelStyle = getComputedStyle(priceLabel);
+            console.log('Color del label precio aplicado:', priceLabelStyle.color);
+        }
+        
+        if (priceValue) {
+            const priceValueStyle = getComputedStyle(priceValue);
+            console.log('Color del valor precio aplicado:', priceValueStyle.color);
+        }
+        
+        if (warning) {
+            const warningStyle = getComputedStyle(warning);
+            console.log('Fondo de advertencia aplicado:', warningStyle.backgroundColor);
+            console.log('Color texto advertencia aplicado:', warningStyle.color);
+            console.log('Borde advertencia aplicado:', warningStyle.border);
+        }
+        });
+    </script>
+</body>
+</html>

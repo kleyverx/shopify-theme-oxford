@@ -87,12 +87,7 @@
       {% endif %}
       
       {% if section.settings.show_cart %}
-        <a href="{{ routes.cart_url }}" class="header__action-btn header__cart-link">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M2.5 3.33334H3.00526C3.85578 3.33334 4.56986 3.97376 4.6621 4.81926L5.3379 11.0141C5.43014 11.8596 6.14422 12.5 6.99474 12.5H14.205C14.9669 12.5 15.6317 11.9834 15.82 11.2452L16.9699 6.73593C17.2387 5.68213 16.4425 4.58334 15.355 4.58334H5.83333M8.33333 16.6667C8.33333 17.1269 7.96024 17.5 7.5 17.5C7.03976 17.5 6.66667 17.1269 6.66667 16.6667C6.66667 16.2064 7.03976 15.8333 7.5 15.8333C7.96024 15.8333 8.33333 16.2064 8.33333 16.6667ZM15 16.6667C15 17.1269 14.6269 17.5 14.1667 17.5C13.7064 17.5 13.3333 17.1269 13.3333 16.6667C13.3333 16.2064 13.7064 15.8333 14.1667 15.8333C14.6269 15.8333 15 16.2064 15 16.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="header__cart-count" id="cart-count">{{ cart.item_count }}</span>
-        </a>
+        {% render 'mini-cart' %}
       {% endif %}
     </div>
   </div>
@@ -192,7 +187,7 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 999;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
