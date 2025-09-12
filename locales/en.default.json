@@ -14,12 +14,7 @@
     "comment_form_title": "Add a comment",
     "read_more": "Read more"
   },
-  "cart": {
-    "checkout": "Checkout",
-    "title": "Cart",
-    "update": "Update",
-    "remove": "Remove"
-  },
+
   "customers": {
     "login": {
       "email": "Email",

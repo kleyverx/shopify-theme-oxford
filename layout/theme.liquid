@@ -26,13 +26,34 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     
-    {% # Add to Cart Block CSS %}
+    {% # Mini Cart CSS %}
+    {{ 'mini-cart-config.css' | asset_url | stylesheet_tag }}
+    {{ 'mini-cart.css' | asset_url | stylesheet_tag }}
     {{ 'add-to-cart-block.css' | asset_url | stylesheet_tag }}
+    
+    {% # Cart Page CSS %}
+    {% if template.name == 'cart' %}
+      {{ 'cart-page.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    
+
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
+
+    {% comment %} Initialize Shopify currency for JavaScript components {% endcomment %}
+    <script>
+      window.Shopify = window.Shopify || {};
+      window.Shopify.currency = window.Shopify.currency || {};
+      window.Shopify.currency.active = '{{ shop.currency }}';
+      window.Shopify.shop = window.Shopify.shop || {};
+      window.Shopify.shop.currency = '{{ shop.currency }}';
+      window.Shopify.money_format = '{{ shop.money_format }}';
+      window.theme = window.theme || {};
+      window.theme.moneyFormat = '{{ shop.money_format }}';
+    </script>
 
     {% if settings.favicon_image != blank %}
       <link rel="icon" type="image/png" href="{{ settings.favicon_image | image_url: width: 64, height: 64 }}">
@@ -52,11 +73,14 @@
 
     {% sections 'footer-group' %}
     
-    <!-- Mini Cart Dropdown (rendered at body level to avoid stacking context issues) -->
-    <div id="mini-cart-dropdown-portal"></div>
+    {% # Mini Cart JavaScript %}
+    {{ 'mini-cart.js' | asset_url | script_tag }}
     
-    {% # Add to Cart Block JavaScript %}
-    {{ 'add-to-cart-block.js' | asset_url | script_tag }}
+    {% # Cart Page JavaScript %}
+    {% if template.name == 'cart' %}
+      {{ 'cart-page.js' | asset_url | script_tag }}
+    {% endif %}
+
   </body>
 </html>
 

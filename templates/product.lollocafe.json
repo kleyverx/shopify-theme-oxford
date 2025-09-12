@@ -1,0 +1,99 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "product",
+      "blocks": {
+        "add_to_cart_cUaUmy": {
+          "type": "add_to_cart",
+          "settings": {
+            "quantity_label": "Cantidad",
+            "add_to_cart_text": "Agregar al carrito",
+            "loading_text": "Agregando...",
+            "button_bg_color": "#00003a",
+            "button_text_color": "#ffffff",
+            "quantity_btn_color": "#00003a",
+            "quantity_btn_bg": "#666666",
+            "quantity_label_color": "#374151",
+            "quantity_input_color": "#666666",
+            "quantity_input_bg": "rgba(0,0,0,0)",
+            "price_total_label_color": "#374151",
+            "price_total_value_color": "#111827",
+            "unavailable_text": "Producto no disponible"
+          }
+        }
+      },
+      "block_order": [
+        "add_to_cart_cUaUmy"
+      ],
+      "settings": {
+        "show_breadcrumb": true,
+        "max_width": 1200,
+        "columns_gap": 60,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "background_color": "#ffffff",
+        "primary_color": "#000000",
+        "secondary_color": "#666666",
+        "accent_color": "#00003a",
+        "border_color": "#e5e5e5",
+        "image_ratio": "1/1",
+        "image_fit": "contain",
+        "image_shadow": true,
+        "enable_zoom": false,
+        "thumbnail_size": 90,
+        "thumbnails_per_row": 3,
+        "custom_title": "",
+        "title_size": 2,
+        "title_weight": "700",
+        "custom_subtitle": "",
+        "custom_description": "",
+        "show_vendor": true,
+        "show_price": true,
+        "show_description": true,
+        "border_radius": 8
+      }
+    },
+    "product_carousel_R3PygV": {
+      "type": "product-carousel",
+      "name": "Carrusel de productos",
+      "settings": {
+        "carousel_title": "Productos de Lollocafé",
+        "background_color": "#ffffff",
+        "collection": "lollo-caffe",
+        "products_limit": 8,
+        "text_color": "#8b4513",
+        "text_size": 19,
+        "carousel_title_size": 28
+      }
+    },
+    "apps_8pLgt3": {
+      "type": "apps",
+      "blocks": {
+        "powerful_form_builder_app_block_BLYjmc": {
+          "type": "shopify://apps/powerful-form-builder/blocks/app-block/e4bcb1eb-35b2-42e6-bc37-bfe0e1542c9d",
+          "settings": {
+            "shortcode": "<div class=\"globo-formbuilder\" data-id=\"MTA2NzAy\"></div>"
+          }
+        }
+      },
+      "block_order": [
+        "powerful_form_builder_app_block_BLYjmc"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "product_carousel_R3PygV",
+    "apps_8pLgt3"
+  ]
+}

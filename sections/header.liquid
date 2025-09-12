@@ -76,7 +76,7 @@
       {% endfor %}
     </nav>
 
-    <!-- Cart & Search Icons -->
+    <!-- Search Icons -->
     <div class="header__actions">
       {% if section.settings.show_search %}
         <button class="header__action-btn" aria-label="{{ 'header.search' | t }}">
@@ -86,9 +86,9 @@
         </button>
       {% endif %}
       
-      {% if section.settings.show_cart %}
-        {% render 'mini-cart' %}
-      {% endif %}
+      <!-- Mini Cart -->
+      {% render 'mini-cart' %}
+
     </div>
   </div>
 
@@ -482,22 +482,8 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
-.header__cart-count {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  min-width: 18px;
-  height: 18px;
-  background: var(--nav-link-active);
-  color: white;
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-semibold);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
+
+
 
 /* Mobile Menu Button */
 .header__burger {
@@ -1305,12 +1291,6 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "checkbox",
       "id": "show_search",
       "label": "Show search icon",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_cart",
-      "label": "Show cart icon",
       "default": true
     },
     {

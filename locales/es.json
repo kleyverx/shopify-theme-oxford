@@ -14,49 +14,6 @@
     "comment_form_title": "Agregar un comentario",
     "read_more": "Leer más"
   },
-  "cart": {
-    "checkout": "Finalizar compra",
-    "title": "Carrito",
-    "update": "Actualizar",
-    "remove": "Eliminar",
-    "general": {
-      "title": "Carrito de compras",
-      "items": "artículos",
-      "empty": "Tu carrito está vacío",
-      "empty_text": "Tu carrito está vacío",
-      "empty_subtitle": "Parece que aún no has agregado nada a tu carrito. Comienza a explorar nuestros productos.",
-      "start_shopping": "Comenzar a comprar",
-      "subtotal": "Subtotal",
-      "total": "Total",
-      "quantity": "Cantidad",
-      "price": "Precio",
-      "product": "Producto",
-      "continue_shopping": "Continuar comprando",
-      "view_cart": "Ver carrito",
-      "added_to_cart": "Agregado al carrito",
-      "item_added": "Artículo agregado",
-      "item_removed": "Artículo eliminado",
-      "cart_updated": "Carrito actualizado",
-      "loading": "Cargando...",
-      "error": "Error al actualizar el carrito",
-      "confirm_remove": "¿Estás seguro de que quieres eliminar este artículo?",
-      "max_quantity_reached": "Cantidad máxima alcanzada",
-      "invalid_quantity": "Cantidad inválida",
-      "out_of_stock": "Agotado",
-      "low_stock": "Pocas unidades disponibles",
-      "decrease_quantity": "Disminuir cantidad",
-      "increase_quantity": "Aumentar cantidad",
-      "free_shipping_info": "Envío gratis en pedidos superiores a $50",
-      "view_cart": "Ver carrito completo",
-      "checkout": "Finalizar compra",
-      "summary": "Resumen",
-      "shipping": "Envío",
-      "calculated_at_checkout": "Calculado al finalizar la compra",
-      "taxes_and_shipping": "Impuestos y envío calculados al finalizar la compra",
-      "taxes_included": "Impuestos incluidos",
-      "shipping_calculated_at_checkout": "El envío se calcula al finalizar la compra"
-    }
-  },
   "customers": {
     "login": {
       "email": "Correo electrónico",
@@ -92,7 +49,7 @@
     "close_menu": "Cerrar menú",
     "navigation": "Navegación principal",
     "search": "Buscar",
-    "cart": "Carrito",
+
     "account": "Cuenta",
     "menu": "Menú"
   },

@@ -234,8 +234,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;
-    height: 500px;
+    width: 400px;
+    height: 400px;
     z-index: 10;
   }
   
@@ -243,6 +243,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
   }
   
   .reviews-{{ section.id }} .central-image-placeholder {
@@ -254,11 +255,30 @@
     background: transparent;
   }
   
-  /* Reseñas en círculo */
+  /* Línea circular para las reseñas */
   .reviews-{{ section.id }} .reviews-circle {
     position: relative;
     width: 100%;
     height: 100%;
+  }
+  
+  .reviews-{{ section.id }} .reviews-circle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    border: 2px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    z-index: 1;
+    animation: rotate-circle 30s linear infinite;
+  }
+  
+  @keyframes rotate-circle {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
   }
   
   .reviews-{{ section.id }} .review-item {
@@ -289,6 +309,7 @@
       translateY(calc(-1 * var(--radius))) 
       rotate(calc(-1 * var(--angle)))
       scale(0.8);
+    z-index: 5;
   }
   
   .reviews-{{ section.id }} .review-item.active {
@@ -298,6 +319,7 @@
       translateY(calc(-1 * var(--radius))) 
       rotate(calc(-1 * var(--angle)))
       scale(1);
+    z-index: 10;
   }
   
   /* Estilos de las reseñas */
@@ -386,20 +408,19 @@
     }
     
     .reviews-{{ section.id }} .mobile-central-image img {
-      width: 400px;
-      height: 400px;
+      width: 300px;
+      height: 300px;
       object-fit: cover;
-      border-radius: 20px;
+      object-position: center;
     }
     
     .reviews-{{ section.id }} .mobile-central-image-placeholder {
-      width: 400px;
-      height: 400px;
+      width: 300px;
+      height: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: transparent;
-      border-radius: 20px;
     }
     
     .reviews-{{ section.id }} .reviews-carousel {
@@ -533,13 +554,13 @@
     }
     
     .reviews-{{ section.id }} .mobile-central-image img {
-      width: 320px;
-      height: 320px;
+      width: 250px;
+      height: 250px;
     }
     
     .reviews-{{ section.id }} .mobile-central-image-placeholder {
-      width: 320px;
-      height: 320px;
+      width: 250px;
+      height: 250px;
     }
     
     .reviews-{{ section.id }} .carousel-btn {

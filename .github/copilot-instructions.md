@@ -27,9 +27,7 @@ alwaysApply: true
         { name: "uniq", usage: "array | uniq" },
         { name: "where", usage: "array | where: string, string" },
         
-        // cart
-        { name: "item_count_for_variant", usage: "cart | item_count_for_variant: {variant_id}" },
-        { name: "line_items_for", usage: "cart | line_items_for: object" },
+        
         
         // collection
         { name: "link_to_type", usage: "string | link_to_type" },
@@ -239,7 +237,7 @@ alwaysApply: true
         "all_products",
         "articles",
         "blogs",
-        "cart",
+        
         "closest",
         "content_for_header",
         "customer",
@@ -330,7 +328,7 @@ alwaysApply: true
       - Defines the structure for repeated content such as headers and footers, wrapping other template files
       - It's the frame that holds the page together, but it's not the content
       - Contains the HTML document structure (head, body tags)
-      - Includes global elements like navigation, cart drawer, and footer
+      - Includes global elements like navigation and footer
       - Typically includes global CSS/JS assets and meta tags or render a snippet that do that
     }
     theme_snippets = {
@@ -474,7 +472,7 @@ alwaysApply: true
     
           When filtering a collection page, we can update the a list of applied filters client-side as a Buyer chooses them, i.e. "Color: Red" or "Size: Medium". However, we do not know how many products will be returned that match the filters, so we can't update the product grid or a count of products.
     
-          When a Buyer attempts to add an item to their cart, we can update the cart item count client-side. Assuming our product form's "add to cart" button is already checking the item's availability, we can have a reasonably high degree of certainty that the item will be added to the cart (API request is successful). However, we do not know what the new cart total will be, nor do we know what the line items will look like, so we can't update those in a cart drawer without waiting for the server response.
+          
         </criteria>
       </optimistic_ui>
     </server_side_rendering>
@@ -610,7 +608,7 @@ alwaysApply: true
         const button = this.querySelector('ref="button"');
         if (!button) return;
         button.enable();
-        button.textContent = 'Add to cart';
+        button.textContent = 'Buy now';
     
         // Single chain is fine
         const button = this.querySelector('ref="button"');
