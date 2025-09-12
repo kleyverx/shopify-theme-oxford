@@ -205,5 +205,23 @@
     "fade": "Desvanecer",
     "slide": "Deslizar",
     "bounce": "Rebote"
+  },
+  "cart": {
+    "title": "Carrito",
+    "item": "artículo",
+    "items": "artículos",
+    "empty_title": "Tu carrito está vacío",
+    "empty_message": "Antes de proceder al pago, debes agregar algunos productos a tu carrito de compras. Encontrarás muchos productos interesantes en nuestra página \"Tienda\".",
+    "continue_shopping": "Continuar comprando",
+    "quantity": "Cantidad",
+    "subtotal": "Subtotal",
+    "taxes_note": "Los impuestos y gastos de envío se calculan en el checkout",
+    "update": "Actualizar carrito",
+    "checkout": "Finalizar compra",
+    "remove": "Eliminar",
+    "note": "Instrucciones especiales para el vendedor",
+    "shipping": "Envío",
+    "tax": "Impuesto",
+    "total": "Total"
   }
 }
