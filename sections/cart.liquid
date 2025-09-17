@@ -7,7 +7,7 @@
 <div class="cart-page">
   <div class="cart-header">
     <h1 class="cart-title">{{ 'cart.title' | t }}</h1>
-    <p class="cart-count">{{ cart.item_count }} {% if cart.item_count == 1 %}{{ 'cart.item' | t }}{% else %}{{ 'cart.items' | t }}{% endif %}</p>
+    <p class="cart-count">{{ cart.item_count }} artículos</p>
   </div>
 
   {% if cart.items.size > 0 %}
@@ -15,85 +15,120 @@
       <div class="cart-items">
         {% for item in cart.items %}
           <div class="cart-item" data-key="{{ item.key }}" data-id="{{ item.id }}">
-            <div class="cart-item__image">
-              {% if item.image %}
-                <img src="{{ item.image | image_url: width: 150 }}" alt="{{ item.image.alt | escape }}" loading="lazy">
-              {% else %}
-                <div class="cart-item__no-image">{{ 'cart.no_image' | t }}</div>
-              {% endif %}
-            </div>
-            
-            <div class="cart-item__details">
-              <h3 class="cart-item__title">
-                <a href="{{ item.url }}">{{ item.product.title }}</a>
-              </h3>
-              
-              {% if item.variant.title != 'Default Title' %}
-                <p class="cart-item__variant">{{ item.variant.title }}</p>
-              {% endif %}
-              
-              {% if item.properties.size > 0 %}
-                <div class="cart-item__properties">
-                  {% for property in item.properties %}
-                    {% unless property.last == blank %}
-                      <p class="cart-item__property">
-                        <span class="property-name">{{ property.first }}:</span>
-                        <span class="property-value">{{ property.last }}</span>
-                      </p>
-                    {% endunless %}
-                  {% endfor %}
-                </div>
-              {% endif %}
-              
-              {% if item.selling_plan_allocation %}
-                <p class="cart-item__subscription">{{ item.selling_plan_allocation.selling_plan.name }}</p>
-              {% endif %}
-            </div>
-            
-            <div class="cart-item__quantity">
-              <label for="quantity-{{ item.key }}" class="visually-hidden">{{ 'cart.quantity' | t }}</label>
-              <div class="quantity-selector">
-                <button type="button" class="quantity-btn quantity-minus" data-key="{{ item.key }}" aria-label="{{ 'cart.decrease_quantity' | t }}">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </button>
-                <input type="number" 
-                       name="updates[]" 
-                       id="quantity-{{ item.key }}"
-                       class="quantity-input" 
-                       value="{{ item.quantity }}" 
-                       min="0" 
-                       data-key="{{ item.key }}"
-                       aria-label="{{ 'cart.quantity' | t }}">
-                <button type="button" class="quantity-btn quantity-plus" data-key="{{ item.key }}" aria-label="{{ 'cart.increase_quantity' | t }}">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <div class="cart-item__pricing">
-              {% if item.original_price != item.final_price %}
-                <span class="cart-item__original-price">{{ item.original_price | money }}</span>
-                <span class="cart-item__final-price">{{ item.final_price | money }}</span>
-                {% if item.variant.compare_at_price %}
-                  <span class="cart-item__save">{{ 'cart.save' | t }} {{ item.variant.compare_at_price | minus: item.final_price | money }}</span>
+            <!-- Mobile responsive header with image and details -->
+            <div class="cart-item__header">
+              <div class="cart-item__image">
+                {% if item.image %}
+                  <img src="{{ item.image | image_url: width: 150 }}" alt="{{ item.image.alt | escape }}" loading="lazy">
+                {% else %}
+                  <div class="cart-item__no-image">{{ 'cart.no_image' | t }}</div>
                 {% endif %}
-              {% else %}
-                <span class="cart-item__price">{{ item.final_price | money }}</span>
-              {% endif %}
+              </div>
               
-              <div class="cart-item__line-price">
-                <span class="cart-item__line-total">{{ item.final_line_price | money }}</span>
-                {% if item.line_level_discount_allocations.size > 0 %}
-                  <div class="cart-item__discounts">
-                    {% for discount in item.line_level_discount_allocations %}
-                      <span class="cart-item__discount">{{ discount.discount_application.title }} (-{{ discount.amount | money }})</span>
+              <div class="cart-item__details">
+                {% if item.variant.title != 'Default Title' %}
+                  <p class="cart-item__variant">{{ item.variant.title }}</p>
+                {% endif %}
+                
+                {% if item.properties.size > 0 %}
+                  <div class="cart-item__properties">
+                    {% for property in item.properties %}
+                      {% unless property.last == blank %}
+                        <p class="cart-item__property">
+                          <span class="property-name">{{ property.first }}:</span>
+                          <span class="property-value">{{ property.last }}</span>
+                        </p>
+                      {% endunless %}
                     {% endfor %}
                   </div>
                 {% endif %}
+                
+                {% if item.selling_plan_allocation %}
+                  <p class="cart-item__subscription">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                {% endif %}
+              </div>
+            </div>
+            
+            <h3 class="cart-item__title">
+              <a href="{{ item.url }}">{{ item.product.title }}</a>
+            </h3>
+            
+            <!-- Mobile responsive footer with quantity and pricing -->
+            <div class="cart-item__footer">
+              <div class="cart-item__quantity">
+                <label for="quantity-{{ item.key }}" class="visually-hidden">{{ 'cart.quantity' | t }}</label>
+                <div class="quantity-selector">
+                  {% comment %}
+                    Según la documentación de Shopify Liquid, item.variant.inventory_quantity no está disponible en el contexto del carrito.
+                    En su lugar, debemos usar item.inventory_quantity que sí está disponible según la Cart API.
+                    Referencia: https://shopify.dev/docs/api/liquid/objects/line_item
+                  {% endcomment %}
+                  {% assign max_stock = item.inventory_quantity | default: 999 %}
+                  {% assign can_increment = false %}
+                  {% comment %}
+                    Solo permitir incremento si:
+                    1. El inventario se rastrea (inventory_quantity no es null)
+                    2. La cantidad actual es menor al stock disponible
+                    3. O si no se rastrea inventario (inventory_quantity es null)
+                  {% endcomment %}
+                  {% if item.inventory_quantity == null or item.quantity < max_stock %}
+                    {% assign can_increment = true %}
+                  {% endif %}
+                  
+                  <button type="button" class="quantity-btn quantity-minus" data-key="{{ item.key }}" aria-label="{{ 'cart.decrease_quantity' | t }}">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                  <input type="number" 
+                         name="updates[]" 
+                         id="quantity-{{ item.key }}"
+                         class="quantity-input" 
+                         value="{{ item.quantity }}" 
+                         min="0" 
+                         {% comment %}Solo establecer max si el inventario se rastrea{% endcomment %}
+                         {% unless item.inventory_quantity == null %}max="{{ max_stock }}"{% endunless %}
+                         data-key="{{ item.key }}"
+                         data-variant-id="{{ item.variant.id }}"
+                         {% comment %}Pasar información de inventario correcta al JavaScript{% endcomment %}
+                         data-max-stock="{{ max_stock }}"
+                         {% if item.inventory_quantity != null %}data-inventory-tracked="true"{% else %}data-inventory-tracked="false"{% endif %}
+                         data-inventory-policy="{{ item.inventory_policy }}"
+                         aria-label="{{ 'cart.quantity' | t }}">
+                  <button type="button" 
+                          class="quantity-btn quantity-plus{% unless can_increment %} quantity-btn--disabled{% endunless %}" 
+                          data-key="{{ item.key }}" 
+                          {% unless can_increment %}disabled{% endunless %}
+                          {% unless can_increment %}title="Stock máximo alcanzado ({{ max_stock }} unidades)"{% endunless %}
+                          aria-label="{{ 'cart.increase_quantity' | t }}">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="cart-item__pricing">
+                {% if item.original_price != item.final_price %}
+                  <span class="cart-item__original-price">{{ item.original_price | money }}</span>
+                  <span class="cart-item__final-price">{{ item.final_price | money }}</span>
+                  {% if item.variant.compare_at_price %}
+                    <span class="cart-item__save">{{ 'cart.save' | t }} {{ item.variant.compare_at_price | minus: item.final_price | money }}</span>
+                  {% endif %}
+                {% else %}
+                  <span class="cart-item__price">{{ item.final_price | money }}</span>
+                {% endif %}
+                
+                <div class="cart-item__line-price">
+                  <span class="cart-item__line-total">{{ item.final_line_price | money }}</span>
+                  {% if item.line_level_discount_allocations.size > 0 %}
+                    <div class="cart-item__discounts">
+                      {% for discount in item.line_level_discount_allocations %}
+                        <span class="cart-item__discount">{{ discount.discount_application.title }} (-{{ discount.amount | money }})</span>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
               </div>
             </div>
             

@@ -222,6 +222,7 @@
     "note": "Instrucciones especiales para el vendedor",
     "shipping": "Envío",
     "tax": "Impuesto",
-    "total": "Total"
+    "total": "Total",
+    "total_savings": "Ahorro total"
   }
 }

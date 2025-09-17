@@ -67,12 +67,12 @@
       margin-left: -50vw;
       margin-right: -50vw;
     }
-    .stats-strip__container { padding: 20px 0; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+    .stats-strip__container { padding: 20px 0; width: 100%; margin: 0; padding-left: 0; padding-right: 0; }
     .stats-strip__heading { margin: 0 0 16px; font-size: 1.375rem; font-weight: 700; color: var(--text); }
 
-    .stats-strip__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; align-items: stretch; border-radius: 8px; overflow: hidden; }
+    .stats-strip__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; align-items: stretch; width: 100%; }
 
-    .stats-strip__item { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 20px 24px; position: relative; background: var(--bg); outline: none; transition: transform .3s ease, box-shadow .3s ease; }
+    .stats-strip__item { display: grid; grid-template-columns: 72px 1fr; gap: 16px; padding: 24px 40px; position: relative; background: var(--bg); outline: none; transition: transform .3s ease, box-shadow .3s ease; min-width: 0; width: 100%; box-sizing: border-box; }
     .stats-strip[data-hoverfx="true"] .stats-strip__item:hover,
     .stats-strip[data-hoverfx="true"] .stats-strip__item:focus-visible { transform: translateY(-2px); box-shadow: 0 var(--elev) 20px rgba(0,0,0,.08); }
     .stats-strip__item:focus-visible { box-shadow: 0 0 0 3px rgba(8,58,141,.25); border-radius: 8px; }
@@ -87,31 +87,64 @@
     .stats-strip__icon-svg svg { width: 100%; height: 100%; max-width: 56px; max-height: 56px; }
     .stats-strip__icon-fallback { width: 56px; height: 56px; }
 
-    .stats-strip__content { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-    .stats-strip__eyebrow { font-size: .75rem; line-height: 1.1; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
-    .stats-strip__kicker { font-size: .75rem; color: var(--muted); margin-top: 2px; }
-    .stats-strip__big { color: var(--accent); font-weight: 800; font-size: 2rem; line-height: 1.1; margin-top: 2px; }
-    .stats-strip__sub { font-size: .85rem; color: var(--text); opacity: .9; margin-top: 2px; }
+    .stats-strip__content { display: flex; flex-direction: column; justify-content: center; min-width: 0; width: 100%; overflow: visible; }
+    .stats-strip__eyebrow { font-size: .75rem; line-height: 1.3; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .02em; word-wrap: break-word; overflow-wrap: break-word; hyphens: auto; white-space: normal; }
+    .stats-strip__kicker { font-size: .75rem; color: var(--muted); margin-top: 2px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+    .stats-strip__big { color: var(--accent); font-weight: 800; font-size: 2rem; line-height: 1.2; margin-top: 2px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+    .stats-strip__sub { font-size: .85rem; color: var(--text); opacity: .9; margin-top: 2px; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3; white-space: normal; }
 
     /* Reveal on scroll */
     .stats-strip[data-animate="true"] .will-reveal { opacity: 0; transform: translateY(10px); }
     .stats-strip[data-animate="true"] .will-reveal.is-visible { opacity: 1; transform: translateY(0); transition: opacity .5s ease, transform .5s ease; }
 
     /* Responsive */
+    @media (max-width: 1200px) {
+      .stats-strip__item { padding: 20px 35px; }
+      .stats-strip__big { font-size: 1.9rem; }
+    }
+
     @media (max-width: 1100px) { 
       .stats-strip__grid { grid-template-columns: repeat(2, 1fr); }
-      .stats-strip__item:nth-child(odd) { box-shadow: none; }
-      .stats-strip__item:nth-child(2n+1) { box-shadow: inset 0 -1px 0 0 var(--divider); }
-      .stats-strip__item:nth-child(2n) { box-shadow: inset 1px 0 0 0 var(--divider), inset 0 -1px 0 0 var(--divider); }
+      .stats-strip__item { padding: 18px 30px; }
+      .stats-strip__item:nth-child(odd) { box-shadow: inset 0 -1px 0 0 var(--divider); }
+      .stats-strip__item:nth-child(even) { box-shadow: inset 1px 0 0 0 var(--divider), inset 0 -1px 0 0 var(--divider); }
+      .stats-strip__big { font-size: 1.8rem; }
+    }
+
+    @media (max-width: 768px) {
+      .stats-strip__container { padding: 16px 0; }
+      .stats-strip__item { grid-template-columns: 60px 1fr; padding: 16px 20px; gap: 12px; }
+      .stats-strip__icon-img, .stats-strip__icon-svg, .stats-strip__icon-fallback { width: 48px; height: 48px; }
+      .stats-strip__big { font-size: 1.7rem; }
+      .stats-strip__heading { font-size: 1.25rem; margin: 0 0 12px 20px; }
     }
 
     @media (max-width: 640px) {
-      .stats-strip__container { padding-left: 15px; padding-right: 15px; }
       .stats-strip__grid { grid-template-columns: 1fr; }
-      .stats-strip__item { grid-template-columns: 56px 1fr; padding: 16px 18px; }
+      .stats-strip__item { grid-template-columns: 56px 1fr; padding: 16px 20px; gap: 12px; }
       .stats-strip__item { box-shadow: inset 0 -1px 0 0 var(--divider); }
       .stats-strip__big { font-size: 1.6rem; }
-      .stats-strip__heading { font-size: 1.125rem; }
+      .stats-strip__heading { font-size: 1.125rem; margin: 0 0 12px 20px; }
+      .stats-strip__eyebrow { font-size: 0.7rem; }
+      .stats-strip__kicker { font-size: 0.7rem; }
+      .stats-strip__sub { font-size: 0.8rem; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-strip__container { padding: 12px 0; }
+      .stats-strip__item { padding: 14px 16px; gap: 10px; }
+      .stats-strip__icon-img, .stats-strip__icon-svg, .stats-strip__icon-fallback { width: 44px; height: 44px; }
+      .stats-strip__big { font-size: 1.5rem; line-height: 1.1; }
+      .stats-strip__heading { font-size: 1rem; margin: 0 0 10px 16px; }
+      .stats-strip__eyebrow { font-size: 0.65rem; line-height: 1.2; }
+      .stats-strip__sub { font-size: 0.75rem; line-height: 1.2; }
+    }
+
+    @media (max-width: 360px) {
+      .stats-strip__item { padding: 12px 14px; gap: 8px; }
+      .stats-strip__icon-img, .stats-strip__icon-svg, .stats-strip__icon-fallback { width: 40px; height: 40px; }
+      .stats-strip__big { font-size: 1.4rem; }
+      .stats-strip__heading { margin: 0 0 8px 14px; }
     }
 
     /* Respetar reduced motion */
@@ -160,38 +193,80 @@
         return Math.round(num);
       }
 
-      function animateCount(el, target, duration = 1200) {
-        if (!doMotion) return; // no animar
-        const start = 0; const startTime = performance.now();
+      function animateCount(el, target, duration = 2000) {
+        if (!doMotion) {
+          // Si no hay motion, mostrar el valor final
+          el.textContent = el.getAttribute('data-count-target');
+          return;
+        }
+        
+        const original = el.getAttribute('data-count-target');
+        const start = 0; 
+        const startTime = performance.now();
+        
         function step(now) {
-          const p = Math.min(1, (now - startTime) / duration);
-          const val = Math.floor(start + (target - start) * p);
-          // Mantén el formato original (prefijo/sufijo simples)
-          const original = el.getAttribute('data-count-target');
-          const before = original.split(/([0-9][0-9\.,]*)/)[0] || '';
-          const after = original.slice(before.length).replace(/[0-9][0-9\.,]*/, '');
-          el.textContent = before + val.toLocaleString() + after;
-          if (p < 1) requestAnimationFrame(step);
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // Easing function para suavizar la animación
+          const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+          const currentValue = Math.floor(start + (target - start) * easeOutQuart);
+          
+          // Mantener formato original con prefijos y sufijos
+          const numMatch = original.match(/([+-]?\d*[\.,]?\d+)/);
+          if (numMatch) {
+            const beforeNum = original.substring(0, numMatch.index);
+            const afterNum = original.substring(numMatch.index + numMatch[0].length);
+            
+            // Formatear el número manteniendo el estilo original
+            let formattedNum = currentValue.toString();
+            if (original.includes('k') || original.includes('K')) {
+              formattedNum = (currentValue / 1000).toFixed(0) + 'k';
+            } else if (original.includes('M') || original.includes('m')) {
+              formattedNum = (currentValue / 1000000).toFixed(1) + 'M';
+            }
+            
+            el.textContent = beforeNum + formattedNum + afterNum;
+          } else {
+            el.textContent = currentValue.toString();
+          }
+          
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          }
         }
         requestAnimationFrame(step);
       }
 
       if (root.getAttribute('data-countup') === 'true') {
         const counters = root.querySelectorAll('.js-count');
+        console.log('Counters found:', counters.length); // Debug
+        
         const trigger = (el) => {
-          const tgt = parseTarget(el.getAttribute('data-count-target'));
-          if (!isNaN(tgt)) animateCount(el, tgt);
+          const targetText = el.getAttribute('data-count-target');
+          const tgt = parseTarget(targetText);
+          console.log('Animating:', targetText, '→', tgt); // Debug
+          if (!isNaN(tgt) && tgt > 0) {
+            animateCount(el, tgt);
+          } else {
+            // Si no se puede parsear, mostrar el texto original
+            el.textContent = targetText;
+          }
         };
+        
         if (doMotion && 'IntersectionObserver' in window) {
           const io2 = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
               if (entry.isIntersecting) {
-                trigger(entry.target); obs.unobserve(entry.target);
+                console.log('Element in view, triggering animation'); // Debug
+                trigger(entry.target); 
+                obs.unobserve(entry.target);
               }
             });
-          }, { threshold: 0.5 });
+          }, { threshold: 0.3 });
           counters.forEach(el => io2.observe(el));
         } else {
+          console.log('No motion or no IntersectionObserver, triggering immediately'); // Debug
           counters.forEach(trigger);
         }
       }

@@ -58,19 +58,29 @@ class MiniCart {
       }
     });
 
-    // Cerrar al hacer clic fuera del mini cart
-    document.addEventListener('click', (e) => {
-      if (this.isOpen && !this.wrapper.contains(e.target)) {
-        this.close();
-      }
-    });
-
     // Delegación de eventos para elementos dinámicos
     if (this.content) {
       this.content.addEventListener('click', (e) => this.handleContentClick(e));
       this.content.addEventListener('change', (e) => this.handleContentChange(e));
       this.content.addEventListener('input', (e) => this.handleContentInput(e));
     }
+
+    // Escuchar eventos de actualización del carrito desde otras partes
+    document.addEventListener('cart:updated', (event) => {
+      if (event.detail) {
+        const { cartData, source, timestamp } = event.detail;
+        
+        // Evitar bucles infinitos - no procesar eventos propios
+        if (source === 'mini-cart') return;
+        
+        // Actualizar datos del carrito con información completa
+        this.cartData = cartData || event.detail;
+        this.updateCartDisplay();
+        
+        // Actualizar estados de botones con nueva información de stock
+        this.updateQuantityButtonStates();
+      }
+    });
   }
 
   handleContentClick(e) {
@@ -81,6 +91,12 @@ class MiniCart {
 
     if (target) {
       e.preventDefault();
+      
+      // No hacer nada si el botón está deshabilitado
+      if (target.disabled || target.classList.contains('mini-cart__qty-btn--disabled')) {
+        return;
+      }
+      
       const change = parseInt(target.dataset.miniCartQtyChange);
       const itemKey = target.dataset.itemKey;
       this.changeQuantity(itemKey, change);
@@ -103,13 +119,9 @@ class MiniCart {
     }
   }
 
-  handleContentChange(e) {
-    const qtyInput = e.target.closest('[data-mini-cart-qty-input]');
-    if (qtyInput) {
-      const itemKey = qtyInput.dataset.itemKey;
-      const newQuantity = parseInt(qtyInput.value) || 1;
-      this.updateQuantity(itemKey, newQuantity);
-    }
+  async handleContentChange(e) {
+    // Input de cantidad deshabilitado - no procesar cambios
+    return;
   }
 
   handleContentInput(e) {
@@ -118,7 +130,7 @@ class MiniCart {
       // Validar entrada en tiempo real
       let value = parseInt(qtyInput.value);
       const min = parseInt(qtyInput.min) || 1;
-      const max = parseInt(qtyInput.max) || 999;
+      const max = parseInt(qtyInput.dataset.maxStock) || 999;
       
       if (value < min) qtyInput.value = min;
       if (value > max) qtyInput.value = max;
@@ -127,109 +139,93 @@ class MiniCart {
 
   async loadCart() {
     try {
-      const response = await fetch('/cart.js');
-      if (!response.ok) throw new Error('Error al cargar el carrito');
+      this.setLoading(true);
+      this.clearErrors();
       
-      this.cartData = await response.json();
-      console.log('Carrito cargado:', this.cartData);
+      const response = await fetch('/cart.js', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
       
-      // Actualizar la visualización del carrito
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${errorText || 'Error al cargar el carrito'}`);
+      }
+      
+      const cartData = await response.json();
+      
+      // Validar estructura del cart según documentación oficial de Shopify
+      if (!cartData || typeof cartData !== 'object') {
+        throw new Error('Respuesta de carrito inválida');
+      }
+      
+      this.cartData = cartData;
       this.updateCartDisplay();
       
       return this.cartData;
     } catch (error) {
-      console.error('Error al cargar carrito:', error);
+      console.error('❌ Error al cargar carrito:', error);
       this.showError('Error al cargar el carrito');
       return null;
-    }
-  }
-
-  async addToCart(variantId, quantity = 1, properties = {}) {
-    if (this.isLoading) return;
-    
-    this.setLoading(true);
-    this.clearErrors();
-
-    try {
-      const formData = {
-        items: [{
-          id: variantId,
-          quantity: quantity,
-          properties: properties
-        }]
-      };
-
-      const response = await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || result.description || 'Error al agregar al carrito');
-      }
-
-      // Recargar carrito y abrir
-      await this.loadCart();
-      this.open();
-      
-      // Disparar evento personalizado
-      document.dispatchEvent(new CustomEvent('cart:item-added', {
-        detail: { items: result, cartData: this.cartData }
-      }));
-
-      return result;
-
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      this.showError(error.message);
-      throw error;
     } finally {
       this.setLoading(false);
     }
   }
 
-  async updateQuantity(itemKey, newQuantity) {
-    if (this.isLoading) return;
+  async changeQuantity(itemKey, change) {
+    if (!itemKey || this.isLoading) return;
     
-    this.setLoading(true);
-    this.clearErrors();
+    const currentItem = this.cartData?.items?.find(item => item.key === itemKey);
+    if (!currentItem) return;
+    
+    const newQuantity = Math.max(0, currentItem.quantity + change);
+    
+    if (newQuantity === 0) {
+      return this.removeItem(itemKey);
+    }
+    
+    return this.updateQuantity(itemKey, newQuantity);
+  }
 
+  async updateQuantity(itemKey, quantity) {
+    if (!itemKey || this.isLoading) return;
+    
     try {
-      const updates = {};
-      updates[itemKey] = newQuantity;
-
-      const response = await fetch('/cart/update.js', {
+      this.setLoading(true);
+      this.clearErrors();
+      
+      const formData = new FormData();
+      formData.append('id', itemKey);
+      formData.append('quantity', quantity.toString());
+      
+      const response = await fetch('/cart/change.js', {
         method: 'POST',
+        body: formData,
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ updates })
+          'X-Requested-With': 'XMLHttpRequest'
+        }
       });
-
+      
       const result = await response.json();
-
+      
       if (!response.ok) {
         throw new Error(result.message || result.description || 'Error al actualizar cantidad');
       }
-
+      
+      // Actualizar datos del carrito
       this.cartData = result;
       this.updateCartDisplay();
       
-      // Disparar evento personalizado
-      document.dispatchEvent(new CustomEvent('cart:item-updated', {
-        detail: { cartData: this.cartData }
-      }));
-
+      // Emitir evento de actualización
+      this.emitCartUpdate('quantity-updated');
+      
     } catch (error) {
-      console.error('Error updating quantity:', error);
-      this.showError(error.message);
+      console.error('Error al actualizar cantidad:', error);
+      this.showError(error.message || 'Error al actualizar la cantidad');
+      
       // Recargar carrito en caso de error
       await this.loadCart();
     } finally {
@@ -237,51 +233,44 @@ class MiniCart {
     }
   }
 
-  async changeQuantity(itemKey, change) {
-    const currentItem = this.cartData?.items?.find(item => item.key === itemKey);
-    if (!currentItem) return;
-    
-    const newQuantity = Math.max(1, currentItem.quantity + change);
-    await this.updateQuantity(itemKey, newQuantity);
-  }
-
   async removeItem(itemKey) {
-    await this.updateQuantity(itemKey, 0);
+    if (!itemKey || this.isLoading) return;
     
-    // Disparar evento personalizado
-    document.dispatchEvent(new CustomEvent('cart:item-removed', {
-      detail: { itemKey, cartData: this.cartData }
-    }));
-  }
-
-  async clearCart() {
-    if (this.isLoading) return;
-    
-    this.setLoading(true);
-    this.clearErrors();
-
     try {
-      const response = await fetch('/cart/clear.js', {
+      this.setLoading(true);
+      this.clearErrors();
+      
+      const formData = new FormData();
+      formData.append('id', itemKey);
+      formData.append('quantity', '0');
+      
+      const response = await fetch('/cart/change.js', {
         method: 'POST',
+        body: formData,
         headers: {
-          'Accept': 'application/json'
+          'X-Requested-With': 'XMLHttpRequest'
         }
       });
-
-      if (!response.ok) {
-        throw new Error('Error al vaciar el carrito');
-      }
-
-      await this.loadCart();
       
-      // Disparar evento personalizado
-      document.dispatchEvent(new CustomEvent('cart:cleared', {
-        detail: { cartData: this.cartData }
-      }));
-
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || result.description || 'Error al eliminar producto');
+      }
+      
+      // Actualizar datos del carrito
+      this.cartData = result;
+      this.updateCartDisplay();
+      
+      // Emitir evento de actualización
+      this.emitCartUpdate('item-removed');
+      
     } catch (error) {
-      console.error('Error clearing cart:', error);
-      this.showError(error.message);
+      console.error('Error al eliminar producto:', error);
+      this.showError(error.message || 'Error al eliminar el producto');
+      
+      // Recargar carrito en caso de error
+      await this.loadCart();
     } finally {
       this.setLoading(false);
     }
@@ -289,159 +278,276 @@ class MiniCart {
 
   updateCartDisplay() {
     if (!this.cartData) return;
-
-    // Actualizar contador
-    if (this.count) {
-      this.count.textContent = this.cartData.item_count || 0;
-      this.count.style.display = this.cartData.item_count > 0 ? 'flex' : 'none';
-    }
-
-    // Mostrar/ocultar estados vacío vs con items
-    const emptyState = document.querySelector('[data-mini-cart-empty]');
-    const itemsContainer = document.querySelector('[data-mini-cart-items]');
     
-    if (this.cartData.item_count === 0) {
-      if (emptyState) emptyState.style.display = 'block';
-      if (itemsContainer) itemsContainer.style.display = 'none';
-    } else {
-      if (emptyState) emptyState.style.display = 'none';
-      if (itemsContainer) itemsContainer.style.display = 'block';
-      
-      // Renderizar items del carrito
-      this.renderCartItems();
-    }
+    // Actualizar contador
+    this.updateCartCount();
+    
+    // Actualizar contenido del carrito
+    this.renderCartItems();
+    
+    // Actualizar totales
+    this.updateCartTotals();
+    
+    // Actualizar estados de botones
+    this.updateQuantityButtonStates();
+  }
 
-    // Actualizar subtotal
-    const subtotalElement = document.querySelector('[data-mini-cart-subtotal]');
-    if (subtotalElement && this.cartData.total_price !== undefined) {
-      subtotalElement.textContent = this.formatMoney(this.cartData.total_price);
+  updateCartCount() {
+    if (this.count) {
+      const itemCount = this.cartData?.item_count || 0;
+      this.count.textContent = itemCount;
+      this.count.style.display = itemCount > 0 ? 'flex' : 'none';
     }
-
-    // Actualizar progreso de envío gratis
-    this.updateFreeShippingProgress();
   }
 
   renderCartItems() {
-    const itemsContainer = document.querySelector('[data-mini-cart-items]');
-    if (!itemsContainer || !this.cartData.items) return;
+    if (!this.content) return;
+    
+    const items = this.cartData?.items || [];
+    
+    if (items.length === 0) {
+      this.content.innerHTML = `
+        <div class="mini-cart__empty">
+          <div class="mini-cart__empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </div>
+          <h3>Tu carrito está vacío</h3>
+          <p>Agrega algunos productos para comenzar</p>
+          <a href="/collections/all" class="mini-cart__empty-btn">Continuar comprando</a>
+        </div>
+      `;
+      return;
+    }
+    
+    const itemsHTML = items.map(item => this.renderCartItem(item)).join('');
+    
+    this.content.innerHTML = `
+      <div class="mini-cart__items">
+        ${itemsHTML}
+      </div>
+      <div class="mini-cart__footer">
+        <div class="mini-cart__subtotal">
+          <span>Subtotal: </span>
+          <span class="mini-cart__subtotal-amount">${this.formatMoney(this.cartData.total_price)}</span>
+        </div>
+        <div class="mini-cart__actions">
+          <a href="/cart" class="mini-cart__view-cart-btn">Ver carrito</a>
+          <button type="button" class="mini-cart__checkout-btn" data-mini-cart-checkout>Finalizar compra</button>
+        </div>
+      </div>
+    `;
+  }
 
-    itemsContainer.innerHTML = '';
-
-    this.cartData.items.forEach(item => {
-      const itemElement = document.createElement('div');
-      itemElement.className = 'mini-cart__item';
-      itemElement.setAttribute('data-item-key', item.key);
-      
-      const imageHtml = item.image 
-        ? `<img src="${item.image}" alt="${this.escapeHtml(item.product_title)}" style="width: 60px; height: 60px; object-fit: cover;">`
-        : `<div class="mini-cart__item-placeholder">${item.product_title.slice(0, 2).toUpperCase()}</div>`;
-      
-      const variantHtml = item.variant_title && item.variant_title !== 'Default Title' 
-        ? `<div class="mini-cart__item-variant">${this.escapeHtml(item.variant_title)}</div>`
-        : '';
-      
-      let propertiesHtml = '';
-      if (item.properties && Object.keys(item.properties).length > 0) {
-        propertiesHtml = '<div class="mini-cart__item-properties">';
-        for (const [key, value] of Object.entries(item.properties)) {
-          if (value && value.trim()) {
-            propertiesHtml += `
-              <div class="mini-cart__property">
-                <span class="mini-cart__property-name">${this.escapeHtml(key)}:</span>
-                <span class="mini-cart__property-value">${this.escapeHtml(value)}</span>
-              </div>
-            `;
-          }
-        }
-        propertiesHtml += '</div>';
-      }
-      
-      itemElement.innerHTML = `
+  renderCartItem(item) {
+    const imageUrl = item.image ? item.image.replace('.jpg', '_150x150.jpg').replace('.png', '_150x150.png') : '';
+    const maxStock = item.inventory_quantity || 999;
+    const canIncrement = item.quantity < maxStock;
+    
+    // Generar HTML para descuentos del producto si existen
+    let discountsHtml = '';
+    if (item.line_level_discount_allocations && item.line_level_discount_allocations.length > 0) {
+      discountsHtml = `
+        <div class="mini-cart__item-discounts">
+          ${item.line_level_discount_allocations.map(discount => `
+            <div class="mini-cart__item-discount">
+              <span class="discount-title">${discount.discount_application.title}</span>
+              <span class="discount-amount">-${this.formatMoney(discount.amount)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="mini-cart__item" data-key="${item.key}">
         <div class="mini-cart__item-image">
-          ${imageHtml}
+          ${imageUrl ? `<img src="${imageUrl}" alt="${item.product_title}" loading="lazy">` : '<div class="mini-cart__item-placeholder">IMG</div>'}
         </div>
         <div class="mini-cart__item-details">
-          <h4 class="mini-cart__item-title">${this.escapeHtml(item.product_title)}</h4>
-          ${variantHtml}
-          ${propertiesHtml}
-          <div class="mini-cart__item-price">${this.formatMoney(item.final_price)}</div>
-          <div class="mini-cart__item-quantity">
-            <button class="mini-cart__qty-btn" data-mini-cart-qty-change="-1" data-item-key="${item.key}">-</button>
-            <input type="number" class="mini-cart__qty-input" value="${item.quantity}" min="1" data-mini-cart-qty-input data-item-key="${item.key}">
-            <button class="mini-cart__qty-btn" data-mini-cart-qty-change="1" data-item-key="${item.key}">+</button>
+          <h4 class="mini-cart__item-title">${item.product_title}</h4>
+          ${item.variant_title && item.variant_title !== 'Default Title' ? `<p class="mini-cart__item-variant">${item.variant_title}</p>` : ''}
+          
+          <div class="mini-cart__item-pricing">
+            <div class="mini-cart__item-price">
+              <span class="mini-cart__price-label">Precio unitario:</span>
+              ${item.original_price !== item.final_price ? 
+                `<span class="mini-cart__original-price">${this.formatMoney(item.original_price)}</span>
+                 <span class="mini-cart__final-price">${this.formatMoney(item.final_price)}</span>` :
+                `<span class="mini-cart__price">${this.formatMoney(item.final_price)}</span>`
+              }
+            </div>
+            
+            ${discountsHtml}
+            
+            <div class="mini-cart__item-quantity">
+              <span class="mini-cart__qty-label">Cantidad:</span>
+              <div class="mini-cart__qty-controls">
+                <button type="button" 
+                        class="mini-cart__qty-btn mini-cart__qty-minus" 
+                        data-mini-cart-qty-change="-1" 
+                        data-item-key="${item.key}"
+                        aria-label="Disminuir cantidad">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <input type="number" 
+                       class="mini-cart__qty-input" 
+                       value="${item.quantity}" 
+                       min="1" 
+                       max="${maxStock}"
+                       data-mini-cart-qty-input
+                       data-item-key="${item.key}"
+                       data-max-stock="${maxStock}"
+                       data-inventory-policy="${item.inventory_policy || 'deny'}"
+                       aria-label="Cantidad"
+                       readonly
+                       tabindex="-1">
+                <button type="button" 
+                        class="mini-cart__qty-btn mini-cart__qty-plus${!canIncrement ? ' mini-cart__qty-btn--disabled' : ''}" 
+                        data-mini-cart-qty-change="1" 
+                        data-item-key="${item.key}"
+                        ${!canIncrement ? 'disabled' : ''}
+                        aria-label="Aumentar cantidad">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="mini-cart__item-total">
+              <span class="mini-cart__total-label">Total:</span>
+              <span class="mini-cart__total-price">${this.formatMoney(item.final_line_price)}</span>
+            </div>
           </div>
         </div>
-        <button class="mini-cart__remove-btn" data-mini-cart-remove data-item-key="${item.key}">×</button>
-      `;
-      
-      itemsContainer.appendChild(itemElement);
+        
+        <button type="button" 
+                class="mini-cart__remove-btn" 
+                data-mini-cart-remove 
+                data-item-key="${item.key}"
+                aria-label="Eliminar ${item.product_title}">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  }
+
+  updateCartTotals() {
+    const subtotalElements = document.querySelectorAll('.mini-cart__subtotal-amount');
+    subtotalElements.forEach(element => {
+      element.textContent = this.formatMoney(this.cartData?.total_price || 0);
     });
+    
+    // Actualizar descuentos del carrito
+    this.updateCartDiscounts();
   }
-
-  escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  updateFreeShippingProgress() {
-    const freeShippingElement = document.querySelector('.mini-cart__free-shipping');
-    if (!freeShippingElement || !this.cartData) return;
-
-    const threshold = parseFloat(freeShippingElement.dataset.threshold) || 0;
-    if (threshold <= 0) return;
-
-    const currentTotal = this.cartData.total_price || 0;
-    const remaining = Math.max(0, threshold - currentTotal);
-    const progress = Math.min(100, (currentTotal / threshold) * 100);
-
-    const progressFill = freeShippingElement.querySelector('.mini-cart__progress-fill');
-    const progressText = freeShippingElement.querySelector('.mini-cart__free-shipping-text');
-
-    if (progressFill) {
-      progressFill.style.width = `${progress}%`;
-    }
-
-    if (progressText) {
-      if (remaining > 0) {
-        progressText.textContent = `Agrega ${this.formatMoney(remaining)} más para envío gratis`;
-        progressText.classList.remove('mini-cart__free-shipping-achieved');
+  
+  updateCartDiscounts() {
+    const cartFooter = document.querySelector('.mini-cart__footer');
+    if (!cartFooter) return;
+    
+    // Buscar o crear contenedor de descuentos
+    let discountsContainer = cartFooter.querySelector('.mini-cart__discounts');
+    if (!discountsContainer) {
+      discountsContainer = document.createElement('div');
+      discountsContainer.className = 'mini-cart__discounts';
+      
+      // Insertar antes del subtotal
+      const subtotalElement = cartFooter.querySelector('.mini-cart__subtotal');
+      if (subtotalElement) {
+        cartFooter.insertBefore(discountsContainer, subtotalElement);
       } else {
-        progressText.textContent = '¡Felicidades! Tienes envío gratis';
-        progressText.classList.add('mini-cart__free-shipping-achieved');
+        cartFooter.appendChild(discountsContainer);
+      }
+    }
+    
+    // Limpiar descuentos existentes
+    discountsContainer.innerHTML = '';
+    
+    // Mostrar descuentos del carrito si existen
+    if (this.cartData?.cart_level_discount_applications && this.cartData.cart_level_discount_applications.length > 0) {
+      this.cartData.cart_level_discount_applications.forEach(discount => {
+        const discountElement = document.createElement('div');
+        discountElement.className = 'mini-cart__discount';
+        discountElement.innerHTML = `
+          <span class="discount-title">${discount.title}</span>
+          <span class="discount-amount">-${this.formatMoney(discount.total_allocated_amount)}</span>
+        `;
+        discountsContainer.appendChild(discountElement);
+      });
+      discountsContainer.style.display = 'block';
+    } else {
+      discountsContainer.style.display = 'none';
+    }
+    
+    // Actualizar ahorros totales
+    this.updateCartSavings();
+  }
+  
+  updateCartSavings() {
+    const cartFooter = document.querySelector('.mini-cart__footer');
+    if (!cartFooter) return;
+    
+    // Buscar o crear contenedor de ahorros
+    let savingsContainer = cartFooter.querySelector('.mini-cart__savings');
+    if (!savingsContainer && this.cartData?.total_discount > 0) {
+      savingsContainer = document.createElement('div');
+      savingsContainer.className = 'mini-cart__savings';
+      
+      // Insertar antes del subtotal
+      const subtotalElement = cartFooter.querySelector('.mini-cart__subtotal');
+      if (subtotalElement) {
+        cartFooter.insertBefore(savingsContainer, subtotalElement);
+      } else {
+        cartFooter.appendChild(savingsContainer);
+      }
+    }
+    
+    if (savingsContainer) {
+      if (this.cartData?.total_discount > 0) {
+        savingsContainer.innerHTML = `
+          <span class="mini-cart__savings-label">Ahorros totales:</span>
+          <span class="mini-cart__savings-amount">-${this.formatMoney(this.cartData.total_discount)}</span>
+        `;
+        savingsContainer.style.display = 'flex';
+      } else {
+        savingsContainer.style.display = 'none';
       }
     }
   }
 
-  handleCartUpdate(detail) {
-    if (detail?.cartData) {
-      this.cartData = detail.cartData;
-      this.updateCartDisplay();
-    }
-  }
-
-  open() {
-    if (this.isOpen) return;
+  updateQuantityButtonStates() {
+    if (!this.cartData?.items) return;
     
-    this.isOpen = true;
-    this.dropdown?.classList.add('active');
-    
-    // Focus management sin scroll
-    if (this.closeBtn) {
-      this.closeBtn.focus({ preventScroll: true });
-    }
-  }
-
-  close() {
-    if (!this.isOpen) return;
-    
-    this.isOpen = false;
-    this.dropdown?.classList.remove('active');
-    
-    // Return focus to trigger sin scroll
-    if (this.trigger) {
-      this.trigger.focus({ preventScroll: true });
-    }
+    this.cartData.items.forEach(item => {
+      const itemElement = this.content?.querySelector(`[data-key="${item.key}"]`);
+      if (!itemElement) return;
+      
+      const plusBtn = itemElement.querySelector('.mini-cart__qty-plus');
+      const input = itemElement.querySelector('.mini-cart__qty-input');
+      
+      if (plusBtn && input) {
+        const maxStock = parseInt(input.dataset.maxStock) || 999;
+        const canIncrement = item.quantity < maxStock;
+        
+        plusBtn.disabled = !canIncrement;
+        plusBtn.classList.toggle('mini-cart__qty-btn--disabled', !canIncrement);
+        
+        if (!canIncrement) {
+          plusBtn.title = `Stock máximo alcanzado (${maxStock} unidades)`;
+        } else {
+          plusBtn.removeAttribute('title');
+        }
+      }
+    });
   }
 
   toggle() {
@@ -452,10 +558,45 @@ class MiniCart {
     }
   }
 
-  checkout() {
-    if (this.cartData?.item_count > 0) {
-      window.location.href = '/checkout';
+  open() {
+    if (this.isOpen) return;
+    
+    this.isOpen = true;
+    
+    if (this.wrapper) {
+      this.wrapper.classList.add('mini-cart--open');
     }
+    
+    if (this.dropdown) {
+      this.dropdown.classList.add('active');
+      this.dropdown.setAttribute('aria-hidden', 'false');
+    }
+    
+    document.body.style.overflow = 'hidden';
+    
+    // Cargar carrito actualizado al abrir
+    this.loadCart();
+  }
+
+  close() {
+    if (!this.isOpen) return;
+    
+    this.isOpen = false;
+    
+    if (this.wrapper) {
+      this.wrapper.classList.remove('mini-cart--open');
+    }
+    
+    if (this.dropdown) {
+      this.dropdown.classList.remove('active');
+      this.dropdown.setAttribute('aria-hidden', 'true');
+    }
+    
+    document.body.style.overflow = '';
+  }
+
+  checkout() {
+    window.location.href = '/checkout';
   }
 
   setLoading(loading) {
@@ -465,238 +606,87 @@ class MiniCart {
       this.loading.style.display = loading ? 'flex' : 'none';
     }
     
-    // Deshabilitar controles durante carga
-    const controls = this.content?.querySelectorAll('button, input, select');
-    controls?.forEach(control => {
-      control.disabled = loading;
+    // Deshabilitar botones durante la carga
+    const buttons = this.content?.querySelectorAll('button');
+    buttons?.forEach(button => {
+      button.disabled = loading;
     });
   }
 
   showError(message) {
-    if (!this.errors) return;
-    
-    this.errors.textContent = message;
-    this.errors.style.display = 'block';
-    
-    // Auto-hide después de 5 segundos
-    setTimeout(() => this.clearErrors(), 5000);
+    if (this.errors) {
+      this.errors.textContent = message;
+      this.errors.style.display = 'block';
+      
+      // Auto-ocultar después de 5 segundos
+      setTimeout(() => {
+        this.clearErrors();
+      }, 5000);
+    }
   }
 
   clearErrors() {
     if (this.errors) {
-      this.errors.textContent = '';
       this.errors.style.display = 'none';
+      this.errors.textContent = '';
     }
+  }
+
+  emitCartUpdate(action) {
+    const event = new CustomEvent('cart:updated', {
+      detail: {
+        cartData: this.cartData,
+        action: action,
+        source: 'mini-cart',
+        timestamp: Date.now()
+      },
+      bubbles: true
+    });
+    document.dispatchEvent(event);
   }
 
   formatMoney(cents) {
-    // Formato básico - puede ser personalizado según la configuración de la tienda
-    const amount = cents / 100;
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR' // Cambiar según la moneda de la tienda
-    }).format(amount);
-  }
-
-  // Método público para agregar productos desde formularios externos
-  static async addProduct(variantId, quantity = 1, properties = {}) {
-    const miniCart = window.miniCartInstance;
-    if (miniCart) {
-      return await miniCart.addToCart(variantId, quantity, properties);
+    if (typeof cents !== 'number') return '$0.00';
+    
+    const money = (cents / 100).toFixed(2);
+    
+    // Usar formato de Shopify si está disponible
+    if (window.Shopify && window.Shopify.money_format) {
+      return window.Shopify.money_format.replace('{{amount}}', money);
     }
-    throw new Error('Mini cart no está inicializado');
+    
+    return `$${money}`;
   }
 
-  // Método público para obtener datos del carrito
-  static getCartData() {
-    const miniCart = window.miniCartInstance;
-    return miniCart?.cartData || null;
+  async handleCartUpdate(detail) {
+    // Si es un evento de agregar al carrito, recargar datos completos
+    if (detail && detail.item) {
+      // Recargar el carrito completo para obtener datos actualizados
+      await this.loadCart();
+      
+      // Abrir el mini-cart automáticamente cuando se agrega un producto
+      if (!this.isOpen) {
+        this.open();
+      }
+    } else if (detail && detail.cartData) {
+      // Actualización directa con datos del carrito
+      this.cartData = detail.cartData;
+      this.updateCartDisplay();
+    } else {
+      // Fallback: recargar el carrito
+      await this.loadCart();
+    }
   }
 }
 
-// Integración con formularios de agregar al carrito existentes
-class CartFormIntegration {
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    // Interceptar formularios de producto
-    document.addEventListener('submit', (e) => {
-      const form = e.target.closest('[data-product-form]');
-      if (form) {
-        e.preventDefault();
-        this.handleProductForm(form);
-      }
-    });
-
-    // Interceptar botones de agregar al carrito
-    document.addEventListener('click', (e) => {
-      const addBtn = e.target.closest('[data-add-to-cart]');
-      if (addBtn && !addBtn.closest('form')) {
-        e.preventDefault();
-        this.handleAddToCartButton(addBtn);
-      }
-    });
-  }
-
-  async handleProductForm(form) {
-    const formData = new FormData(form);
-    const variantId = formData.get('id');
-    const quantity = parseInt(formData.get('quantity')) || 1;
-    
-    // Recopilar propiedades
-    const properties = {};
-    for (const [key, value] of formData.entries()) {
-      if (key.startsWith('properties[') && value.trim()) {
-        const propName = key.replace('properties[', '').replace(']', '');
-        properties[propName] = value;
-      }
-    }
-
-    if (!variantId) {
-      console.error('No variant ID found in form');
-      return;
-    }
-
-    // Obtener el botón de submit antes del try block
-    const submitBtn = form.querySelector('[data-add-to-cart]');
-
-    try {
-      // Mostrar estado de carga en el botón
-      this.setButtonLoading(submitBtn, true);
-
-      await MiniCart.addProduct(variantId, quantity, properties);
-      
-      // Mostrar feedback de éxito
-      this.showSuccessFeedback(submitBtn);
-      
-    } catch (error) {
-      console.error('Error adding product:', error);
-      this.showErrorFeedback(submitBtn, error.message);
-    } finally {
-      this.setButtonLoading(submitBtn, false);
-    }
-  }
-
-  async handleAddToCartButton(button) {
-    const productId = button.dataset.productId || button.closest('[data-product-id]')?.dataset.productId;
-    const variantId = button.dataset.variantId || button.closest('[data-variant-id]')?.dataset.variantId;
-    const quantity = parseInt(button.dataset.quantity) || 1;
-
-    if (!variantId && !productId) {
-      console.error('No variant or product ID found');
-      return;
-    }
-
-    try {
-      this.setButtonLoading(button, true);
-      
-      // Si solo tenemos product ID, usar la primera variante disponible
-      const finalVariantId = variantId || await this.getFirstAvailableVariant(productId);
-      
-      await MiniCart.addProduct(finalVariantId, quantity);
-      
-      this.showSuccessFeedback(button);
-      
-    } catch (error) {
-      console.error('Error adding product:', error);
-      this.showErrorFeedback(button, error.message);
-    } finally {
-      this.setButtonLoading(button, false);
-    }
-  }
-
-  async getFirstAvailableVariant(productId) {
-    try {
-      const response = await fetch(`/products/${productId}.js`);
-      const product = await response.json();
-      
-      const availableVariant = product.variants.find(v => v.available);
-      if (!availableVariant) {
-        throw new Error('Producto no disponible');
-      }
-      
-      return availableVariant.id;
-    } catch (error) {
-      throw new Error('Error al obtener información del producto');
-    }
-  }
-
-  setButtonLoading(button, loading) {
-    if (!button) return;
-    
-    const textSpan = button.querySelector('.btn-text');
-    const loadingSpan = button.querySelector('.btn-loading');
-    
-    if (textSpan && loadingSpan) {
-      textSpan.style.display = loading ? 'none' : 'flex';
-      loadingSpan.style.display = loading ? 'flex' : 'none';
-    }
-    
-    button.disabled = loading;
-  }
-
-  showSuccessFeedback(button) {
-    if (!button) return;
-    
-    const originalText = button.querySelector('.btn-text')?.textContent;
-    const textSpan = button.querySelector('.btn-text');
-    
-    if (textSpan) {
-      textSpan.textContent = '¡Agregado!';
-      button.classList.add('success');
-      
-      setTimeout(() => {
-        textSpan.textContent = originalText;
-        button.classList.remove('success');
-      }, 2000);
-    }
-  }
-
-  showErrorFeedback(button, message) {
-    if (!button) return;
-    
-    // Mostrar mensaje de error cerca del botón
-    let errorDiv = button.parentNode.querySelector('.cart-error-message');
-    if (!errorDiv) {
-      errorDiv = document.createElement('div');
-      errorDiv.className = 'cart-error-message';
-      errorDiv.style.cssText = `
-        color: #dc3545;
-        font-size: 14px;
-        margin-top: 8px;
-        padding: 8px 12px;
-        background: #f8d7da;
-        border: 1px solid #f5c6cb;
-        border-radius: 4px;
-      `;
-      button.parentNode.appendChild(errorDiv);
-    }
-    
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
-    
-    // Auto-hide después de 5 segundos
-    setTimeout(() => {
-      errorDiv.style.display = 'none';
-    }, 5000);
-  }
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.miniCart = new MiniCart();
+  });
+} else {
+  window.miniCart = new MiniCart();
 }
 
-// Inicialización cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar mini cart
-  window.miniCartInstance = new MiniCart();
-  
-  // Inicializar integración con formularios
-  new CartFormIntegration();
-  
-  // Exponer API global
-  window.MiniCart = MiniCart;
-});
-
-// Exportar para uso en módulos
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { MiniCart, CartFormIntegration };
-}
+// Exportar para uso en otros scripts
+window.MiniCart = MiniCart;

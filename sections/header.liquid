@@ -53,8 +53,8 @@
                     aria-expanded="false"
                     data-dropdown-trigger>
               {{ link.title }}
-              <svg class="header__dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg class="header__dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" style="color: var(--nav-link-color, currentColor);">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="var(--icon-stroke-width, 1.5)" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
             <div class="header__dropdown" role="menu">
@@ -80,14 +80,16 @@
     <div class="header__actions">
       {% if section.settings.show_search %}
         <button class="header__action-btn" aria-label="{{ 'header.search' | t }}">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M17.5 17.5L13.875 13.875M15.8333 9.16667C15.8333 12.8486 12.8486 15.8333 9.16667 15.8333C5.48477 15.8333 2.5 12.8486 2.5 9.16667C2.5 5.48477 5.48477 2.5 9.16667 2.5C12.8486 2.5 15.8333 5.48477 15.8333 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="color: var(--nav-link-color, currentColor);">
+            <path d="M17.5 17.5L13.875 13.875M15.8333 9.16667C15.8333 12.8486 12.8486 15.8333 9.16667 15.8333C5.48477 15.8333 2.5 12.8486 2.5 9.16667C2.5 5.48477 5.48477 2.5 9.16667 2.5C12.8486 2.5 15.8333 5.48477 15.8333 9.16667Z" stroke="currentColor" stroke-width="var(--icon-stroke-width, 1.5)" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       {% endif %}
       
       <!-- Mini Cart -->
-      {% render 'mini-cart' %}
+      {% if section.settings.show_cart %}
+        {% render 'mini-cart' %}
+      {% endif %}
 
     </div>
   </div>
@@ -99,8 +101,8 @@
       <div class="header__mobile-header">
         <div class="header__mobile-title">{{ section.settings.mobile_menu_title | default: 'Menu' }}</div>
         <button class="header__mobile-close" type="button" aria-label="{{ 'header.close_menu' | t }}">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="color: var(--nav-link-color, currentColor);">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="var(--icon-stroke-width, 2)" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
@@ -113,8 +115,8 @@
                       aria-expanded="false"
                       data-mobile-dropdown>
                 {{ link.title }}
-                <svg class="header__mobile-dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <svg class="header__mobile-dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" style="color: var(--nav-link-color, currentColor);">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="var(--icon-stroke-width, 1.5)" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
               <div class="header__mobile-dropdown">
@@ -1291,6 +1293,12 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "checkbox",
       "id": "show_search",
       "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show cart icon",
       "default": true
     },
     {

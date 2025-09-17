@@ -1,5 +1,45 @@
 /* Mini Cart Theme Configuration Styles */
 
+/* Mini Cart Configuration - Variables CSS personalizables */
+:root {
+  /* Dimensiones */
+  --mini-cart-width: 400px;
+  --mini-cart-max-height: 500px;
+  
+  /* Colores base (serán sobrescritos por css-variables.liquid) */
+  --mini-cart-bg-color: #FFFFFF;
+  --mini-cart-text-color: #333333;
+  --mini-cart-accent-color: #007bff;
+  --mini-cart-border-color: #e0e0e0;
+  --mini-cart-count-bg-color: #dc3545;
+  --mini-cart-count-text-color: #FFFFFF;
+  
+  /* Variables específicas para elementos de texto */
+  --mini-cart-title-color: #333333;
+  --mini-cart-item-title-color: #333333;
+  --mini-cart-item-variant-color: #666666;
+  --mini-cart-item-property-color: #666666;
+  --mini-cart-price-color: #333333;
+  --mini-cart-price-compare-color: #999999;
+  --mini-cart-discount-color: #28a745;
+  --mini-cart-subtotal-color: #333333;
+  --mini-cart-empty-text-color: #666666;
+  --mini-cart-button-text-color: #FFFFFF;
+  
+  /* Variables para elementos del header */
+  --mini-cart-close-icon-color: #666666;
+  --mini-cart-close-hover-bg: rgba(0, 0, 0, 0.05);
+  
+  /* Variables para labels y botones de cantidad */
+  --mini-cart-label-color: #666666;
+  --mini-cart-qty-btn-color: #333333;
+  --mini-cart-qty-btn-border: #dddddd;
+  --mini-cart-qty-btn-bg: #ffffff;
+  --mini-cart-qty-btn-hover-bg: rgba(0, 123, 255, 0.1);
+  --mini-cart-qty-btn-disabled-color: #999999;
+  --mini-cart-qty-btn-disabled-bg: #f8f8f8;
+}
+
 /* CSS Variables for dynamic theming */
 .mini-cart__dropdown {
   --mini-cart-width: 400px;
@@ -8,6 +48,18 @@
   --mini-cart-text-color: #333333;
   --mini-cart-accent-color: #007bff;
   --mini-cart-border-color: #e0e0e0;
+  
+  /* Variables específicas para elementos de texto */
+  --mini-cart-title-color: #333333;
+  --mini-cart-item-title-color: #333333;
+  --mini-cart-item-variant-color: #666666;
+  --mini-cart-item-property-color: #666666;
+  --mini-cart-price-color: #333333;
+  --mini-cart-price-compare-color: #999999;
+  --mini-cart-discount-color: #28a745;
+  --mini-cart-subtotal-color: #333333;
+  --mini-cart-empty-text-color: #666666;
+  --mini-cart-button-text-color: #FFFFFF;
 }
 
 /* Position variants */

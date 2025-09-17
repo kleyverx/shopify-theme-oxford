@@ -27,7 +27,7 @@
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     
     {% # Mini Cart CSS %}
-    {{ 'mini-cart-config.css' | asset_url | stylesheet_tag }}
+    {{ 'mini-cart.css' | asset_url | stylesheet_tag }}
     {{ 'mini-cart.css' | asset_url | stylesheet_tag }}
     {{ 'add-to-cart-block.css' | asset_url | stylesheet_tag }}
     
@@ -72,6 +72,9 @@
     {% render 'social-floating-nav' %}
 
     {% sections 'footer-group' %}
+    
+    {% # Add to Cart JavaScript %}
+    {{ 'add-to-cart.js' | asset_url | script_tag }}
     
     {% # Mini Cart JavaScript %}
     {{ 'mini-cart.js' | asset_url | script_tag }}

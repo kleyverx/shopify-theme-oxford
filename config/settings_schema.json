@@ -81,6 +81,147 @@
     ]
   },
   {
+    "name": "Carrito y Mini-Carrito",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Colores del Carrito"
+      },
+      {
+        "type": "color",
+        "id": "cart_background_color",
+        "default": "#FFFFFF",
+        "label": "Color de fondo del carrito"
+      },
+      {
+        "type": "color",
+        "id": "cart_text_color",
+        "default": "#333333",
+        "label": "Color del texto del carrito"
+      },
+      {
+        "type": "color",
+        "id": "cart_border_color",
+        "default": "#e5e5e5",
+        "label": "Color del borde del carrito"
+      },
+      {
+        "type": "color",
+        "id": "cart_button_bg_color",
+        "default": "#007bff",
+        "label": "Color de fondo de botones del carrito"
+      },
+      {
+        "type": "color",
+        "id": "cart_button_text_color",
+        "default": "#FFFFFF",
+        "label": "Color del texto de botones del carrito"
+      },
+      {
+        "type": "header",
+        "content": "Colores del Mini-Carrito"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_bg_color",
+        "default": "#FFFFFF",
+        "label": "Color de fondo del mini-carrito"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_text_color",
+        "default": "#333333",
+        "label": "Color del texto del mini-carrito"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_border_color",
+        "default": "#e0e0e0",
+        "label": "Color del borde del mini-carrito"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_accent_color",
+        "default": "#007bff",
+        "label": "Color de acento del mini-carrito"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_count_bg_color",
+        "default": "#dc3545",
+        "label": "Color de fondo del contador"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_count_text_color",
+        "default": "#FFFFFF",
+        "label": "Color del texto del contador"
+      },
+      {
+        "type": "header",
+        "content": "Colores del Header del Mini-Carrito"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_close_icon_color",
+        "default": "#666666",
+        "label": "Color del icono de cerrar (X)"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_close_hover_bg",
+        "default": "rgba(0, 0, 0, 0.05)",
+        "label": "Color de fondo al pasar el mouse sobre cerrar"
+      },
+      {
+        "type": "header",
+        "content": "Colores de Botones de Cantidad"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_label_color",
+        "default": "#666666",
+        "label": "Color de los labels (Cantidad, Total)"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_qty_btn_color",
+        "default": "#333333",
+        "label": "Color del texto de botones +/-"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_qty_btn_border",
+        "default": "#dddddd",
+        "label": "Color del borde de botones +/-"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_qty_btn_bg",
+        "default": "#ffffff",
+        "label": "Color de fondo de botones +/-"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_qty_btn_hover_bg",
+        "default": "rgba(0, 123, 255, 0.1)",
+        "label": "Color de fondo al pasar el mouse sobre botones +/-"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_qty_btn_disabled_color",
+        "default": "#999999",
+        "label": "Color de texto de botones +/- deshabilitados"
+      },
+      {
+        "type": "color",
+        "id": "mini_cart_qty_btn_disabled_bg",
+        "default": "#f8f8f8",
+        "label": "Color de fondo de botones +/- deshabilitados"
+      }
+    ]
+  },
+  {
     "name": "Navegación de Secciones",
     "settings": [
       {

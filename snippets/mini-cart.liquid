@@ -8,9 +8,12 @@
      data-hide-view-cart-button="false">
   <!-- Trigger Button -->
   <button class="mini-cart__trigger" data-mini-cart-trigger>
-    <svg class="mini-cart__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6M9 19v2m6-2v2"/>
-    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="var(--icon-stroke-width, 1.0)" stroke-linecap="round" stroke-linejoin="round" style="color: var(--nav-link-color, currentColor);">
+          <path d="M5 15.8a1.7 1.7 0 1 0 3.4 0 1.7 1.7 0 1 0 -3.4 0"/>
+          <path d="M14.2 15.8a1.7 1.7 0 1 0 3.4 0 1.7 1.7 0 1 0 -3.4 0"/>
+          <path d="M14.2 14.2H5V2.5H3.3"/>
+          <path d="M5 4.2l11.7 0.8l-0.8 5.8H5"/>
+        </svg>
     <span class="mini-cart__count" data-mini-cart-count>{{ cart.item_count }}</span>
   </button>
 
@@ -25,7 +28,7 @@
       <div class="mini-cart__header">
         <h3 class="mini-cart__title">Carrito de compras</h3>
         <button class="mini-cart__close" data-mini-cart-close>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="var(--icon-stroke-width, 1.5)" style="color: var(--mini-cart-close-icon-color, currentColor);">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -36,7 +39,7 @@
       <div class="mini-cart__content" data-mini-cart-content>
         <!-- Empty Cart State (will be shown/hidden by JavaScript) -->
         <div class="mini-cart__empty" data-mini-cart-empty style="display: {% if cart.item_count == 0 %}block{% else %}none{% endif %}">
-          <svg class="mini-cart__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg class="mini-cart__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="var(--icon-stroke-width, 1.5)" style="color: var(--mini-cart-text-color, currentColor);">
             <circle cx="9" cy="21" r="1"/>
             <circle cx="20" cy="21" r="1"/>
             <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
@@ -77,9 +80,9 @@
                 {% endif %}
                 <div class="mini-cart__item-price">{{ item.final_price | money }}</div>
                 <div class="mini-cart__item-quantity">
-                  <button class="mini-cart__qty-btn" data-mini-cart-qty-change="-1" data-item-key="{{ item.key }}">-</button>
-                  <input type="number" class="mini-cart__qty-input" value="{{ item.quantity }}" min="1" data-mini-cart-qty-input data-item-key="{{ item.key }}">
-                  <button class="mini-cart__qty-btn" data-mini-cart-qty-change="1" data-item-key="{{ item.key }}">+</button>
+                  <button class="mini-cart__qty-btn" data-mini-cart-qty-change="-1" data-item-key="{{ item.key }}" data-variant-id="{{ item.variant.id }}">-</button>
+                  <input type="number" class="mini-cart__qty-input" value="{{ item.quantity }}" min="1" data-mini-cart-qty-input data-item-key="{{ item.key }}" data-variant-id="{{ item.variant.id }}">
+                  <button class="mini-cart__qty-btn" data-mini-cart-qty-change="1" data-item-key="{{ item.key }}" data-variant-id="{{ item.variant.id }}">+</button>
                 </div>
               </div>
               <button class="mini-cart__remove-btn" data-mini-cart-remove data-item-key="{{ item.key }}">×</button>

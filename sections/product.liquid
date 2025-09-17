@@ -178,6 +178,55 @@
                 {% when 'html' %}
                   {{ block.settings.html_content }}
                 
+                {% when 'custom_offer' %}
+                  {% comment %} Bloque de oferta personalizado - Solo informativo {% endcomment %}
+                  {% assign offer_text = product.metafields.custom.offer_text.value | default: block.settings.offer_text %}
+                  {% assign offer_active = product.metafields.custom.offer_active.value | default: block.settings.offer_active %}
+                  {% assign offer_discount = product.metafields.custom.offer_discount.value | default: block.settings.offer_discount %}
+                  {% assign countdown_date = product.metafields.custom.offer_countdown.value | default: block.settings.countdown_date %}
+                  
+                  {% if block.settings.show_offer_block and offer_active and offer_text != blank %}
+                    <div class="custom-offer-block" style="
+                      --offer-bg-color: {{ block.settings.offer_bg_color }};
+                      --offer-text-color: {{ block.settings.offer_text_color }};
+                      --offer-border-color: {{ block.settings.offer_border_color }};
+                      --offer-badge-color: {{ block.settings.offer_badge_color }};
+                      --offer-discount-bg: {{ block.settings.offer_discount_bg }};
+                      --offer-discount-text: {{ block.settings.offer_discount_text }};
+                      --countdown-bg-color: {{ block.settings.countdown_bg_color }};
+                      --countdown-text-color: {{ block.settings.countdown_text_color }};
+                    ">
+                      <div class="custom-offer-content">
+                        <div class="custom-offer-badge">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        </div>
+                        
+                        <div class="custom-offer-text">
+                          {{ offer_text }}
+                        </div>
+                        
+                        {% if offer_discount and offer_discount > 0 %}
+                          <div class="custom-offer-discount">
+                            {{ offer_discount }}% OFF
+                          </div>
+                        {% endif %}
+                      </div>
+                      
+                      {% if block.settings.show_countdown and countdown_date != blank %}
+                        <div class="custom-offer-countdown">
+                          ⏰ Oferta termina en: 
+                          <div class="countdown-timer" data-countdown-end="{{ countdown_date }}">
+                            <span class="countdown-unit">00</span>:
+                            <span class="countdown-unit">00</span>:
+                            <span class="countdown-unit">00</span>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                
                 {% when 'add_to_cart' %}
                   {% comment %} Obtener precios para descuentos nativos de Shopify {% endcomment %}
                   {% assign current_variant = product.selected_or_first_available_variant %}
@@ -196,6 +245,46 @@
                        data-max-stock="{{ product.selected_or_first_available_variant.inventory_quantity | default: 999 }}"
                        style="--quantity-btn-color: {{ block.settings.quantity_btn_color | default: '#6b7280' }}; --quantity-btn-bg: {{ block.settings.quantity_btn_bg | default: 'transparent' }}; --quantity-label-color: {{ block.settings.quantity_label_color | default: '#374151' }}; --quantity-input-color: {{ block.settings.quantity_input_color | default: '#111827' }}; --quantity-input-bg: {{ block.settings.quantity_input_bg | default: 'transparent' }}; --price-total-label-color: {{ block.settings.price_total_label_color | default: '#374151' }}; --price-total-value-color: {{ block.settings.price_total_value_color | default: '#111827' }}; --threshold-warning-bg: {{ block.settings.threshold_warning_bg_color | default: '#fef3c7' }}; --threshold-warning-text: {{ block.settings.threshold_warning_text_color | default: '#92400e' }}; --threshold-warning-border: {{ block.settings.threshold_warning_border_color | default: '#f59e0b' }};">
                     {% if product.available %}
+                      <!-- Debug: Mostrar información de variantes -->
+                      <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 12px; border-radius: 4px;">
+                        <strong>Debug Info:</strong><br>
+                        - Producto: {{ product.title }}<br>
+                        - Total variantes: {{ product.variants.size }}<br>
+                        - Solo variante por defecto: {{ product.has_only_default_variant }}<br>
+                        - Opciones disponibles: {{ product.options.size }}<br>
+                        {% for option in product.options %}
+                          - Opción {{ forloop.index }}: {{ option }} ({{ product.options_with_values[forloop.index0].values.size }} valores)<br>
+                        {% endfor %}
+                      </div>
+
+                      <!-- Selector de Variantes -->
+                      {% unless product.has_only_default_variant %}
+                        <div class="product-variants" data-product-variants>
+                          {% for option in product.options_with_values %}
+                            <div class="variant-option">
+                              <label class="variant-label">{{ option.name }}:</label>
+                              <div class="variant-selector" data-option-name="{{ option.name }}" data-option-position="{{ option.position }}">
+                                {% for value in option.values %}
+                                  <input type="radio" 
+                                         id="option-{{ option.position }}-{{ value | handle }}-{{ block.id }}" 
+                                         name="option{{ option.position }}" 
+                                         value="{{ value }}" 
+                                         class="variant-input"
+                                         {% if forloop.first %}checked{% endif %}
+                                         data-variant-option>
+                                  <label for="option-{{ option.position }}-{{ value | handle }}-{{ block.id }}" 
+                                         class="variant-value">{{ value }}</label>
+                                {% endfor %}
+                              </div>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% else %}
+                        <div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 4px; color: #856404;">
+                          <strong>Aviso:</strong> Este producto solo tiene la variante por defecto. Para mostrar el selector de variantes, necesitas crear variantes adicionales en el admin de Shopify.
+                        </div>
+                      {% endunless %}
+
                       <form class="product-form" data-product-form>
                         <div class="quantity-selector">
                           <label for="quantity-{{ block.id }}" class="quantity-label">
@@ -241,7 +330,7 @@
                           <button type="submit" 
                                   class="add-to-cart-btn" 
                                   data-add-to-cart
-                                  style="background-color: {{ block.settings.button_bg_color | default: '#007bff' }}; color: {{ block.settings.button_text_color | default: '#ffffff' }};">
+                                  style="background-color: {{ block.settings.button_bg_color | default: 'var(--nav-link-color, #007bff)' }}; color: {{ block.settings.button_text_color | default: '#ffffff' }};">
                             <span class="btn-text">{{ block.settings.add_to_cart_text | default: 'Agregar al carrito' }}</span>
                             <span class="btn-loading" style="display: none;">
                               <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -259,7 +348,7 @@
                         
 
                         
-                        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-variant-id>
                       </form>
                     {% else %}
                       <div class="product-unavailable">
@@ -313,58 +402,144 @@ document.addEventListener('DOMContentLoaded', function() {
   // Inicializar
   updateMainImage(0);
   
-  // Enhanced cart integration for reliable mini cart opening
-  document.addEventListener('cart:item-added', function(event) {
-    console.log('✓ Product added to cart:', event.detail);
-    
-    // Force mini cart to open with multiple methods
-    function forceOpenMiniCart() {
-      // Method 1: Direct DOM manipulation (most reliable)
-      const miniCartDropdown = document.querySelector('#mini-cart-dropdown');
-      if (miniCartDropdown) {
-        miniCartDropdown.classList.add('active');
-        miniCartDropdown.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('mini-cart-open');
-        console.log('✓ Mini cart opened via DOM manipulation');
-        return true;
+  // Product data for add-to-cart functionality
+  {% if product %}
+    window.product = {
+      id: {{ product.id }},
+      title: {{ product.title | json }},
+      handle: {{ product.handle | json }},
+      variants: [
+        {% for variant in product.variants %}
+          {
+            id: {{ variant.id }},
+            title: {{ variant.title | json }},
+            price: {{ variant.price }},
+            compare_at_price: {{ variant.compare_at_price | default: 0 }},
+            available: {{ variant.available | json }},
+            inventory_quantity: {{ variant.inventory_quantity | default: 999 }},
+            inventory_policy: {{ variant.inventory_policy | json }},
+            options: [
+              {% for option in variant.options %}
+                {{ option | json }}{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ],
+            featured_image: {% if variant.featured_image %}{{ variant.featured_image | image_url | json }}{% else %}null{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      options: [
+        {% for option in product.options %}
+          {{ option | json }}{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    };
+
+    // Funcionalidad de variantes
+    function initVariantSelector() {
+      const variantInputs = document.querySelectorAll('[data-variant-option]');
+      const variantIdInput = document.querySelector('[data-variant-id]');
+      const priceDisplay = document.querySelector('[data-price-total]');
+      const quantityInput = document.querySelector('[data-quantity-input]');
+      const addToCartBlock = document.querySelector('.add-to-cart-block');
+
+      if (!variantInputs.length) return;
+
+      function getSelectedOptions() {
+        const options = [];
+        for (let i = 1; i <= window.product.options.length; i++) {
+          const selectedInput = document.querySelector(`input[name="option${i}"]:checked`);
+          if (selectedInput) {
+            options.push(selectedInput.value);
+          }
+        }
+        return options;
       }
-      
-      // Method 2: Global instance
-      if (window.PremiumMiniCart && typeof window.PremiumMiniCart.open === 'function') {
-        try {
-          window.PremiumMiniCart.open();
-          console.log('✓ Mini cart opened via global instance');
-          return true;
-        } catch (error) {
-          console.warn('Failed to open via global instance:', error);
+
+      function findVariantByOptions(options) {
+        return window.product.variants.find(variant => {
+          return variant.options.every((option, index) => option === options[index]);
+        });
+      }
+
+      function updateVariant() {
+        const selectedOptions = getSelectedOptions();
+        const variant = findVariantByOptions(selectedOptions);
+
+        if (variant) {
+          // Actualizar ID de variante
+          if (variantIdInput) {
+            variantIdInput.value = variant.id;
+          }
+
+          // Actualizar precio
+          if (priceDisplay && quantityInput) {
+            const quantity = parseInt(quantityInput.value) || 1;
+            const totalPrice = (variant.price * quantity) / 100;
+            priceDisplay.textContent = `$${totalPrice.toFixed(2)}`;
+          }
+
+          // Actualizar imagen principal si la variante tiene imagen
+          if (variant.featured_image && mainImage) {
+            mainImage.src = variant.featured_image;
+          }
+
+          // Actualizar stock máximo
+          if (quantityInput) {
+            quantityInput.max = variant.inventory_quantity || 999;
+          }
+
+          // Actualizar datos del bloque
+          if (addToCartBlock) {
+            addToCartBlock.setAttribute('data-product-price', variant.price);
+            addToCartBlock.setAttribute('data-compare-at-price', variant.compare_at_price || 0);
+            addToCartBlock.setAttribute('data-max-stock', variant.inventory_quantity || 999);
+          }
+
+          // Verificar disponibilidad
+          const addToCartBtn = document.querySelector('[data-add-to-cart]');
+          if (addToCartBtn) {
+            if (variant.available) {
+              addToCartBtn.disabled = false;
+              const btnText = addToCartBtn.querySelector('.btn-text');
+              if (btnText) btnText.textContent = 'Agregar al carrito';
+            } else {
+              addToCartBtn.disabled = true;
+              const btnText = addToCartBtn.querySelector('.btn-text');
+              if (btnText) btnText.textContent = 'No disponible';
+            }
+          }
         }
       }
-      
-      // Method 3: Trigger click
-      const miniCartTrigger = document.querySelector('[data-mini-cart-trigger], .mini-cart__trigger, .cart-icon');
-      if (miniCartTrigger) {
-        miniCartTrigger.click();
-        console.log('✓ Mini cart opened via trigger click');
-        return true;
+
+      // Event listeners para cambios de variante
+      variantInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          updateVariant();
+          // Actualizar también el cálculo de precio total
+          const quantityInput = document.querySelector('[data-quantity-input]');
+          if (quantityInput && window.AddToCart) {
+            const form = quantityInput.closest('form');
+            if (form) {
+              // Trigger price update in AddToCart class
+              const event = new Event('change');
+              quantityInput.dispatchEvent(event);
+            }
+          }
+        });
+      });
+
+      // Event listener para cambios de cantidad
+      if (quantityInput) {
+        quantityInput.addEventListener('input', updateVariant);
       }
-      
-      return false;
+
+      // Inicializar con la primera variante
+      updateVariant();
     }
-    
-    // Try immediately
-    if (!forceOpenMiniCart()) {
-      // Retry after 100ms if first attempt fails
-      setTimeout(() => {
-        forceOpenMiniCart();
-      }, 100);
-    }
-  });
-  
-  // Ensure add-to-cart blocks are properly initialized
-  const addToCartBlocks = document.querySelectorAll('.add-to-cart-block');
-  if (addToCartBlocks.length === 0) {
-    console.warn('No add-to-cart blocks found on this page');
-  }
+
+    // Inicializar selector de variantes
+    initVariantSelector();
+  {% endif %}
 });
 </script>
 
@@ -763,6 +938,104 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .product-info > * {
   animation: fadeInUp 0.6s ease-out;
+}
+
+/* Estilos del selector de variantes */
+.product-variants {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.variant-option {
+  margin-bottom: 1rem;
+}
+
+.variant-option:last-child {
+  margin-bottom: 0;
+}
+
+.variant-label {
+  display: block;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.variant-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.variant-input {
+  display: none;
+}
+
+.variant-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 25px;
+  background: white;
+  color: var(--secondary-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 60px;
+  text-align: center;
+}
+
+.variant-value:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.variant-input:checked + .variant-value {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.variant-input:disabled + .variant-value {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
+  color: #999;
+}
+
+.variant-input:disabled + .variant-value:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-color);
+}
+
+/* Responsive para variantes */
+@media (max-width: 767px) {
+  .product-variants {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .variant-value {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 50px;
+  }
+  
+  .variant-selector {
+    gap: 0.4rem;
+  }
 }
 
 .product-info > *:nth-child(1) { animation-delay: 0.1s; }
@@ -1253,6 +1526,119 @@ document.addEventListener('DOMContentLoaded', function() {
           "type": "html",
           "id": "html_content",
           "label": "Código HTML personalizado"
+        }
+      ]
+    },
+    {
+      "type": "custom_offer",
+      "name": "🎯 Oferta Personalizada",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Configuración de la Oferta"
+        },
+        {
+          "type": "checkbox",
+          "id": "offer_active",
+          "label": "Activar oferta",
+          "default": false,
+          "info": "También se puede controlar desde metafields del producto"
+        },
+        {
+          "type": "text",
+          "id": "offer_text",
+          "label": "Texto de la oferta",
+          "default": "¡Oferta especial por tiempo limitado!",
+          "info": "Se puede sobrescribir con el metafield 'custom.offer_text'"
+        },
+        {
+          "type": "number",
+          "id": "offer_discount",
+          "label": "Porcentaje de descuento",
+          "default": 15,
+          "info": "Se puede sobrescribir con el metafield 'custom.offer_discount'"
+        },
+        {
+          "type": "text",
+          "id": "offer_label",
+          "label": "Etiqueta de la oferta",
+          "default": "OFERTA ESPECIAL"
+        },
+        {
+          "type": "header",
+          "content": "Colores y Estilo"
+        },
+        {
+          "type": "color",
+          "id": "offer_bg_color",
+          "label": "Color de fondo",
+          "default": "#e74c3c"
+        },
+        {
+          "type": "color",
+          "id": "offer_text_color",
+          "label": "Color del texto",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "offer_border_color",
+          "label": "Color del borde",
+          "default": "#c0392b"
+        },
+        {
+          "type": "color",
+          "id": "offer_badge_color",
+          "label": "Color del ícono/badge",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "offer_discount_bg",
+          "label": "Color de fondo del descuento",
+          "default": "rgba(255, 255, 255, 0.2)"
+        },
+        {
+          "type": "color",
+          "id": "offer_discount_text",
+          "label": "Color del texto del descuento",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "countdown_bg_color",
+          "label": "Color de fondo del countdown",
+          "default": "rgba(255, 255, 255, 0.2)"
+        },
+        {
+          "type": "color",
+          "id": "countdown_text_color",
+          "label": "Color del texto del countdown",
+          "default": "#ffffff"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_offer_block",
+          "label": "Mostrar bloque de oferta",
+          "default": true,
+          "info": "Controla la visibilidad del bloque completo"
+        },
+        {
+          "type": "header",
+          "content": "Cuenta Regresiva (Opcional)"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_countdown",
+          "label": "Mostrar cuenta regresiva",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "countdown_date",
+          "label": "Fecha límite",
+          "placeholder": "2024-12-31T23:59:59",
+          "info": "Formato: YYYY-MM-DDTHH:MM:SS"
         }
       ]
     },

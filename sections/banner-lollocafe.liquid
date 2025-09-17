@@ -64,8 +64,8 @@
                 {% endif %}
                 
                 {% if block.settings.button_text and block.settings.button_url %}
-                  <a href="{{ block.settings.button_url }}" class="banner-lollocafe__button"
-                     style="{% if block.settings.button_bg_color %}background-color: {{ block.settings.button_bg_color }};{% endif %}{% if block.settings.button_text_color %}color: {{ block.settings.button_text_color }};{% endif %}{% if block.settings.button_size %}font-size: {{ block.settings.button_size }}px;{% endif %}{% if block.settings.button_padding_horizontal and block.settings.button_padding_vertical %}padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;{% endif %}{% if block.settings.button_border_radius %}border-radius: {{ block.settings.button_border_radius }}px;{% endif %}">
+                  <a href="{{ block.settings.button_url }}" class="banner-lollocafe__button{% if block.settings.button_custom_position %} banner-lollocafe__button--custom-position{% endif %}"
+                     style="{% if block.settings.button_bg_color %}background-color: {{ block.settings.button_bg_color }};{% endif %}{% if block.settings.button_text_color %}color: {{ block.settings.button_text_color }};{% endif %}{% if block.settings.button_size %}font-size: {{ block.settings.button_size }}px;{% endif %}{% if block.settings.button_padding_horizontal and block.settings.button_padding_vertical %}padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;{% endif %}{% if block.settings.button_border_radius %}border-radius: {{ block.settings.button_border_radius }}px;{% endif %}{% if block.settings.button_custom_position %}position: absolute; left: {{ block.settings.button_position_x }}%; top: {{ block.settings.button_position_y }}%; transform: translate(-50%, -50%);{% endif %}">
                     {{ block.settings.button_text }}
                   </a>
                 {% endif %}
@@ -422,7 +422,7 @@
   background-color: #8B4513;
   color: white;
   text-decoration: none;
-
+  border-radius: 8px;
   font-weight: 600;
   border: 2px solid #8B4513;
   box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
@@ -432,6 +432,8 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 /* Efecto de llenado hover dinámico */
@@ -454,7 +456,8 @@
   height: 300px;
 }
 
-.banner-lollocafe__button:hover {
+/* Hover general solo para botones normales */
+.banner-lollocafe__button:not(.banner-lollocafe__button--custom-position):hover {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
   border-color: rgba(255, 255, 255, 0.3);
@@ -472,14 +475,78 @@
   opacity: 0.9;
 }
 
-.banner-lollocafe-carousel__slide.active .banner-lollocafe__button {
+/* Animación para botón normal (sin posición personalizada) */
+.banner-lollocafe-carousel__slide.active .banner-lollocafe__button:not(.banner-lollocafe__button--custom-position) {
   transform: translateX(0);
   opacity: 1;
 }
 
-.banner-lollocafe__button:active {
+/* Estados de interacción para botón normal */
+.banner-lollocafe__button:not(.banner-lollocafe__button--custom-position):active {
   transform: translateY(-1px) scale(1.02);
   box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+}
+
+/* Hover para botones normales - consolidado */
+.banner-lollocafe__button:not(.banner-lollocafe__button--custom-position):hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #A0522D;
+}
+
+/* Botón con posición personalizada */
+.banner-lollocafe__button--custom-position {
+  position: absolute !important;
+  z-index: 10;
+  opacity: 0 !important;
+  transform: translate(-50%, -50%) scale(0.8) !important;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Animación para botón con posición personalizada cuando el slide está activo */
+.banner-lollocafe-carousel__slide.active .banner-lollocafe__button--custom-position {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  transition-delay: 0.6s;
+}
+
+/* Estados de interacción para botón con posición personalizada */
+.banner-lollocafe__button--custom-position:hover {
+  transform: translate(-50%, -50%) scale(1.05) !important;
+  box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #A0522D;
+}
+
+.banner-lollocafe__button--custom-position:active {
+  transform: translate(-50%, -50%) scale(1.02) !important;
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+}
+
+/* Responsive adjustments para posición personalizada */
+@media (max-width: 768px) {
+  .banner-lollocafe__button--custom-position {
+    font-size: 0.9rem !important;
+    padding: 0.8rem 1.5rem !important;
+  }
+  
+  /* Asegurar que el hover funcione correctamente en móvil */
+  .banner-lollocafe__button--custom-position:hover {
+    transform: translate(-50%, -50%) scale(1.03) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-lollocafe__button--custom-position {
+    font-size: 0.8rem !important;
+    padding: 0.7rem 1.2rem !important;
+  }
+  
+  /* Hover más sutil en pantallas muy pequeñas */
+  .banner-lollocafe__button--custom-position:hover {
+    transform: translate(-50%, -50%) scale(1.02) !important;
+  }
 }
 
 /* Indicadores de puntos */
@@ -671,6 +738,14 @@
   .banner-lollocafe-carousel-{{ section.id }} .banner-lollocafe__button {
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
+    border-radius: 6px;
+    min-width: 120px;
+    white-space: nowrap;
+  }
+  
+  /* Hover para botón con posición personalizada en móvil */
+  .banner-lollocafe__button--custom-position:hover {
+    transform: translate(-50%, -50%) scale(1.02) !important;
   }
 }
 
@@ -1164,6 +1239,39 @@ document.addEventListener('DOMContentLoaded', function() {
           "max": 50,
           "step": 1,
           "default": 8
+        },
+        {
+          "type": "header",
+          "content": "Posicionamiento del botón"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_custom_position",
+          "label": "Usar posición personalizada",
+          "default": false,
+          "info": "Activa para posicionar el botón con coordenadas X e Y específicas"
+        },
+        {
+          "type": "range",
+          "id": "button_position_x",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Posición X (horizontal)",
+          "default": 50,
+          "info": "0% = izquierda, 50% = centro, 100% = derecha"
+        },
+        {
+          "type": "range",
+          "id": "button_position_y",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Posición Y (vertical)",
+          "default": 80,
+          "info": "0% = arriba, 50% = centro, 100% = abajo"
         }
       ]
     }
