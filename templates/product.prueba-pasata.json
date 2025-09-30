@@ -1,0 +1,452 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner_lollocafe_JAjzPd": {
+      "type": "banner-lollocafe",
+      "blocks": {
+        "slide_F3GjzT": {
+          "type": "slide",
+          "settings": {
+            "desktop_image": "shopify://shop_images/BANNER_PRODUCTO_PASSATA.jpg",
+            "mobile_image": "shopify://shop_images/1080_a9f67a3b-ef9e-4be2-994a-f5746bd0cb70.jpg",
+            "background_color": "#8b4513",
+            "overlay_color": "#000000",
+            "overlay_opacity": 0,
+            "text_position_desktop": "center-center",
+            "text_alignment": "center",
+            "title": "",
+            "title_color": "#ffffff",
+            "title_size": 48,
+            "subtitle": "",
+            "subtitle_color": "#ffffff",
+            "subtitle_size": 18,
+            "button_text": "",
+            "button_url": "",
+            "mobile_click_url": "",
+            "button_bg_color": "#8b4513",
+            "button_text_color": "#ffffff",
+            "button_size": 16,
+            "button_padding_horizontal": 24,
+            "button_padding_vertical": 12,
+            "button_border_radius": 8,
+            "button_custom_position": false,
+            "button_position_x": 50,
+            "button_position_y": 80
+          }
+        }
+      },
+      "block_order": [
+        "slide_F3GjzT"
+      ],
+      "name": "Banner Lollocafe",
+      "settings": {
+        "autoplay": true,
+        "autoplay_speed": 5000,
+        "show_arrows": true,
+        "show_text": true,
+        "hide_text_mobile": false,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "product",
+      "blocks": {
+        "add_to_cart_ertygV": {
+          "type": "add_to_cart",
+          "settings": {
+            "quantity_label": "Cantidad",
+            "show_quantity_by_default": false,
+            "add_to_cart_text": "Agregar al carrito",
+            "loading_text": "Agregando...",
+            "button_bg_color": "#00003a",
+            "button_text_color": "#ffffff",
+            "quantity_btn_color": "#6b7280",
+            "quantity_btn_bg": "rgba(0,0,0,0)",
+            "quantity_label_color": "#374151",
+            "quantity_input_color": "#111827",
+            "quantity_input_bg": "rgba(0,0,0,0)",
+            "price_total_label_color": "#374151",
+            "price_total_value_color": "#111827",
+            "unavailable_text": "Producto no disponible"
+          }
+        }
+      },
+      "block_order": [
+        "add_to_cart_ertygV"
+      ],
+      "settings": {
+        "show_breadcrumb": true,
+        "max_width": 1200,
+        "columns_gap": 60,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "background_color": "#ffffff",
+        "primary_color": "#000000",
+        "secondary_color": "#666666",
+        "accent_color": "#007bff",
+        "border_color": "#e5e5e5",
+        "image_ratio": "1/1",
+        "image_fit": "contain",
+        "image_shadow": true,
+        "enable_zoom": false,
+        "thumbnail_size": 90,
+        "thumbnails_per_row": 3,
+        "custom_title": "",
+        "title_size": 2,
+        "title_weight": "700",
+        "custom_subtitle": "",
+        "custom_description": "",
+        "show_vendor": true,
+        "show_price": true,
+        "show_description": true,
+        "border_radius": 8
+      }
+    },
+    "faq_FAD6kM": {
+      "type": "faq",
+      "blocks": {
+        "question_xEtDFg": {
+          "type": "question",
+          "settings": {
+            "question": "¿Cuál es la cantidad mínima de Passata que debo comprar?",
+            "answer": "<ul><li>Establecimos una <strong>compra mínima de 20 cajas</strong>. Cada caja contiene <strong>12 unidades</strong> de passata (680g c/u).</li></ul>"
+          }
+        },
+        "question_gF7JDf": {
+          "type": "question",
+          "settings": {
+            "question": "¿Qué datos son obligatorios para generar la factura fiscal?",
+            "answer": "<ul><li>Necesitamos la siguiente información de su empresa para procesar su pedido y generar la factura fiscal venezolana: <strong>Nombre</strong> (Razón Social), <strong>Teléfono</strong>, <strong>RIF</strong> (Registro de Información Fiscal) y el <strong>Lugar de Despacho</strong> exacto.</li></ul>"
+          }
+        },
+        "question_3iHiep": {
+          "type": "question",
+          "settings": {
+            "question": "¿Cómo se gestiona la entrega de mi pedido?",
+            "answer": "<ul><li>Hacemos despachos al lugar indicado por usted. Nuestro tiempo de entrega es de 5 a 12 días hábiles una vez confirmado el pago.</li></ul>"
+          }
+        }
+      },
+      "block_order": [
+        "question_xEtDFg",
+        "question_gF7JDf",
+        "question_3iHiep"
+      ],
+      "name": "Preguntas Frecuentes",
+      "settings": {
+        "title": "¿Que necesito para comprar?",
+        "subtitle": "<p>Encuentra respuestas a las preguntas más comunes sobre nuestros productos y servicios.</p>",
+        "image": "shopify://shop_images/tapa_final.jpg",
+        "background_color": "#ffffff",
+        "title_color": "#00003a",
+        "question_color": "#00003a",
+        "answer_color": "#666666",
+        "border_color": "#e0e0e0",
+        "accordion_bg": "#ffffff",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "animate_on_scroll": true
+      }
+    },
+    "store_locations_grouped_iAqqwH": {
+      "type": "store-locations-grouped",
+      "blocks": {
+        "city_group_q7VEDM": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 13,
+            "pos_l": 47,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Caracas",
+            "locations_text": "Gama,\nForum Supermayorista ,\nHipermercado Páramo,\nPlan Suárez ,\nRío Vida ,\nHippo Supermarket,\nHipermercado Hummy ,\nBullking ,\nEmporium,\nMercato Market ,\nSupermercado Sledo ,"
+          }
+        },
+        "city_group_HhGKEG": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 13,
+            "pos_l": 37,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Puerto Cabello",
+            "locations_text": "Catania Hipermercado"
+          }
+        },
+        "city_group_i6cP3G": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 13,
+            "pos_l": 34,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de San Felipe",
+            "locations_text": "Kromi Market CA."
+          }
+        },
+        "city_group_MFTDJD": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 23,
+            "pos_l": 31,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Acarigua",
+            "locations_text": "Forum Supermayorista,\nHipermercado Sol,\nAbasto girasol"
+          }
+        },
+        "city_group_paWN8g": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 9,
+            "pos_l": 60,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Margarita",
+            "locations_text": "Automercados Nova,\nSupermercados Sigo,\nRattan,\nMás x Menos"
+          }
+        },
+        "city_group_8GXEAJ": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 19,
+            "pos_l": 55,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Barcelona",
+            "locations_text": "Más x menos,\nAikoz ,\nTodo Hogar,\nLimpia Todo"
+          }
+        },
+        "city_group_H7WrCb": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 47,
+            "pos_l": 62,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Ciudad Bolivar",
+            "locations_text": "Forum Supermayorista"
+          }
+        },
+        "city_group_3V6iYt": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 20,
+            "pos_l": 64,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Maturin",
+            "locations_text": "Rojoluje (Distribuidora),\nForum Supermayorista ,\nSupermercados Maxi,\nMykasa ,\nFarmacias Farmadon"
+          }
+        },
+        "city_group_CHePe4": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 14,
+            "pos_l": 28,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Barquisimeto",
+            "locations_text": "Forum Supermayorista,\nNuevo Siglo ,\nHipermercado Kari,\nMerkafur,\nFrigorífico la pollera ,\nMi super,\nDiane"
+          }
+        },
+        "city_group_kcLFe4": {
+          "type": "city_group",
+          "settings": {
+            "pos_t": 13,
+            "pos_l": 14,
+            "pos_size": "medium",
+            "bg_cl": "#65affa",
+            "cl_text": "#ffffff",
+            "hide_on_mobile": false,
+            "city_name": "Ubicaciones de Maracaibo",
+            "locations_text": "Alkosto ,\nFarmacia Maraplus ,\nFamilia ,\nPanadería La Fina,\nMega 62 ,\nMercasa,\nMultitienda los cascos,\nSupermercado ,\nLa Polular ,\nMarbella,\nMillenium,\nSamba Latino ,\nFamoso ,\nDistribuidora FC"
+          }
+        }
+      },
+      "block_order": [
+        "city_group_q7VEDM",
+        "city_group_HhGKEG",
+        "city_group_i6cP3G",
+        "city_group_MFTDJD",
+        "city_group_paWN8g",
+        "city_group_8GXEAJ",
+        "city_group_H7WrCb",
+        "city_group_3V6iYt",
+        "city_group_CHePe4",
+        "city_group_kcLFe4"
+      ],
+      "name": "Ubicaciones por Ciudad",
+      "settings": {
+        "image": "shopify://shop_images/mapa_banner.png",
+        "mobile_image": "shopify://shop_images/mapa_1080.png",
+        "full_width_desktop": false,
+        "full_width_tablet": false,
+        "full_width_mobile": true,
+        "interaction_mode": "click",
+        "enable_whatsapp_button": true,
+        "hide_pins_on_mobile": false,
+        "layout": "t4s-se-container",
+        "mg": "",
+        "pd": "",
+        "mg_tb": "",
+        "pd_tb": "",
+        "mg_mb": "",
+        "pd_mb": "",
+        "modal_bg_color": "#ffffff",
+        "modal_text_color": "#00003a",
+        "modal_title_color": "#00003a",
+        "modal_border_color": "#00003a",
+        "modal_close_color": "#00003a",
+        "modal_close_hover_color": "#00003a",
+        "dropdown_bg_color": "#ffffff",
+        "dropdown_text_color": "#00003a",
+        "dropdown_title_color": "#00003a",
+        "dropdown_border_color": "#00003a"
+      }
+    },
+    "apps_cCWBKF": {
+      "type": "apps",
+      "blocks": {
+        "powerful_form_builder_app_block_xN7Und": {
+          "type": "shopify://apps/powerful-form-builder/blocks/app-block/e4bcb1eb-35b2-42e6-bc37-bfe0e1542c9d",
+          "settings": {
+            "shortcode": "<div class=\"globo-formbuilder\" data-id=\"MTA2NzAy\"></div>"
+          }
+        }
+      },
+      "block_order": [
+        "powerful_form_builder_app_block_xN7Und"
+      ],
+      "disabled": true,
+      "settings": {}
+    },
+    "brands_carousel_QBWGr4": {
+      "type": "brands-carousel",
+      "blocks": {
+        "brand_xNDUWk": {
+          "type": "brand",
+          "settings": {
+            "circle_bg_color": "#ffffff",
+            "logo": "shopify://shop_images/GAMA_RGB-01-e1628625728907.png",
+            "svg": "",
+            "alt": "",
+            "link": ""
+          }
+        },
+        "brand_gLVM3w": {
+          "type": "brand",
+          "settings": {
+            "circle_bg_color": "#ffffff",
+            "logo": "shopify://shop_images/logo3_645b5163-333b-4b69-a67b-a3b4fc9a5874.png",
+            "svg": "",
+            "alt": "",
+            "link": ""
+          }
+        },
+        "brand_dghYfz": {
+          "type": "brand",
+          "settings": {
+            "circle_bg_color": "#00003a",
+            "logo": "shopify://shop_images/logo-riovida-2.png",
+            "svg": "",
+            "alt": "",
+            "link": ""
+          }
+        },
+        "brand_7T6WGd": {
+          "type": "brand",
+          "settings": {
+            "circle_bg_color": "#ffffff",
+            "logo": "shopify://shop_images/393445203_122113628228068149_6951597149791508912_n.png",
+            "svg": "",
+            "alt": "",
+            "link": ""
+          }
+        },
+        "brand_86encF": {
+          "type": "brand",
+          "settings": {
+            "circle_bg_color": "#00003a",
+            "logo": "shopify://shop_images/forum_supermayorista_1692804381_013.png",
+            "svg": "",
+            "alt": "",
+            "link": ""
+          }
+        },
+        "brand_UgqPwe": {
+          "type": "brand",
+          "settings": {
+            "circle_bg_color": "#ffffff",
+            "logo": "shopify://shop_images/396737315_643251214637837_7582887242351486905_n.png",
+            "svg": "",
+            "alt": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "brand_xNDUWk",
+        "brand_gLVM3w",
+        "brand_dghYfz",
+        "brand_7T6WGd",
+        "brand_86encF",
+        "brand_UgqPwe"
+      ],
+      "name": "Nuestras Marcas",
+      "settings": {
+        "title": "Nuestros Aliados Comerciales",
+        "subtitle": "Trabajamos con los mejores comercios",
+        "background_color": "#ffffff",
+        "title_color": "#333333",
+        "subtitle_color": "#666666",
+        "hover_text": "Visitar sitio",
+        "overlay_text_color": "#ffffff",
+        "overlay_bg_color": "rgba(46, 70, 149, 0.85)",
+        "arrow_color": "#333333",
+        "arrow_bg_color": "#ffffff",
+        "arrow_hover_color": "#ffffff",
+        "arrow_hover_bg_color": "#2e4695",
+        "enable_autoplay": true,
+        "autoplay_speed": 4,
+        "transition_speed": 800,
+        "animate_on_scroll": true
+      }
+    }
+  },
+  "order": [
+    "banner_lollocafe_JAjzPd",
+    "main",
+    "faq_FAD6kM",
+    "store_locations_grouped_iAqqwH",
+    "apps_cCWBKF",
+    "brands_carousel_QBWGr4"
+  ]
+}
