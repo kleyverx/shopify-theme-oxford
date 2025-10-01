@@ -25,7 +25,9 @@
           {% if section.settings.central_image != blank %}
             <img src="{{ section.settings.central_image | image_url: width: 1920, height: 1920 }}" 
                  alt="{{ section.settings.central_image_alt | default: 'Imagen central' | escape }}" 
-                 loading="lazy">
+                 loading="lazy"
+                 width="200"
+                 height="200">
           {% else %}
             <div class="central-image-placeholder">
               <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
@@ -64,7 +66,9 @@
                   {% if block.settings.author_image != blank %}
                     <img src="{{ block.settings.author_image | image_url: width: 60 }}" 
                          alt="{{ block.settings.author_name | escape }}" 
-                         class="author-avatar">
+                         class="author-avatar"
+                         width="60"
+                         height="60">
                   {% endif %}
                   
                   <div class="author-info">
@@ -90,7 +94,9 @@
         {% if section.settings.central_image != blank %}
           <img src="{{ section.settings.central_image | image_url: width: 1920, height: 1920 }}" 
                alt="{{ section.settings.central_image_alt | default: 'Imagen central' | escape }}" 
-               loading="lazy">
+               loading="lazy"
+               width="150"
+               height="150">
         {% else %}
           <div class="mobile-central-image-placeholder">
             <svg width="150" height="150" viewBox="0 0 150 150" fill="none">
@@ -126,7 +132,9 @@
                   {% if block.settings.author_image != blank %}
                     <img src="{{ block.settings.author_image | image_url: width: 60 }}" 
                          alt="{{ block.settings.author_name | escape }}" 
-                         class="author-avatar">
+                         class="author-avatar"
+                         width="60"
+                         height="60">
                   {% endif %}
                   
                   <div class="author-info">

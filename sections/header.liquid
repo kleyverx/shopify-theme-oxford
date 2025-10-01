@@ -88,7 +88,15 @@
       
       <!-- Mini Cart -->
       {% if section.settings.show_cart %}
-        {% render 'mini-cart' %}
+        {% comment %} Solo mostrar carrito en templates específicos de Lollocafe, prueba-pasata y en el template de cart {% endcomment %}
+        {% assign show_cart_for_template = false %}
+        {% if template.suffix == 'lollocafe' or template.suffix == 'prueba-pasata' or template.name == 'cart' %}
+          {% assign show_cart_for_template = true %}
+        {% endif %}
+        
+        {% if show_cart_for_template %}
+          {% render 'mini-cart' %}
+        {% endif %}
       {% endif %}
 
     </div>

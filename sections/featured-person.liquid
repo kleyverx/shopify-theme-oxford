@@ -14,7 +14,9 @@
         {% if section.settings.person_image != blank %}
           <img src="{{ section.settings.person_image | image_url: width: 600 }}" 
                alt="{{ section.settings.person_name | escape }}" 
-               loading="lazy">
+               loading="lazy"
+               width="600"
+               height="600">
         {% else %}
           <div class="featured-person-placeholder">
             <svg width="200" height="200" viewBox="0 0 200 200" fill="none">

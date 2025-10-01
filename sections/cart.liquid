@@ -19,7 +19,7 @@
             <div class="cart-item__header">
               <div class="cart-item__image">
                 {% if item.image %}
-                  <img src="{{ item.image | image_url: width: 150 }}" alt="{{ item.image.alt | escape }}" loading="lazy">
+                  <img src="{{ item.image | image_url: width: 150 }}" alt="{{ item.image.alt | escape }}" loading="lazy" width="150" height="150">
                 {% else %}
                   <div class="cart-item__no-image">{{ 'cart.no_image' | t }}</div>
                 {% endif %}

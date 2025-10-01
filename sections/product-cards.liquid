@@ -30,7 +30,9 @@
                   {% if block.settings.image != blank %}
                     <img src="{{ block.settings.image | image_url: width: 400 }}" 
                          alt="{{ block.settings.title | escape }}" 
-                         loading="lazy">
+                         loading="lazy"
+                         width="400"
+                         height="400">
                   {% else %}
                     <div class="product-card-placeholder">
                       <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -44,7 +46,7 @@
                 <!-- Overlay de imagen personalizable para hover que cubre toda la card -->
                 <div class="hover-image-overlay">
                   {% if block.settings.hover_image != blank %}
-                    <img class="hover-background" src="{{ block.settings.hover_image | image_url: width: 600 }}" alt="Hover background" />
+                    <img class="hover-background" src="{{ block.settings.hover_image | image_url: width: 600 }}" alt="Hover background" width="600" height="600" />
                   {% else %}
                     <!-- Overlay con gradiente por defecto para dispositivos táctiles -->
                     <div class="hover-background default-overlay"></div>

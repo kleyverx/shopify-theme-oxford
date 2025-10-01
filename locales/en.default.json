@@ -27,6 +27,24 @@
     "title": "Collections",
     "empty": "No products found in this collection."
   },
+  "cart": {
+    "title": "Your Cart",
+    "no_image": "No image",
+    "quantity": "Quantity",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "save": "Save",
+    "remove": "Remove",
+    "discounts": "Discounts",
+    "subtotal": "Subtotal",
+    "total_savings": "Total Savings",
+    "taxes_note": "Taxes and shipping calculated at checkout",
+    "update": "Update Cart",
+    "checkout": "Checkout",
+    "empty_title": "Your cart is empty",
+    "empty_message": "Add some products to your cart to get started.",
+    "continue_shopping": "Continue Shopping"
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",
@@ -129,7 +147,9 @@
     "menu_open": "Open menu",
     "menu_close": "Close menu",
     "navigation": "Navigation",
-    "mobile_navigation": "Mobile navigation"
+    "mobile_navigation": "Mobile navigation",
+    "search": "Search",
+    "close_menu": "Close menu"
   },
   "general": {
     "breadcrumbs": {

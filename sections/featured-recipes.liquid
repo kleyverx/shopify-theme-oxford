@@ -77,7 +77,7 @@ Muestra un preview de recetas del blog seleccionado.
           <div class="featured-recipe-card">
             <a href="{{ article.url }}">
               {% if article.image %}
-                <img class="featured-recipe-card__image" src="{{ article.image | image_url: width: 400, height: 200 }}" alt="{{ article.title | escape }}" loading="lazy">
+                <img class="featured-recipe-card__image" src="{{ article.image | image_url: width: 400, height: 200 }}" alt="{{ article.title | escape }}" loading="lazy" width="400" height="200">
               {% else %}
                 <div class="featured-recipe-card__image--placeholder"></div>
               {% endif %}
